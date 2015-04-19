@@ -52,3 +52,12 @@ class ProxCdiv:
         div = fft.dst(div, type=1, axis=1) / ( self.N + 2. )
         div = fft.dst(div, type=1, axis=2) / ( self.P + 2. )
         return div
+
+    def __call__(self,grid):
+        # projects StaggeredGrid grid on the divergence free constrain
+        
+        div = self.A_div(grid)
+        div = self.inv_A_T_A_div(div)
+        gridP = self.T_A_div(div)
+
+        return ( grid - gridP )
