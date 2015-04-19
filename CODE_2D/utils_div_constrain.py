@@ -42,6 +42,7 @@ class ProxCdiv:
 
     def inv_A_T_A_div(self,div):
         # inverts operator A o T_A
+        # this function modifies div
 
         div = 0.5*fft.dst(div, type=1, axis=0)
         div = 0.5*fft.dst(div, type=1, axis=1)
@@ -63,3 +64,23 @@ class ProxCdiv:
 
         return ( grid - gridP )
 
+    def test(self):
+        d1 = np.random.rand(self.M+1,self.N+1,self.P+1)
+        e = 0.
+        t = 0.
+
+        d2 = np.copy(d1)
+        time_start = time.time()
+        d2 = self.inv_A_T_A_div(d2)
+        d2 = self.A_T_A_div(d2)
+        t0 += time.time() - time_start
+        e += np.abs(d1 - d2).max()
+
+        d2 = np.copy(d1)
+        time_start = time.time()
+        d2 = self.A_T_A_div(d2)
+        d2 = self.inv_A_T_A_div(d2)
+        t0 += time.time() - time_start
+        e += np.abs(d1 - d2).max()
+
+        return e, t0
