@@ -69,6 +69,8 @@ class StaggeredGrid:
         return StaggeredGrid( M, N, P,
                               mx, my, f )
 
+    fromfile = staticmethod(fromfile)
+
 ########################################
 # Interpolation and other grid functions
 ########################################
@@ -92,6 +94,14 @@ class StaggeredGrid:
 
         return CenteredGrid( M, N, P,
                              mx, my, f )
+
+    def divergence(self):
+        M = self.M
+        N = self.N
+        P = self.P
+        return ( M*( self.mx[1:M+2,:,:] - self.mx[0:M+1,:,:] ) +
+                 N*( self.my[:,1:N+2,:] - self.my[:,0:N+1,:] ) +
+                 P*( self.f[:,:,1:P+2]  - self.f[:,:,0:P+1]  ) )
 
 ###############
 # To acces item
