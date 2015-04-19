@@ -107,9 +107,9 @@ class ProxCdivbound:
         div[0,0,0] = 0.0
         div = div/self.eigvalues_A_div_b
 
-        div = fft.idct(div, type=1, axis=0) / ( self.M + 1. )
-        div = fft.idct(div, type=1, axis=1) / ( self.N + 1. )
-        div = fft.idct(div, type=1, axis=2) / ( self.P + 1. )
+        div = fft.idct(div, axis=0) / ( self.M + 1. )
+        div = fft.idct(div, axis=1) / ( self.N + 1. )
+        div = fft.idct(div, axis=2) / ( self.P + 1. )
 
         bx0 += self.M*div[0,:,:]
         bx1 -= self.M*div[self.M,:,:]
