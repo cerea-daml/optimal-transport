@@ -2,6 +2,9 @@ import numpy as np
 import scipy.fftpack as fft
 import time as tm
 
+from utils_centered_grid import *
+from utils_staggered_grid import *
+
 class ProxCdiv:
     '''
     Utils related to the divergence constrain
@@ -23,7 +26,7 @@ class ProxCdiv:
                                  2. * (P**2) * ( 1. - np.cos( np.pi * ( Zm + 1. ) / ( P + 2. ) ) ) )
 
     def __repr__(self):
-        return ( 'Proximal operator associated to the divergence free constrain on a grid with shape' +
+        return ( 'Proximal operator associated to the divergence free constrain on a grid with shape :' +
                  str(self.M) + ' x ' +
                  str(self.N) + ' x ' +
                  str(self.P) )
