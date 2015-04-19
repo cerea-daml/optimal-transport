@@ -66,11 +66,12 @@ class CenteredGrid:
         return CenteredGrid( M, N, P,
                              mx, my, f )
 
-########################
-# Interpolation function
-########################
+    def fromfile = staticmethod(fromfile)
+###################################
+# Interpolation and other functions
+###################################
 
-    def interpolation(self):
+    def T_interpolation(self):
         M = self.M
         N = self.N
         P = self.P
