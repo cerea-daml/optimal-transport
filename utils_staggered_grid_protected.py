@@ -126,6 +126,24 @@ class StaggeredGrid:
 
     T_divergence = staticmethod(T_divergence)
 
+    def bt0(self):
+        return self.f[:,:,0]
+
+    def bt1(self):
+        return self.f[:,:,self.P+1]
+
+    def bx0(self):
+        return self.f[0,:,:]
+
+    def bx1(self):
+        return self.f[self.M+1,:,:]
+
+    def by0(self):
+        return self.f[:,0,:]
+
+    def by1(self):
+        return self.f[:,self.N+1,:]
+
 ###############
 # To acces item
 ###############
