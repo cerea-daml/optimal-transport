@@ -87,3 +87,15 @@ class ProxCdiv:
         e += np.abs(d1 - d2).max()
 
         return e, t
+
+    def timing(self,nTiming):
+        t = 0.
+        for i in xrange(nTiming):
+            mx = np.random.rand(self.M+2, self.N+1, self.P+1)
+            my = np.random.rand(self.M+1, self.N+2, self.P+1)
+            f  = np.random.rand(self.M+1, self.N+1, self.P+2)
+            grid = StaggeredGrid(self.M, self.N, self.P, mx, my, f)
+            time_start = tm.time()
+            grid = self(grid)
+            t += tm.time() - time_start
+        return t
