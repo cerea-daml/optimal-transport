@@ -70,17 +70,17 @@ class ProxCdiv:
         t = 0.
 
         d2 = np.copy(d1)
-        time_start = time.time()
+        time_start = tm.time()
         d2 = self.inv_A_T_A_div(d2)
         d2 = self.A_T_A_div(d2)
-        t0 += time.time() - time_start
+        t += tm.time() - time_start
         e += np.abs(d1 - d2).max()
 
         d2 = np.copy(d1)
-        time_start = time.time()
+        time_start = tm.time()
         d2 = self.A_T_A_div(d2)
         d2 = self.inv_A_T_A_div(d2)
-        t0 += time.time() - time_start
+        t += tm.time() - time_start
         e += np.abs(d1 - d2).max()
 
-        return e, t0
+        return e, t
