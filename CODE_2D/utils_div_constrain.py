@@ -1,5 +1,6 @@
 import numpy as np
 import scipy.fftpack as fft
+import time as tm
 
 class ProxCdiv:
     '''
@@ -61,3 +62,4 @@ class ProxCdiv:
         gridP = self.T_A_div(div)
 
         return ( grid - gridP )
+
