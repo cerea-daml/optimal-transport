@@ -103,6 +103,29 @@ class StaggeredGrid:
                  N*( self.my[:,1:N+2,:] - self.my[:,0:N+1,:] ) +
                  P*( self.f[:,:,1:P+2]  - self.f[:,:,0:P+1]  ) )
 
+    def T_divergence(div):
+        (m,n,p) = div.shape
+        M = m-1
+        N = n-1
+        P = p-1
+
+        mx = np.zeros(shape=(M+2,N+1,P+1))
+        mx[0:M+1,:,:] = -M*div[0:M+1,:,:]
+        mx[1:M+2,:,:] = mx[1:M+2,:,:] + M*div[0:M+1,:,:]
+
+        my = np.zeros(shape=(M+1,N+2,P+1))
+        my[:,0:N+1,:] = -N*div[:,0:N+1,:]
+        my[:,1:N+2,:] = my[:,1:N+2,:] + N*div[:,0:N+1,:]
+
+        f = np.zeros(shape=(M+1,N+1,P+2))
+        f[:,:,0:P+1] = -P*div[:,:,0:P+1]
+        f[:,:,1:P+2] = f[:,:,1:P+2] + P*div[:,:,0:P+1]
+
+        return StaggeredGrid( M, N, P,
+                              mx, my, f )
+
+    T_divergence = staticmethod(T_divergence)
+
 ###############
 # To acces item
 ###############
