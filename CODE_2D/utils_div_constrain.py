@@ -82,14 +82,14 @@ class ProxCdiv:
         div2 = self.inv_A_T_A_div(div2)
         div2 = self.A_T_A_div(div2)
         t += tm.time() - time_start
-        e += np.abs(div1.div - div2.div).max()
+        e += ( div1 - div2 ).LInftyNorm()
 
         div2 = div1.copy()
         time_start = tm.time()
         div2 = self.A_T_A_div(div2)
         div2 = self.inv_A_T_A_div(div2)
         t += tm.time() - time_start
-        e += np.abs(div1.div - div2.div).max()
+        e += ( div1 - div2 ).LInftyNorm()
 
         return e, t
 

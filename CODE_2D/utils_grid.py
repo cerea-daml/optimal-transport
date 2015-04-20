@@ -46,6 +46,14 @@ class CenteredGrid:
         return CenteredGrid( self.M, self.N, self.P,
                              self.mx.copy(), self.my.copy(), self.f.copy() )
 
+    def LInftyNorm(self):
+        return np.max( [ np.abs(self.mx).max(),
+                         np.abs(self.my).max(),
+                         np.abs(self.f).max() ] )
+
+    def L2Norm(self):
+        return np.sqrt( ( np.power(self.mx,2) + np.power(self.my,2) + np.power(self.f,2) ).mean() )
+
 ###############
 # I/O functions
 ###############
@@ -306,6 +314,14 @@ class StaggeredGrid:
     def copy(self):
         return StaggeredGrid( self.M, self.N, self.P,
                               self.mx.copy(), self.my.copy(), self.f.copy() )
+
+    def LInftyNorm(self):
+        return np.max( [ np.abs(self.mx).max(),
+                         np.abs(self.my).max(),
+                         np.abs(self.f).max() ] )
+
+    def L2Norm(self):
+        return np.sqrt( ( np.power(self.mx,2) +np.power(self.my,2) + np.power(self.f,2) ).mean() )
 
 ###############
 # I/O functions
@@ -585,6 +601,12 @@ class Divergence:
     def copy(self):
         return Divergence( self.M, self.N, self.P,
                            self.div.copy() )
+
+    def LInftyNorm(self):
+        return np.abs(self.div).max()
+
+    def L2Norm(self):
+        return np.sqrt( np.power(self.div,2).mean() )
 
 ############
 # Divergence
