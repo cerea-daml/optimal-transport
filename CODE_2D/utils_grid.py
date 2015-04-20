@@ -838,9 +838,9 @@ class DivergenceBound:
                           np.power(self.by0,2) + np.power(self.by1,2) +
                           np.power(self.bt0,2) + np.power(self.bt1,2) ).mean() )
 
-############
-# Divergence
-############
+####################################
+# Divergence and boundary conditions
+####################################
 
     def T_divBound(self):
         M = self.M
@@ -868,6 +868,26 @@ class DivergenceBound:
 
         return StaggeredGrid( M, N, P,
                               mx, my, f)
+
+########################################
+# Gauss operations to invert A_T_A_div_b
+########################################
+
+    def applyGaussForward(self):
+        self.div[0,:,:]      += self.M*self.bx0[:,:]
+        self.div[self.M,:,:] -= self.M*self.bx1[:,:]
+        self.div[:,0,:]      += self.N*self.by0[:,:]
+        self.div[:,self.N,:] -= self.N*self.by1[:,:]
+        self.div[:,:,0]      += self.P*self.bt0[:,:]
+        self.div[:,:,self.P] -= self.P*self.bt1[:,:]
+
+    def applyGaussBackward(self):
+        self.bx0 += self.M*self.div[0,:,:]
+        self.bx1 -= self.M*self.div[self.M,:,:]
+        self.by0 += self.N*self.div[:,0,:]
+        self.by1 -= self.N*self.div[:,self.N,:]
+        self.bt0 += self.P*self.div[:,:,0]
+        self.bt1 -= self.P*self.div[:,:,self.P]
 
 ##########################
 # Operations bewteen grids
