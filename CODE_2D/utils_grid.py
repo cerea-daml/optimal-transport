@@ -64,9 +64,12 @@ class CenteredGrid:
         M = int(data[0])
         N = int(data[1])
         P = int(data[2])
-        mx = data[3:3+(M+1)*(N+1)*(P+1)].reshape((M+1,N+1,P+1))
-        my = data[3+(M+1)*(N+1)*(P+1):3+2*(M+1)*(N+1)*(P+1)].reshape((M+1,N+1,P+1))
-        f  = data[3+2*(M+1)*(N+1)*(P+1):3+3*(M+1)*(N+1)*(P+1)].reshape((M+1,N+1,P+1))
+        mx = data[3:
+                      3+(M+1)*(N+1)*(P+1)].reshape((M+1,N+1,P+1))
+        my = data[3+(M+1)*(N+1)*(P+1):
+                      3+2*(M+1)*(N+1)*(P+1)].reshape((M+1,N+1,P+1))
+        f  = data[3+2*(M+1)*(N+1)*(P+1):
+                      3+3*(M+1)*(N+1)*(P+1)].reshape((M+1,N+1,P+1))
         return CenteredGrid( M, N, P,
                              mx, my, f )
 
@@ -81,16 +84,16 @@ class CenteredGrid:
         N = self.N
         P = self.P
         mx = np.zeros(shape=(M+2,N+1,P+1))
-        mx[0:M+1,:,:] = 0.5*self.mx[:,:,:]
-        mx[1:M+2,:,:] = mx[1:M+2,:,:] + 0.5*self.mx[:,:,:]
+        mx[0:M+1,:,:] =  0.5*self.mx[:,:,:]
+        mx[1:M+2,:,:] += 0.5*self.mx[:,:,:]
 
         my = np.zeros(shape=(M+1,N+2,P+1))
-        my[:,0:N+1,:] = 0.5*self.my[:,:,:]
-        my[:,1:N+2,:] = my[:,1:N+2,:] + 0.5*self.my[:,:,:]
+        my[:,0:N+1,:] =  0.5*self.my[:,:,:]
+        my[:,1:N+2,:] += 0.5*self.my[:,:,:]
 
         f = np.zeros(shape=(M+1,N+1,P+2))
-        f[:,:,0:P+1] = 0.5*self.f[:,:,:]
-        f[:,:,1:P+2] = f[:,:,1:P+2] + 0.5*self.f[:,:,:]
+        f[:,:,0:P+1] =  0.5*self.f[:,:,:]
+        f[:,:,1:P+2] += 0.5*self.f[:,:,:]
 
         return StaggeredGrid( M, N, P,
                               mx, my, f )
@@ -344,15 +347,15 @@ class StaggeredGrid:
 
         mx = np.zeros(shape=(M+1,N+1,P+1))
         mx[:,:,:] = 0.5*self.mx[0:M+1,:,:]
-        mx[0:M+1,:,:] = mx[0:M+1,:,:] + 0.5*self.mx[1:M+2,:,:]
+        mx[0:M+1,:,:] += 0.5*self.mx[1:M+2,:,:]
 
         my = np.zeros(shape=(M+1,N+1,P+1))
         my[:,:,:] = 0.5*self.my[:,0:N+1,:]
-        my[:,0:N+1,:] = my[:,0:N+1,:] + 0.5*self.my[:,1:N+2,:]
+        my[:,0:N+1,:] += 0.5*self.my[:,1:N+2,:]
 
         f = np.zeros(shape=(M+1,N+1,P+1))
         f[:,:,:] = 0.5*self.f[:,:,0:P+1]
-        f[:,:,0:P+1] = f[:,:,0:P+1] + 0.5*self.f[:,:,1:P+2]
+        f[:,:,0:P+1] += 0.5*self.f[:,:,1:P+2]
 
         return CenteredGrid( M, N, P,
                              mx, my, f )
@@ -361,32 +364,10 @@ class StaggeredGrid:
         M = self.M
         N = self.N
         P = self.P
-        return ( M*( self.mx[1:M+2,:,:] - self.mx[0:M+1,:,:] ) +
-                 N*( self.my[:,1:N+2,:] - self.my[:,0:N+1,:] ) +
-                 P*( self.f[:,:,1:P+2]  - self.f[:,:,0:P+1]  ) )
-
-    def T_divergence(div):
-        (m,n,p) = div.shape
-        M = m-1
-        N = n-1
-        P = p-1
-
-        mx = np.zeros(shape=(M+2,N+1,P+1))
-        mx[0:M+1,:,:] = -M*div[0:M+1,:,:]
-        mx[1:M+2,:,:] = mx[1:M+2,:,:] + M*div[0:M+1,:,:]
-
-        my = np.zeros(shape=(M+1,N+2,P+1))
-        my[:,0:N+1,:] = -N*div[:,0:N+1,:]
-        my[:,1:N+2,:] = my[:,1:N+2,:] + N*div[:,0:N+1,:]
-
-        f = np.zeros(shape=(M+1,N+1,P+2))
-        f[:,:,0:P+1] = -P*div[:,:,0:P+1]
-        f[:,:,1:P+2] = f[:,:,1:P+2] + P*div[:,:,0:P+1]
-        
-        return StaggeredGrid( M, N, P,
-                              mx, my, f )
-
-    T_divergence = staticmethod(T_divergence)
+        div = ( M*( self.mx[1:M+2,:,:] - self.mx[0:M+1,:,:] ) +
+                N*( self.my[:,1:N+2,:] - self.my[:,0:N+1,:] ) +
+                P*( self.f[:,:,1:P+2]  - self.f[:,:,0:P+1]  ) )
+        return Divergence(M,N,P,div)
 
     def bt0(self):
         return self.f[:,:,0]

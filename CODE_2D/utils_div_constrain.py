@@ -2,8 +2,7 @@ import numpy as np
 import scipy.fftpack as fft
 import time as tm
 
-from utils_centered_grid import *
-from utils_staggered_grid import *
+from utils_grid import *
 
 class ProxCdiv:
     '''
@@ -38,14 +37,16 @@ class ProxCdiv:
         return grid.divergence()
 
     def T_A_div(self,div):
-        return StaggeredGrid.T_divergence(div)
+        return div.T_divergence()
 
     def A_T_A_div(self,div):
         return self.A_div(self.T_A_div(div))
 
-    def inv_A_T_A_div(self,div):
+    def inv_A_T_A_div(self,divergence):
         # inverts operator A o T_A
-        # this function modifies div
+        # this function modifies divergence
+        
+        div = divergence.div
 
         div = 0.5*fft.dst(div, type=1, axis=0)
         div = 0.5*fft.dst(div, type=1, axis=1)
@@ -56,7 +57,9 @@ class ProxCdiv:
         div = fft.dst(div, type=1, axis=0) / ( self.M + 2. )
         div = fft.dst(div, type=1, axis=1) / ( self.N + 2. )
         div = fft.dst(div, type=1, axis=2) / ( self.P + 2. )
-        return div
+
+        divergence.div = div
+        return divergence
 
     def __call__(self,grid):
         # projects StaggeredGrid grid on the divergence free constrain
@@ -69,22 +72,24 @@ class ProxCdiv:
 
     def test(self):
         d1 = np.random.rand(self.M+1,self.N+1,self.P+1)
+        div1 = Divergence(self.M, self.N, self.P, d1)
+
         e = 0.
         t = 0.
 
-        d2 = np.copy(d1)
+        div2 = div1.copy()
         time_start = tm.time()
-        d2 = self.inv_A_T_A_div(d2)
-        d2 = self.A_T_A_div(d2)
+        div2 = self.inv_A_T_A_div(div2)
+        div2 = self.A_T_A_div(div2)
         t += tm.time() - time_start
-        e += np.abs(d1 - d2).max()
+        e += np.abs(div1.div - div2.div).max()
 
-        d2 = np.copy(d1)
+        div2 = div1.copy()
         time_start = tm.time()
-        d2 = self.A_T_A_div(d2)
-        d2 = self.inv_A_T_A_div(d2)
+        div2 = self.A_T_A_div(div2)
+        div2 = self.inv_A_T_A_div(div2)
         t += tm.time() - time_start
-        e += np.abs(d1 - d2).max()
+        e += np.abs(div1.div - div2.div).max()
 
         return e, t
 

@@ -2,8 +2,7 @@ import numpy as np
 import scipy.fftpack as fft
 import time as tm
 
-from utils_centered_grid import *
-from utils_staggered_grid import *
+from utils_grid import *
 
 class ProxCdivbound:
     '''
