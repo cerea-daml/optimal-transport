@@ -423,6 +423,15 @@ class StaggeredGrid:
                                self.my[:,0,:], self.my[:,N+1,:],
                                self.f[:,:,0],  self.f[:,:,P+1] )
 
+    def divTempBound(self):
+        div = ( self.M*( self.mx[1:self.M+2,:,:] - self.mx[0:self.M+1,:,:] ) +
+                self.N*( self.my[:,1:self.N+2,:] - self.my[:,0:self.N+1,:] ) +
+                self.P*( self.f[:,:,1:self.P+2]  - self.f[:,:,0:self.P+1]  ) )
+        return DivergenceTempBound(self.M, self.N, self.P,
+                                   div,
+                                   self.f[:,:,0],  self.f[:,:,self.P+1] )
+
+    
 ###############
 # To acces item
 ###############
@@ -1142,3 +1151,228 @@ class DivergenceBound:
                                np.abs(self.bx0), np.abs(self.bx1),
                                np.abs(self.by0), np.abs(self.by1),
                                np.abs(self.bt0), np.abs(self.bt1) )
+#######################
+# Class DivergenceBound
+#######################
+
+class DivergenceTempBound:
+    '''
+    Class to deals with a divergence field defined on a centered grid and temporal boundary conditions
+    '''
+
+#############
+# Constructor
+#############
+
+    def __init__(self, M, N, P, div=None, 
+                 bt0=None, bt1=None):
+        self.M = M
+        self.N = N
+        self.P = P
+
+        if div is None:
+            self.div = np.zeros(shape=(M+1,N+1,P+1))
+        else:
+            self.div = div
+
+        if bt0 is None:
+            self.bt0 = np.zeros(shape=(M+1,N+1))
+        else:
+            self.bt0 = bt0
+
+        if bt1 is None:
+            self.bt1 = np.zeros(shape=(M+1,N+1))
+        else:
+            self.bt1 = bt1
+
+    def __repr__(self):
+        return ( 'Divergence and temporal boundaries on a centered grid with shape ' +
+                 str(self.M) + ' x ' +
+                 str(self.N) + ' x ' +
+                 str(self.P) )
+    
+    def __delattr__(self, nom_attr):
+        raise AttributeError('You can not delete any attribute from this class : DivergenceTempBound')
+
+    def copy(self):
+        return DivergenceTempBound( self.M, self.N, self.P,
+                                    self.div.copy(), 
+                                    self.bt0.copy(), self.bt1.copy() )
+
+    def LInftyNorm(self):
+        return np.max( [ np.abs(self.div).max(),
+                         np.abs(self.bt0).max(), np.abs(self.bt1).max() ] )
+
+    def L2Norm(self):
+        return np.sqrt( ( np.power(self.div,2) +
+                          np.power(self.bt0,2) + np.power(self.bt1,2) ).mean() )
+
+    def random(M, N, P):
+        div = np.random.rand(M+1,N+1,P+1)
+        bt0 = np.random.rand(M+1,N+1)
+        bt1 = np.random.rand(M+1,N+1)
+        return DivergenceTempBound( M, N, P, div,
+                                    bt0, bt1 )
+    random = staticmethod(random)
+
+####################################
+# Divergence and boundary conditions
+####################################
+
+    def T_divTempBound(self):
+        mx = np.zeros(shape=(self.M+2,self.N+1,self.P+1))
+        my = np.zeros(shape=(self.M+1,self.N+2,self.P+1))
+        f  = np.zeros(shape=(self.M+1,self.N+1,self.P+2))
+
+        mx[0:self.M+1,:,:] = -self.M*self.div[0:self.M+1,:,:]
+        mx[1:self.M+2,:,:] += self.M*self.div[0:self.M+1,:,:]
+        
+        my[:,0:self.N+1,:] = -self.N*self.div[:,0:self.N+1,:]
+        my[:,1:self.N+2,:] += self.N*self.div[:,0:self.N+1,:]
+        
+        f[:,:,0:self.P+1] = -self.P*self.div[:,:,0:self.P+1]
+        f[:,:,1:self.P+2] += self.P*self.div[:,:,0:self.P+1]
+        f[:,:,0]          += self.bt0[:,:]
+        f[:,:,self.P+1]   += self.bt1[:,:]
+
+        return StaggeredGrid( self.M, self.N, self.P,
+                              mx, my , f )
+
+########################################
+# Gauss operations to invert A_T_A_div_b
+########################################
+
+    def applyGaussForward(self):
+        self.div[:,:,0]      += self.P*self.bt0[:,:]
+        self.div[:,:,self.P] -= self.P*self.bt1[:,:]
+
+    def applyGaussBackward(self):
+        self.bt0 += self.P*self.div[:,:,0]
+        self.bt1 -= self.P*self.div[:,:,self.P]
+
+##########################
+# Operations bewteen grids
+##########################
+
+    def __add__(self, other):
+        if isinstance(other,DivergenceTempBound):
+            return DivergenceTempBound(self.M, self.N, self.P, 
+                                       self.div + other.div,
+                                       self.bt0 + other.bt0, self.bt1 + other.bt1 )
+        else:
+            return DivergenceTempBound(self.M, self.N, self.P,
+                                       self.div + other,
+                                       self.bt0 + other, self.bt1 + other )
+
+    def __sub__(self, other):
+        if isinstance(other,DivergenceTempBound):
+            return DivergenceTempBound(self.M, self.N, self.P, 
+                                       self.div - other.div,
+                                       self.bt0 - other.bt0, self.bt1 - other.bt1 )
+        else:
+            return DivergenceTempBound(self.M, self.N, self.P,
+                                       self.div - other,
+                                       self.bt0 - other, self.bt1 - other )
+
+    def __mul__(self, other):
+        if isinstance(other,DivergenceTempBound):
+            return DivergenceTempBound(self.M, self.N, self.P, 
+                                       self.div * other.div,
+                                       self.bt0 * other.bt0, self.bt1 * other.bt1 )
+        else:
+            return DivergenceTempBound(self.M, self.N, self.P,
+                                       self.div * other,
+                                       self.bt0 * other, self.bt1 * other )
+
+    def __div__(self, other):
+        if isinstance(other,DivergenceTempBound):
+            return DivergenceTempBound(self.M, self.N, self.P, 
+                                       self.div / other.div,
+                                       self.bt0 / other.bt0, self.bt1 / other.bt1 )
+        else:
+            return DivergenceTempBound(self.M, self.N, self.P,
+                                       self.div / other,
+                                       self.bt0 / other, self.bt1 / other )
+
+    def __radd__(self, other):
+        return DivergenceTempBound(self.M, self.N, self.P,
+                                   other + self.div,
+                                   other + self.bt0, other + self.bt1 )
+
+    def __rsub__(self, other):
+        return DivergenceTempBound(self.M, self.N, self.P,
+                                   other - self.div,
+                                   other - self.bt0, other - self.bt1 )
+
+    def __rmul__(self, other):
+        return DivergenceTempBound(self.M, self.N, self.P,
+                                   other * self.div,
+                                   other * self.bt0, other * self.bt1 )
+
+    def __rdiv__(self, other):
+        return DivergenceTempBound(self.M, self.N, self.P,
+                                   other / self.div,
+                                   other / self.bt0, other / self.bt1 )
+
+    def __iadd__(self, other):
+        if isinstance(other,DivergenceTempBound):
+            self.div += other.div
+            self.bt0 += other.bt0
+            self.bt1 += other.bt1
+            return self
+        else:
+            self.div += other
+            self.bt0 += other
+            self.bt1 += other
+            return self
+
+    def __isub__(self, other):
+        if isinstance(other,DivergenceTempBound):
+            self.div -= other.div
+            self.bt0 -= other.bt0
+            self.bt1 -= other.bt1
+            return self
+        else:
+            self.div -= other
+            self.bt0 -= other
+            self.bt1 -= other
+            return self
+
+    def __imul__(self, other):
+        if isinstance(other,DivergenceTempBound):
+            self.div *= other.div
+            self.bt0 *= other.bt0
+            self.bt1 *= other.bt1
+            return self
+        else:
+            self.div *= other
+            self.bt0 *= other
+            self.bt1 *= other
+            return self
+
+    def __idiv__(self, other):
+        if isinstance(other,DivergenceTempBound):
+            self.div /= other.div
+            self.bt0 /= other.bt0
+            self.bt1 /= other.bt1
+            return self
+        else:
+            self.div /= other
+            self.bt0 /= other
+            self.bt1 /= other
+            return self
+
+    def __neg__(self):
+        return DivergenceTempBound(self.M, self.N, self.P,
+                                   - self.div,
+                                   - self.bt0, - self.bt1)
+
+    def __pos__(self):
+        return DivergenceTempBound(self.M, self.N, self.P,
+                                   + self.div,
+                                   + self.bt0, + self.bt1)
+
+    def __abs__(self):
+        return DivergenceTempBound(self.M, self.N, self.P,
+                                   np.abs(self.div),
+                                   np.abs(self.bt0), np.abs(self.bt1) )
