@@ -1176,6 +1176,7 @@ class DivergenceBound:
                                np.abs(self.bx0), np.abs(self.bx1),
                                np.abs(self.by0), np.abs(self.by1),
                                np.abs(self.bt0), np.abs(self.bt1) )
+
 #######################
 # Class DivergenceBound
 #######################
@@ -1510,6 +1511,13 @@ class StaggeredCenteredGrid:
     def interpolationDefault(self):
         return ( self.centGrid - self.stagGrid.interpolation() )
 
+    def interpolationDefault_Bound(self):
+        centGrid = self.centGrid - self.stagGrid.interpolation()
+        return CenteredGrid(self.M, self.N, self.P, centGrid,
+                            self.stagGrid.mx[0,:,:], self.stagGrid.mx[self.M+1,:,:],
+                            self.stagGrid.my[:,0,:], self.stagGrid.my[:,self.N+1,:],
+                            self.stagGrid.f[:,:,0],  self.stagGrid.f[:,:,self.P+1])
+
 ##########################
 # Operations bewteen grids
 ##########################
@@ -1613,3 +1621,303 @@ class StaggeredCenteredGrid:
     def __abs__(self):
         return StaggeredCenteredGrid(self.M, self.N, self.P,
                                      abs(self.stagGrid), abs(self.centGrid))
+
+#########################
+# Class CenteredGridBound
+#########################
+
+class CenteredGridBound:
+    '''
+    Class to deals with a centered grid and boundary conditions
+    '''
+
+#############
+# Constructor
+#############
+
+    def __init__(self, M, N, P, centGrid=None, 
+                 bx0=None, bx1=None,
+                 by0=None, by1=None,
+                 bt0=None, bt1=None):
+        self.M = M
+        self.N = N
+        self.P = P
+
+        if centGrid is None:
+            self.centGrid(M,N,P)
+
+        if bx0 is None:
+            self.bx0 = np.zeros(shape=(N+1,P+1))
+        else:
+            self.bx0 = bx0
+
+        if bx1 is None:
+            self.bx1 = np.zeros(shape=(N+1,P+1))
+        else:
+            self.bx1 = bx1
+
+        if by0 is None:
+            self.by0 = np.zeros(shape=(M+1,P+1))
+        else:
+            self.by0 = by0
+
+        if by1 is None:
+            self.by1 = np.zeros(shape=(M+1,P+1))
+        else:
+            self.by1 = by1
+
+        if bt0 is None:
+            self.bt0 = np.zeros(shape=(M+1,N+1))
+        else:
+            self.bt0 = bt0
+
+        if bt1 is None:
+            self.bt1 = np.zeros(shape=(M+1,N+1))
+        else:
+            self.bt1 = bt1
+
+    def __repr__(self):
+        return ( 'Centered grid and boundary conditions with shape ' +
+                 str(self.M) + ' x ' +
+                 str(self.N) + ' x ' +
+                 str(self.P) )
+    
+    def __delattr__(self, nom_attr):
+        raise AttributeError('You can not delete any attribute from this class : CenteredGridBound')
+
+    def copy(self):
+        return CenteredGridBound( self.M, self.N, self.P, self.centGrid.copy()
+                                  self.bx0.copy(), self.bx1.copy(),
+                                  self.by0.copy(), self.by1.copy(),
+                                  self.bt0.copy(), self.bt1.copy() )
+
+    def LInftyNorm(self):
+        return np.max( [ self.centGrid.LInftyNorm(),
+                         np.abs(self.bx0).max(), np.abs(self.bx1).max(),
+                         np.abs(self.by0).max(), np.abs(self.by1).max(),
+                         np.abs(self.bt0).max(), np.abs(self.bt1).max() ] )
+
+    def L2Norm(self):
+        return np.sqrt( ( np.power(self.centGrid.mx,2) +
+                          np.power(self.centGrid.my,2) +
+                          np.power(self.centGrid.f,2)  +
+                          np.power(self.bx0,2) + np.power(self.bx1,2) +
+                          np.power(self.by0,2) + np.power(self.by1,2) +
+                          np.power(self.bt0,2) + np.power(self.bt1,2) ).mean() )
+
+    def random(M, N, P):
+        centGrid = CenteredGrid.random(M,N,P)
+        bx0 = np.random.rand(N+1,P+1)
+        bx1 = np.random.rand(N+1,P+1)
+        by0 = np.random.rand(M+1,P+1)
+        by1 = np.random.rand(M+1,P+1)
+        bt0 = np.random.rand(M+1,N+1)
+        bt1 = np.random.rand(M+1,N+1)
+        return DivergenceBound( M, N, P, centGrid,
+                                bx0, bx1,
+                                by0, by1,
+                                bt0, bt1 )
+    random = staticmethod(random)
+
+########################################
+# Interpolation and other grid functions
+########################################
+
+    def T_interpolationDefault_Boundary(self):
+        mxu = np.zeros(shape=(self.M+2,self.N+1,self.P+1))
+        myu = np.zeros(shape=(self.M+1,self.N+2,self.P+1))
+        fu  = np.zeros(shape=(self.M+1,self.N+1,self.P+2))
+
+        mxu[0:self.M+1,:,:] = -0.5*self.centGrid.mx[:,:,:]
+        mxu[1:self.M+2,:,:] -= 0.5*self.centGrid.mx[:,:,:]
+        mxu[0,:,:]          += self.bx0[:,:]
+        mxu[self.M+1,:,:]   += self.bx1[:,:]
+        
+        myu[:,0:self.N+1,:] = -0.5*self.my[:,:,:]
+        myu[:,1:self.N+2,:] -= 0.5*self.my[:,:,:]
+        myu[:,0,:]          += self.by0[:,:]
+        myu[:,self.N+1,:]   += self.by1[:,:]
+
+        fu[:,:,0:self.P+1] = -0.5*self.f[:,:,:]
+        fu[:,:,1:self.P+2] -= 0.5*self.f[:,:,:]
+        fu[:,:,0]          += self.bt0[:,:]
+        fu[:,:,self.P+1]   += self.bt1[:,:]
+
+        stagGrid = StaggeredGrid(self.M, self.N, self.P, mxu, myu, fu)
+
+        return StaggeredCenteredGrid(self.M, self.N, self.P, stagGrid, self.centGrid)
+
+##########################
+# Operations bewteen grids
+##########################
+
+    def __add__(self, other):
+        if isinstance(other,CenteredGridBound):
+            return CenteredGridBound(self.M, self.N, self.P, self.centGrid + other.centGrid,
+                                     self.bx0 + other.bx0, self.bx1 + other.bx1,
+                                     self.by0 + other.by0, self.by1 + other.by1,
+                                     self.bt0 + other.bt0, self.bt1 + other.bt1)
+        else:
+            return CenteredGridBound(self.M, self.N, self.P, self.centGrid + other,
+                                     self.bx0 + other, self.bx1 + other,
+                                     self.by0 + other, self.by1 + other,
+                                     self.bt0 + other, self.bt1 + other)
+
+    def __sub__(self, other):
+        if isinstance(other,CenteredGridBound):
+            return CenteredGridBound(self.M, self.N, self.P, self.centGrid - other.centGrid,
+                                     self.bx0 - other.bx0, self.bx1 - other.bx1,
+                                     self.by0 - other.by0, self.by1 - other.by1,
+                                     self.bt0 - other.bt0, self.bt1 - other.bt1)
+        else:
+            return CenteredGridBound(self.M, self.N, self.P, self.centGrid - other,
+                                     self.bx0 - other, self.bx1 - other,
+                                     self.by0 - other, self.by1 - other,
+                                     self.bt0 - other, self.bt1 - other)
+
+    def __mul__(self, other):
+        if isinstance(other,CenteredGridBound):
+            return CenteredGridBound(self.M, self.N, self.P, self.centGrid * other.centGrid, 
+                                     self.bx0 * other.bx0, self.bx1 * other.bx1,
+                                     self.by0 * other.by0, self.by1 * other.by1,
+                                     self.bt0 * other.bt0, self.bt1 * other.bt1)
+        else:
+            return CenteredGridBound(self.M, self.N, self.P, self.centGrid * other,
+                                     self.bx0 * other, self.bx1 * other,
+                                     self.by0 * other, self.by1 * other,
+                                     self.bt0 * other, self.bt1 * other)
+
+    def __div__(self, other):
+        if isinstance(other,CenteredGridBound):
+            return CenteredGridBound(self.M, self.N, self.P, self.centGrid / other.centGrid, 
+                                     self.bx0 / other.bx0, self.bx1 / other.bx1,
+                                     self.by0 / other.by0, self.by1 / other.by1,
+                                     self.bt0 / other.bt0, self.bt1 / other.bt1)
+        else:
+            return CenteredGridBound(self.M, self.N, self.P, self.centGrid / other,
+                                     self.bx0 / other, self.bx1 / other,
+                                     self.by0 / other, self.by1 / other,
+                                     self.bt0 / other, self.bt1 / other)
+
+    def __radd__(self, other):
+        return CenteredGridBound(self.M, self.N, self.P, other + self.centGrid,
+                                 other + self.bx0, other + self.bx1,
+                                 other + self.by0, other + self.by1,
+                                 other + self.bt0, other + self.bt1)
+
+    def __rsub__(self, other):
+        return CenteredGridBound(self.M, self.N, self.P, other - self.centGrid,
+                                 other - self.bx0, other - self.bx1,
+                                 other - self.by0, other - self.by1,
+                                 other - self.bt0, other - self.bt1)
+
+    def __rmul__(self, other):
+        return CenteredGridBound(self.M, self.N, self.P, other * self.centGrid,
+                                 other * self.bx0, other * self.bx1,
+                                 other * self.by0, other * self.by1,
+                                 other * self.bt0, other * self.bt1)
+
+    def __rdiv__(self, other):
+        return CenteredGridBound(self.M, self.N, self.P, other / self.centGrid,
+                                 other / self.bx0, other / self.bx1,
+                                 other / self.by0, other / self.by1,
+                                 other / self.bt0, other / self.bt1)
+
+    def __iadd__(self, other):
+        if isinstance(other,CenteredGridBound):
+            self.centGrid += other.centGrid
+            self.bx0 += other.bx0
+            self.bx1 += other.bx1
+            self.by0 += other.by0
+            self.by1 += other.by1
+            self.bt0 += other.bt0
+            self.bt1 += other.bt1
+            return self
+        else:
+            self.centGrid += other
+            self.bx0 += other
+            self.bx1 += other
+            self.by0 += other
+            self.by1 += other
+            self.bt0 += other
+            self.bt1 += other
+            return self
+
+    def __isub__(self, other):
+        if isinstance(other,CenteredGridBound):
+            self.centGrid -= other.centGrid
+            self.bx0 -= other.bx0
+            self.bx1 -= other.bx1
+            self.by0 -= other.by0
+            self.by1 -= other.by1
+            self.bt0 -= other.bt0
+            self.bt1 -= other.bt1
+            return self
+        else:
+            self.centGrid -= other
+            self.bx0 -= other
+            self.bx1 -= other
+            self.by0 -= other
+            self.by1 -= other
+            self.bt0 -= other
+            self.bt1 -= other
+            return self
+
+    def __imul__(self, other):
+        if isinstance(other,CenteredGridBound):
+            self.centGrid *= other.centGrid
+            self.bx0 *= other.bx0
+            self.bx1 *= other.bx1
+            self.by0 *= other.by0
+            self.by1 *= other.by1
+            self.bt0 *= other.bt0
+            self.bt1 *= other.bt1
+            return self
+        else:
+            self.centGrid *= other
+            self.bx0 *= other
+            self.bx1 *= other
+            self.by0 *= other
+            self.by1 *= other
+            self.bt0 *= other
+            self.bt1 *= other
+            return self
+
+    def __idiv__(self, other):
+        if isinstance(other,CenteredGridBound):
+            self.centGrid /= other.centGrid
+            self.bx0 /= other.bx0
+            self.bx1 /= other.bx1
+            self.by0 /= other.by0
+            self.by1 /= other.by1
+            self.bt0 /= other.bt0
+            self.bt1 /= other.bt1
+            return self
+        else:
+            self.centGrid /= other
+            self.bx0 /= other
+            self.bx1 /= other
+            self.by0 /= other
+            self.by1 /= other
+            self.bt0 /= other
+            self.bt1 /= other
+            return self
+
+    def __neg__(self):
+        return CenteredGridBound(self.M, self.N, self.P, - self.centGrid,
+                                 - self.bx0, - self.bx1,
+                                 - self.by0, - self.by1,
+                                 - self.bt0, - self.bt1)
+
+    def __pos__(self):
+        return CenteredGridBound(self.M, self.N, self.P, + self.centGrid,
+                                 + self.bx0, + self.bx1,
+                                 + self.by0, + self.by1,
+                                 + self.bt0, + self.bt1)
+
+    def __abs__(self):
+        return CenteredGridBound(self.M, self.N, self.P, abs(self.centGrid),
+                                 np.abs(self.bx0), np.abs(self.bx1),
+                                 np.abs(self.by0), np.abs(self.by1),
+                                 np.abs(self.bt0), np.abs(self.bt1))
+
