@@ -106,6 +106,24 @@ class CenteredGrid:
         return StaggeredGrid( M, N, P,
                               mx, my, f )
 
+    def T_interpolationDefault(self):
+        mxu = np.zeros(shape=(self.M+2,self.N+1,self.P+1))
+        myu = np.zeros(shape=(self.M+1,self.N+2,self.P+1))
+        fu  = np.zeros(shape=(self.M+1,self.N+1,self.P+2))
+
+        mxu[0:self.M+1,:,:] = -0.5*self.mx[:,:,:]
+        mxu[1:self.M+2,:,:] -= 0.5*self.mx[:,:,:]
+
+        myu[:,0:self.N+1,:] = -0.5*self.my[:,:,:]
+        myu[:,1:self.N+2,:] -= 0.5*self.my[:,:,:]
+
+        fu[:,:,0:self.P+1] = -0.5*self.f[:,:,:]
+        fu[:,:,1:self.P+2] -= 0.5*self.f[:,:,:]
+
+        stagGrid = StaggeredGrid(self.M, self.N, self.P, mxu, myu, fu)
+
+        return StaggeredCenteredGrid(self.M, self.N, self.P, stagGrid, self)
+
 ###############
 # To acces item
 ###############
@@ -1376,3 +1394,209 @@ class DivergenceTempBound:
         return DivergenceTempBound(self.M, self.N, self.P,
                                    np.abs(self.div),
                                    np.abs(self.bt0), np.abs(self.bt1) )
+
+#############################
+# Class StaggeredCenteredGrid
+#############################
+
+class StaggeredCenteredGrid:
+    '''
+    Class to deals with a staggered and a centered grid
+    '''
+
+#############
+# Constructor
+#############
+
+    def __init__(self, M, N, P, 
+                 stagGrid = None,
+                 centGrid = None):
+        self.M = M
+        self.N = N
+        self.P = P
+        if stagGrid is None:
+            self.stagGrid = StaggeredGrid(M, N, P)
+        else:
+            self.stagGrid = stagGrid
+        if centGrid is None:
+            self.centGrid = CenteredGrid(M, N, P)
+        else:
+            self.centGrid = centGrid
+
+    def __repr__(self):
+        return ( 'Satggered/Centered grids with shape ' +
+                 str(self.M) + ' x ' +
+                 str(self.N) + ' x ' +
+                 str(self.P) )
+    
+    def __delattr__(self, nom_attr):
+        raise AttributeError('You can not delete any attribute from this class : StaggeredCenteredGrid')
+
+    def copy(self):
+        return StaggeredCenteredGrid( self.M, self.N, self.P,
+                                      self.stagGrid.copy(), self.centGrid.copy() )
+
+    def LInftyNorm(self):
+        return np.max( [ self.stagGrid.LInftyNorm(),
+                         self.centGrid.LInftyNorm() ] )
+
+    def L2Norm(self):
+        return np.sqrt( ( np.power(self.stagGrid.mx,2) + np.power(self.stagGrid.my,2) + np.power(self.stagGrid.f,2) +
+                          np.power(self.centGrid.mx,2) + np.power(self.centGrid.my,2) + np.power(self.centGrid.f,2) ).mean() )
+
+###############
+# I/O functions
+###############
+
+    def tofile(self, fileName):
+        file = open(fileName, 'w')
+        np.array([self.M,self.N,self.P],dtype=float).tofile(file)
+        self.stagGrid.mx.tofile(file)
+        self.stagGrid.my.tofile(file)
+        self.stagGrid.f.tofile(file)
+        self.centGrid.mx.tofile(file)
+        self.centGrid.my.tofile(file)
+        self.centGrid.f.tofile(file)
+        file.close()
+        return 0
+
+    def fromfile(fileName):
+        data = np.fromfile(fileName)
+        M = int(data[0])
+        N = int(data[1])
+        P = int(data[2])
+
+        mxu = data[3:
+                       3+(M+2)*(N+1)*(P+1)].reshape((M+2,N+1,P+1))
+        myu = data[3+(M+2)*(N+1)*(P+1):
+                       3+(M+2)*(N+1)*(P+1)+(M+1)*(N+2)*(P+1)].reshape((M+1,N+2,P+1))
+        fu  = data[3+(M+2)*(N+1)*(P+1)+(M+1)*(N+2)*(P+1):
+                       3+(M+2)*(N+1)*(P+1)+(M+1)*(N+2)*(P+1)+(M+1)*(N+1)*(P+2)].reshape((M+1,N+1,P+2))
+
+        mxv = data[3+(M+2)*(N+1)*(P+1)+(M+1)*(N+2)*(P+1)+(M+1)*(N+1)*(P+2):
+                       3+(M+2)*(N+1)*(P+1)+(M+1)*(N+2)*(P+1)+(M+1)*(N+1)*(P+2)+(M+1)*(N+1)*(P+1)].reshape((M+1,N+1,P+1))
+        myv = data[3+(M+2)*(N+1)*(P+1)+(M+1)*(N+2)*(P+1)+(M+1)*(N+1)*(P+2)+(M+1)*(N+1)*(P+1):
+                       3+(M+2)*(N+1)*(P+1)+(M+1)*(N+2)*(P+1)+(M+1)*(N+1)*(P+2)+2*(M+1)*(N+1)*(P+1)].reshape((M+1,N+1,P+1))
+        fv  = data[3+(M+2)*(N+1)*(P+1)+(M+1)*(N+2)*(P+1)+(M+1)*(N+1)*(P+2)+2*(M+1)*(N+1)*(P+1):
+                       3+(M+2)*(N+1)*(P+1)+(M+1)*(N+2)*(P+1)+(M+1)*(N+1)*(P+2)+3*(M+1)*(N+1)*(P+1)].reshape((M+1,N+1,P+1))
+
+        stagGrid = StaggeredGrid( M, N, P,
+                                  mxu, myu, fu )
+
+        centGrid = CenteredGrid( M, N, P,
+                                 mxv, myv, fv )
+
+        return StaggeredCenteredGrid(M, N, P, stagGrid, centGrid)
+
+    fromfile = staticmethod(fromfile)
+
+########################################
+# Interpolation and other grid functions
+########################################
+
+    def interpolationDefault(self):
+        return ( self.centGrid - self.stagGrid.interpolation() )
+
+##########################
+# Operations bewteen grids
+##########################
+
+    def __add__(self, other):
+        if isinstance(other,StaggeredCenteredGrid):
+            return StaggeredCenteredGrid(self.M, self.N, self.P, 
+                                         self.stagGrid + other.stagGrid, self.centGrid + other.centGrid)
+        else:
+            return StaggeredCenteredGrid(self.M, self.N, self.P,
+                                         self.stagGrid + other, self.centGrid + other)
+
+    def __sub__(self, other):
+        if isinstance(other,StaggeredCenteredGrid):
+            return StaggeredCenteredGrid(self.M, self.N, self.P, 
+                                         self.stagGrid - other.stagGrid, self.centGrid - other.centGrid)
+        else:
+            return StaggeredCenteredGrid(self.M, self.N, self.P,
+                                         self.stagGrid - other, self.centGrid - other)
+
+    def __mul__(self, other):
+        if isinstance(other,StaggeredCenteredGrid):
+            return StaggeredCenteredGrid(self.M, self.N, self.P, 
+                                         self.stagGrid * other.stagGrid, self.centGrid * other.centGrid)
+        else:
+            return StaggeredCenteredGrid(self.M, self.N, self.P,
+                                         self.stagGrid * other, self.centGrid * other)
+
+    def __div__(self, other):
+        if isinstance(other,StaggeredCenteredGrid):
+            return StaggeredCenteredGrid(self.M, self.N, self.P, 
+                                         self.stagGrid / other.stagGrid, self.centGrid / other.centGrid)
+        else:
+            return StaggeredCenteredGrid(self.M, self.N, self.P,
+                                         self.stagGrid / other, self.centGrid / other)
+
+    def __radd__(self, other):
+        return StaggeredCenteredGrid(self.M, self.N, self.P,
+                                     other + self.stagGrid, other + self.centGrid)
+
+    def __rsub__(self, other):
+        return StaggeredCenteredGrid(self.M, self.N, self.P,
+                                     other - self.stagGrid, other - self.centGrid)
+
+    def __rmul__(self, other):
+        return StaggeredCenteredGrid(self.M, self.N, self.P,
+                                     other * self.stagGrid, other * self.centGrid)
+
+    def __rdiv__(self, other):
+        return StaggeredCenteredGrid(self.M, self.N, self.P,
+                                     other / self.stagGrid, other / self.centGrid)
+
+    def __iadd__(self, other):
+        if isinstance(other,StaggeredCenteredGrid):
+            self.stagGrid += other.stagGrid
+            self.centGrid += other.centGrid
+            return self
+        else:
+            self.stagGrid += other
+            self.centGrid += other
+            return self
+
+    def __isub__(self, other):
+        if isinstance(other,StaggeredCenteredGrid):
+            self.stagGrid -= other.stagGrid
+            self.centGrid -= other.centGrid
+            return self
+        else:
+            self.stagGrid -= other
+            self.centGrid -= other
+            return self
+
+    def __imul__(self, other):
+        if isinstance(other,StaggeredCenteredGrid):
+            self.stagGrid *= other.stagGrid
+            self.centGrid *= other.centGrid
+            return self
+        else:
+            self.stagGrid *= other
+            self.centGrid *= other
+            return self
+
+    def __idiv__(self, other):
+        if isinstance(other,StaggeredCenteredGrid):
+            self.stagGrid /= other.stagGrid
+            self.centGrid /= other.centGrid
+            return self
+        else:
+            self.stagGrid /= other
+            self.centGrid /= other
+            return self
+
+    def __neg__(self):
+        return StaggeredCenteredGrid(self.M, self.N, self.P,
+                                     - self.stagGrid, - self.centGrid)
+
+    def __pos__(self):
+        return StaggeredCenteredGrid(self.M, self.N, self.P,
+                                     + self.stagGrid, + self.centGrid)
+
+    def __abs__(self):
+        return StaggeredCenteredGrid(self.M, self.N, self.P,
+                                     abs(self.stagGrid), abs(self.centGrid))
