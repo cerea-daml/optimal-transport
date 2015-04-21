@@ -11,13 +11,18 @@ class ProxCdiv:
           = { U in E_s \ A_div.U = (0) }
     '''
 
-    def __init__(self, M, N, P):
+    def __init__(self, M, N, P, div=None):
         self.M = M
         self.N = N
         self.P = P
         x = np.arange(M+1)
         y = np.arange(N+1)
         z = np.arange(P+1)
+
+        if div is None:
+            self.kernel = np.zeros(shape=(M+1,N+1,P+1))
+        else:
+            self.kernel = div
 
         Xm,Ym,Zm =np.meshgrid(x,y,z,indexing='ij')
         self.eigvalues_A_div = ( 2. * (M**2) * ( 1. - np.cos( np.pi * ( Xm + 1. ) / ( M + 2. ) ) ) +
@@ -65,6 +70,7 @@ class ProxCdiv:
         # projects StaggeredGrid grid on the divergence free constrain
         
         div = self.A_div(grid)
+        div -= self.kernel
         div = self.inv_A_T_A_div(div)
         gridP = self.T_A_div(div)
 

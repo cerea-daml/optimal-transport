@@ -48,7 +48,7 @@ class ProxCdivtempbound:
 
     def inv_A_T_A_div_tb(self, divTempBound):
         # inverts operator A o T_A
-        # this function modifies div and the boundary conditions
+        # this function modifies divTempBound
 
         divTempBound.applyGaussForward()
 
@@ -69,7 +69,7 @@ class ProxCdivtempbound:
         return divTempBound
 
     def __call__(self, grid):
-        # projects StaggeredGrid grid on the divergence and boundary condition constrain        
+        # projects StaggeredGrid grid on the divergence and temporal boundary condition constrain        
         divTempBound = self.A_div_tb(grid)
         divTempBound -= self.kernel
         divTempBound = self.inv_A_T_A_div_tb(divTempBound)

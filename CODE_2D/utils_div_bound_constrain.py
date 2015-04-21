@@ -54,7 +54,7 @@ class ProxCdivbound:
 
     def inv_A_T_A_div_b(self, divBound):
         # inverts operator A o T_A
-        # this function modifies div and the boundary conditions
+        # this function modifies divBound
 
         divBound.applyGaussForward()
 
