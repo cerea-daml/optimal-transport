@@ -7,15 +7,21 @@ from utils_grid import *
 class ProxCstagcentbound:
     '''
     Utils related to the staggered/centered and boundary condition constrain
-    C_s_c_b = { (U,V) in E_s x E_c \ V = interpolation(U) & boundary(U) = (m_left,m_right,m_down,m_up,f_init,f_final) }
-            = { (U,V) in E_s x E_c \ A_s_c_b.(U,V) = (0,m_left,m_right,m_down,m_up,f_init,f_final) }
+    C_s_c_b = { (U,V) in E_s x E_c \ V - interpolation(U) = interpDefault & boundary(U) = (m_left,m_right,m_down,m_up,f_init,f_final) }
+            = { (U,V) in E_s x E_c \ A_s_c_b.(U,V) = (interpDefault,m_left,m_right,m_down,m_up,f_init,f_final) }
     '''
 
-    def __init__(self, M, N, P):
+    def __init__(self, M, N, P,
+                 interpDefault=None,
+                 mx0=None, mx1=None,
+                 my0=None, my1=None,
+                 f0=None,  f1=None):
         self.M = M
         self.N = N
         self.P = P
         
+        self.kernel = CenteredGridBound(interpDefault, mx0, mx1, my0, my1, f0, f1)
+
         self.inv_A_T_A_s_c_b_mx = np.linalg.inv(self.A_T_A_s_c_b_mx())
         self.inv_A_T_A_s_c_b_my = np.linalg.inv(self.A_T_A_s_c_b_my())
         self.inv_A_T_A_s_c_b_f  = np.linalg.inv(self.A_T_A_s_c_b_f())
@@ -114,6 +120,7 @@ class ProxCstagcentbound:
     def __call__(self, stagCentGrid):
         # projects staggered/centered grid on the staggered/centered and boundary condition constrain        
         gridBound = self.A_s_c_b(stagCentGrid)
+        gridBound -= self.kernel
         gridBound = self.inv_A_T_A_s_c_b(gridBound)
         gridP    = self.T_A_s_c_b(gridBound)
         return ( stagCentGrid - gridP )
