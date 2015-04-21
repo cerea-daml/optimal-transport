@@ -295,7 +295,7 @@ class CenteredGrid:
                             np.abs(self.mx), np.abs(self.my), np.abs(self.f) )
 
 ####################
-# Class CenteredGrid
+# Class StagerredGrid
 ####################
 
 class StaggeredGrid:
@@ -1511,12 +1511,12 @@ class StaggeredCenteredGrid:
     def interpolationDefault(self):
         return ( self.centGrid - self.stagGrid.interpolation() )
 
-    def interpolationDefault_Bound(self):
+    def interpolationDefault_Boundary(self):
         centGrid = self.centGrid - self.stagGrid.interpolation()
-        return CenteredGrid(self.M, self.N, self.P, centGrid,
-                            self.stagGrid.mx[0,:,:], self.stagGrid.mx[self.M+1,:,:],
-                            self.stagGrid.my[:,0,:], self.stagGrid.my[:,self.N+1,:],
-                            self.stagGrid.f[:,:,0],  self.stagGrid.f[:,:,self.P+1])
+        return CenteredGridBound(self.M, self.N, self.P, centGrid,
+                                 self.stagGrid.mx[0,:,:], self.stagGrid.mx[self.M+1,:,:],
+                                 self.stagGrid.my[:,0,:], self.stagGrid.my[:,self.N+1,:],
+                                 self.stagGrid.f[:,:,0],  self.stagGrid.f[:,:,self.P+1])
 
 ##########################
 # Operations bewteen grids
@@ -1645,7 +1645,8 @@ class CenteredGridBound:
 
         if centGrid is None:
             self.centGrid(M,N,P)
-
+        else:
+            self.centGrid = centGrid
         if bx0 is None:
             self.bx0 = np.zeros(shape=(N+1,P+1))
         else:
@@ -1686,7 +1687,7 @@ class CenteredGridBound:
         raise AttributeError('You can not delete any attribute from this class : CenteredGridBound')
 
     def copy(self):
-        return CenteredGridBound( self.M, self.N, self.P, self.centGrid.copy()
+        return CenteredGridBound( self.M, self.N, self.P, self.centGrid.copy(),
                                   self.bx0.copy(), self.bx1.copy(),
                                   self.by0.copy(), self.by1.copy(),
                                   self.bt0.copy(), self.bt1.copy() )
@@ -1713,10 +1714,10 @@ class CenteredGridBound:
         by1 = np.random.rand(M+1,P+1)
         bt0 = np.random.rand(M+1,N+1)
         bt1 = np.random.rand(M+1,N+1)
-        return DivergenceBound( M, N, P, centGrid,
-                                bx0, bx1,
-                                by0, by1,
-                                bt0, bt1 )
+        return CenteredGridBound( M, N, P, centGrid,
+                                  bx0, bx1,
+                                  by0, by1,
+                                  bt0, bt1 )
     random = staticmethod(random)
 
 ########################################
@@ -1733,13 +1734,13 @@ class CenteredGridBound:
         mxu[0,:,:]          += self.bx0[:,:]
         mxu[self.M+1,:,:]   += self.bx1[:,:]
         
-        myu[:,0:self.N+1,:] = -0.5*self.my[:,:,:]
-        myu[:,1:self.N+2,:] -= 0.5*self.my[:,:,:]
+        myu[:,0:self.N+1,:] = -0.5*self.centGrid.my[:,:,:]
+        myu[:,1:self.N+2,:] -= 0.5*self.centGrid.my[:,:,:]
         myu[:,0,:]          += self.by0[:,:]
         myu[:,self.N+1,:]   += self.by1[:,:]
 
-        fu[:,:,0:self.P+1] = -0.5*self.f[:,:,:]
-        fu[:,:,1:self.P+2] -= 0.5*self.f[:,:,:]
+        fu[:,:,0:self.P+1] = -0.5*self.centGrid.f[:,:,:]
+        fu[:,:,1:self.P+2] -= 0.5*self.centGrid.f[:,:,:]
         fu[:,:,0]          += self.bt0[:,:]
         fu[:,:,self.P+1]   += self.bt1[:,:]
 

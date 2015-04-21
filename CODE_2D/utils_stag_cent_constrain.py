@@ -75,7 +75,7 @@ class ProxCstagcent:
         return grid
 
     def __call__(self, stagCentGrid):
-        # projects staggered/centered grid the staggered/centered constrain        
+        # projects staggered/centered grid on the staggered/centered constrain        
         centGrid = self.A_s_c(stagCentGrid)
         centGrid = self.inv_A_T_A_s_c(centGrid)
         gridP    = self.T_A_s_c(centGrid)
