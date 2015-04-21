@@ -850,6 +850,59 @@ class DivergenceBound:
                           np.power(self.by0,2) + np.power(self.by1,2) +
                           np.power(self.bt0,2) + np.power(self.bt1,2) ).mean() )
 
+    def random(M, N, P):
+        div = np.random.rand(M+1,N+1,P+1)
+        bx0 = np.random.rand(N+1,P+1)
+        bx1 = np.random.rand(N+1,P+1)
+        by0 = np.random.rand(M+1,P+1)
+        by1 = np.random.rand(M+1,P+1)
+        bt0 = np.random.rand(M+1,N+1)
+        bt1 = np.random.rand(M+1,N+1)
+        return DivergenceBound( M, N, P, div,
+                                bx0, bx1,
+                                by0, by1,
+                                bt0, bt1 )
+    random = staticmethod(random)
+
+    def ones(M, N, P):
+        div = np.ones(shape=(M+1,N+1,P+1))
+        bx0 = np.ones(shape=(N+1,P+1))
+        bx1 = np.ones(shape=(N+1,P+1))
+        by0 = np.ones(shape=(M+1,P+1))
+        by1 = np.ones(shape=(M+1,P+1))
+        bt0 = np.ones(shape=(M+1,N+1))
+        bt1 = np.ones(shape=(M+1,N+1))
+        return DivergenceBound( M, N, P, div,
+                                M*bx0, -M*bx1,
+                                N*by0, -N*by1,
+                                P*bt0, -P*bt1 )
+    ones = staticmethod(ones)
+
+    def correctMassDefault(self, EPS):
+        deltaM = ( self.div.sum() +
+                   self.M * ( self.bx0.sum() - self.bx1.sum() ) +
+                   self.N * ( self.by0.sum() - self.by1.sum() ) +
+                   self.P * ( self.bt0.sum() - self.bt1.sum() ) )
+
+        if np.abs(deltaM) > EPS:
+            nbrPts = ( (self.M+1.)*(self.N+1.)*(self.P+1.) +
+                        2.*(self.N+1.)*(self.P+1.) +
+                        2.*(self.M+1.)*(self.P+1.) +
+                        2.*(self.M+1.)*(self.N+1.) )
+            self.div -= deltaM / nbrPts
+            self.bx0 -= deltaM / ( self.M * nbrPts )
+            self.bx1 += deltaM / ( self.M * nbrPts )
+            self.by0 -= deltaM / ( self.N * nbrPts )
+            self.by1 += deltaM / ( self.N * nbrPts )
+            self.bt0 -= deltaM / ( self.P * nbrPts )
+            self.bt1 += deltaM / ( self.P * nbrPts )
+
+            deltaM = ( self.div.sum() +
+                       self.M * ( self.bx0.sum() - self.bx1.sum() ) +
+                       self.N * ( self.by0.sum() - self.by1.sum() ) +
+                       self.P * ( self.bt0.sum() - self.bt1.sum() ) )
+        return deltaM
+
 ####################################
 # Divergence and boundary conditions
 ####################################
