@@ -54,6 +54,13 @@ class CenteredGrid:
     def L2Norm(self):
         return np.sqrt( ( np.power(self.mx,2) + np.power(self.my,2) + np.power(self.f,2) ).mean() )
 
+    def random(M, N, P):
+        mx = np.random.rand(M+1, N+1, P+1)
+        my = np.random.rand(M+1, N+1, P+1)
+        f  = np.random.rand(M+1, N+1, P+1)
+        return CenteredGrid(M, N, P, mx, my, f)
+    random = staticmethod(random)
+
 ###############
 # I/O functions
 ###############
@@ -1443,6 +1450,12 @@ class StaggeredCenteredGrid:
     def L2Norm(self):
         return np.sqrt( ( np.power(self.stagGrid.mx,2) + np.power(self.stagGrid.my,2) + np.power(self.stagGrid.f,2) +
                           np.power(self.centGrid.mx,2) + np.power(self.centGrid.my,2) + np.power(self.centGrid.f,2) ).mean() )
+
+    def random(M, N, P):
+        stagGrid = StaggeredGrid.random(M,N,P)
+        centGrid = CenteredGrid.random(M,N,P)
+        return StaggeredCenteredGrid(M,N,P,stagGrid,centGrid)
+    random = staticmethod(random)
 
 ###############
 # I/O functions
