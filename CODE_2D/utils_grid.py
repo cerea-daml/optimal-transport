@@ -323,6 +323,13 @@ class StaggeredGrid:
     def L2Norm(self):
         return np.sqrt( ( np.power(self.mx,2) +np.power(self.my,2) + np.power(self.f,2) ).mean() )
 
+    def random(M, N, P):
+        mx = np.random.rand(M+2, N+1, P+1)
+        my = np.random.rand(M+1, N+2, P+1)
+        f  = np.random.rand(M+1, N+1, P+2)
+        return StaggeredGrid(M, N, P, mx, my, f)
+    random = staticmethod(random)
+
 ###############
 # I/O functions
 ###############
@@ -620,6 +627,11 @@ class Divergence:
 
     def L2Norm(self):
         return np.sqrt( np.power(self.div,2).mean() )
+
+    def random(M, N, P):
+        div = np.random.rand(M+1,N+1,P+1)
+        return Divergence(M, N, P, div)
+    random = staticmethod(random)
 
 ############
 # Divergence

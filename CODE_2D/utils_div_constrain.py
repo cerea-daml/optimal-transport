@@ -71,9 +71,7 @@ class ProxCdiv:
         return ( grid - gridP )
 
     def test(self):
-        d1 = np.random.rand(self.M+1,self.N+1,self.P+1)
-        div1 = Divergence(self.M, self.N, self.P, d1)
-
+        div1 = Divergence.random(self.M, self.N, self.P)
         e = 0.
         t = 0.
 
@@ -96,10 +94,7 @@ class ProxCdiv:
     def timing(self,nTiming):
         t = 0.
         for i in xrange(nTiming):
-            mx = np.random.rand(self.M+2, self.N+1, self.P+1)
-            my = np.random.rand(self.M+1, self.N+2, self.P+1)
-            f  = np.random.rand(self.M+1, self.N+1, self.P+2)
-            grid = StaggeredGrid(self.M, self.N, self.P, mx, my, f)
+            grid = StaggeredGrid.random(self.M, self.N, self.P)
             time_start = tm.time()
             grid = self(grid)
             t += tm.time() - time_start
