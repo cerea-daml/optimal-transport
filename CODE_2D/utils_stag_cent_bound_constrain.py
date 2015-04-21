@@ -20,7 +20,7 @@ class ProxCstagcentbound:
         self.N = N
         self.P = P
         
-        self.kernel = CenteredGridBound(interpDefault, mx0, mx1, my0, my1, f0, f1)
+        self.kernel = CenteredGridBound(M, N, P, CenteredGrid(M,N,P,interpDefault), mx0, mx1, my0, my1, f0, f1)
 
         self.inv_A_T_A_s_c_b_mx = np.linalg.inv(self.A_T_A_s_c_b_mx())
         self.inv_A_T_A_s_c_b_my = np.linalg.inv(self.A_T_A_s_c_b_my())

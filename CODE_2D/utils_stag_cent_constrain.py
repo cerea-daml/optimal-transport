@@ -7,15 +7,17 @@ from utils_grid import *
 class ProxCstagcent:
     '''
     Utils related to the staggered/centered constrain
-    C_s_c = { (U,V) in E_s x E_c \ V = interpolation(U) }
-          = { (U,V) in E_s x E_c \ A_s_c.(U,V) = (0) }
+    C_s_c = { (U,V) in E_s x E_c \ V - interpolation(U) = interpDefault }
+          = { (U,V) in E_s x E_c \ A_s_c.(U,V) = (interpDefault) }
     '''
 
-    def __init__(self, M, N, P):
+    def __init__(self, M, N, P, interpDefault=None):
         self.M = M
         self.N = N
         self.P = P
-        
+
+        self.kernel = CenteredGrid(M, N, P, interpDefault)
+
         self.inv_A_T_A_s_c_mx = np.linalg.inv(self.A_T_A_s_c_mx())
         self.inv_A_T_A_s_c_my = np.linalg.inv(self.A_T_A_s_c_my())
         self.inv_A_T_A_s_c_f  = np.linalg.inv(self.A_T_A_s_c_f())
@@ -77,6 +79,7 @@ class ProxCstagcent:
     def __call__(self, stagCentGrid):
         # projects staggered/centered grid on the staggered/centered constrain        
         centGrid = self.A_s_c(stagCentGrid)
+        centGrid -= self.kernel
         centGrid = self.inv_A_T_A_s_c(centGrid)
         gridP    = self.T_A_s_c(centGrid)
         return ( stagCentGrid - gridP )
