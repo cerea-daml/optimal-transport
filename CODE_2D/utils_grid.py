@@ -1518,6 +1518,11 @@ class StaggeredCenteredGrid:
                                  self.stagGrid.my[:,0,:], self.stagGrid.my[:,self.N+1,:],
                                  self.stagGrid.f[:,:,0],  self.stagGrid.f[:,:,self.P+1])
 
+    def interpolationDefault_TemporalBoundary(self):
+        centGrid = self.centGrid - self.stagGrid.interpolation()
+        return CenteredGridTempBound(self.M, self.N, self.P, centGrid,
+                                     self.stagGrid.f[:,:,0],  self.stagGrid.f[:,:,self.P+1])
+
 ##########################
 # Operations bewteen grids
 ##########################
@@ -1921,4 +1926,206 @@ class CenteredGridBound:
                                  np.abs(self.bx0), np.abs(self.bx1),
                                  np.abs(self.by0), np.abs(self.by1),
                                  np.abs(self.bt0), np.abs(self.bt1))
+
+
+#############################
+# Class CenteredGridTempBound
+#############################
+
+class CenteredGridTempBound:
+    '''
+    Class to deals with a centered grid and temporal boundary conditions
+    '''
+
+#############
+# Constructor
+#############
+
+    def __init__(self, M, N, P, centGrid=None, 
+                 bt0=None, bt1=None):
+        self.M = M
+        self.N = N
+        self.P = P
+
+        if centGrid is None:
+            self.centGrid(M,N,P)
+        else:
+            self.centGrid = centGrid
+
+        if bt0 is None:
+            self.bt0 = np.zeros(shape=(M+1,N+1))
+        else:
+            self.bt0 = bt0
+
+        if bt1 is None:
+            self.bt1 = np.zeros(shape=(M+1,N+1))
+        else:
+            self.bt1 = bt1
+
+    def __repr__(self):
+        return ( 'Centered grid and temporal boundary conditions with shape ' +
+                 str(self.M) + ' x ' +
+                 str(self.N) + ' x ' +
+                 str(self.P) )
+    
+    def __delattr__(self, nom_attr):
+        raise AttributeError('You can not delete any attribute from this class : CenteredGridTempBound')
+
+    def copy(self):
+        return CenteredGridBound( self.M, self.N, self.P, self.centGrid.copy(),
+                                  self.bt0.copy(), self.bt1.copy() )
+
+    def LInftyNorm(self):
+        return np.max( [ self.centGrid.LInftyNorm(),
+                         np.abs(self.bt0).max(), np.abs(self.bt1).max() ] )
+
+    def L2Norm(self):
+        return np.sqrt( ( np.power(self.centGrid.mx,2) +
+                          np.power(self.centGrid.my,2) +
+                          np.power(self.centGrid.f,2)  +
+                          np.power(self.bt0,2) + np.power(self.bt1,2) ).mean() )
+
+    def random(M, N, P):
+        centGrid = CenteredGrid.random(M,N,P)
+        bt0 = np.random.rand(M+1,N+1)
+        bt1 = np.random.rand(M+1,N+1)
+        return CenteredGridTempBound( M, N, P, centGrid,
+                                      bt0, bt1 )
+    random = staticmethod(random)
+
+########################################
+# Interpolation and other grid functions
+########################################
+
+    def T_interpolationDefault_TemporalBoundary(self):
+        mxu = np.zeros(shape=(self.M+2,self.N+1,self.P+1))
+        myu = np.zeros(shape=(self.M+1,self.N+2,self.P+1))
+        fu  = np.zeros(shape=(self.M+1,self.N+1,self.P+2))
+
+        mxu[0:self.M+1,:,:] = -0.5*self.centGrid.mx[:,:,:]
+        mxu[1:self.M+2,:,:] -= 0.5*self.centGrid.mx[:,:,:]
+        
+        myu[:,0:self.N+1,:] = -0.5*self.centGrid.my[:,:,:]
+        myu[:,1:self.N+2,:] -= 0.5*self.centGrid.my[:,:,:]
+
+        fu[:,:,0:self.P+1] = -0.5*self.centGrid.f[:,:,:]
+        fu[:,:,1:self.P+2] -= 0.5*self.centGrid.f[:,:,:]
+        fu[:,:,0]          += self.bt0[:,:]
+        fu[:,:,self.P+1]   += self.bt1[:,:]
+
+        stagGrid = StaggeredGrid(self.M, self.N, self.P, mxu, myu, fu)
+
+        return StaggeredCenteredGrid(self.M, self.N, self.P, stagGrid, self.centGrid)
+
+##########################
+# Operations bewteen grids
+##########################
+
+    def __add__(self, other):
+        if isinstance(other,CenteredGridTempBound):
+            return CenteredGridTempBound(self.M, self.N, self.P, self.centGrid + other.centGrid,
+                                         self.bt0 + other.bt0, self.bt1 + other.bt1)
+        else:
+            return CenteredGridTempBound(self.M, self.N, self.P, self.centGrid + other,
+                                         self.bt0 + other, self.bt1 + other)
+
+    def __sub__(self, other):
+        if isinstance(other,CenteredGridTempBound):
+            return CenteredGridTempBound(self.M, self.N, self.P, self.centGrid - other.centGrid,
+                                         self.bt0 - other.bt0, self.bt1 - other.bt1)
+        else:
+            return CenteredGridTempBound(self.M, self.N, self.P, self.centGrid - other,
+                                         self.bt0 - other, self.bt1 - other)
+
+    def __mul__(self, other):
+        if isinstance(other,CenteredGridTempBound):
+            return CenteredGridTempBound(self.M, self.N, self.P, self.centGrid * other.centGrid, 
+                                         self.bt0 * other.bt0, self.bt1 * other.bt1)
+        else:
+            return CenteredGridTempBound(self.M, self.N, self.P, self.centGrid * other,
+                                         self.bt0 * other, self.bt1 * other)
+
+    def __div__(self, other):
+        if isinstance(other,CenteredGridTempBound):
+            return CenteredGridTempBound(self.M, self.N, self.P, self.centGrid / other.centGrid, 
+                                         self.bt0 / other.bt0, self.bt1 / other.bt1)
+        else:
+            return CenteredGridTempBound(self.M, self.N, self.P, self.centGrid / other,
+                                         self.bt0 / other, self.bt1 / other)
+
+    def __radd__(self, other):
+        return CenteredGridTempBound(self.M, self.N, self.P, other + self.centGrid,
+                                     other + self.bt0, other + self.bt1)
+
+    def __rsub__(self, other):
+        return CenteredGridTempBound(self.M, self.N, self.P, other - self.centGrid,
+                                     other - self.bt0, other - self.bt1)
+
+    def __rmul__(self, other):
+        return CenteredGridTempBound(self.M, self.N, self.P, other * self.centGrid,
+                                     other * self.bt0, other * self.bt1)
+
+    def __rdiv__(self, other):
+        return CenteredGridTempBound(self.M, self.N, self.P, other / self.centGrid,
+                                     other / self.bt0, other / self.bt1)
+
+    def __iadd__(self, other):
+        if isinstance(other,CenteredGridTempBound):
+            self.centGrid += other.centGrid
+            self.bt0 += other.bt0
+            self.bt1 += other.bt1
+            return self
+        else:
+            self.centGrid += other
+            self.bt0 += other
+            self.bt1 += other
+            return self
+
+    def __isub__(self, other):
+        if isinstance(other,CenteredGridTempBound):
+            self.centGrid -= other.centGrid
+            self.bt0 -= other.bt0
+            self.bt1 -= other.bt1
+            return self
+        else:
+            self.centGrid -= other
+            self.bt0 -= other
+            self.bt1 -= other
+            return self
+
+    def __imul__(self, other):
+        if isinstance(other,CenteredGridTempBound):
+            self.centGrid *= other.centGrid
+            self.bt0 *= other.bt0
+            self.bt1 *= other.bt1
+            return self
+        else:
+            self.centGrid *= other
+            self.bt0 *= other
+            self.bt1 *= other
+            return self
+
+    def __idiv__(self, other):
+        if isinstance(other,CenteredGridTempBound):
+            self.centGrid /= other.centGrid
+            self.bt0 /= other.bt0
+            self.bt1 /= other.bt1
+            return self
+        else:
+            self.centGrid /= other
+            self.bt0 /= other
+            self.bt1 /= other
+            return self
+
+    def __neg__(self):
+        return CenteredGridTempBound(self.M, self.N, self.P, - self.centGrid,
+                                     - self.bt0, - self.bt1)
+
+    def __pos__(self):
+        return CenteredGridTempBound(self.M, self.N, self.P, + self.centGrid,
+                                     + self.bt0, + self.bt1)
+
+    def __abs__(self):
+        return CenteredGridTempBound(self.M, self.N, self.P, abs(self.centGrid),
+                                     np.abs(self.bt0), np.abs(self.bt1))
 
