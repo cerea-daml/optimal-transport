@@ -1972,8 +1972,8 @@ class CenteredGridTempBound:
         raise AttributeError('You can not delete any attribute from this class : CenteredGridTempBound')
 
     def copy(self):
-        return CenteredGridBound( self.M, self.N, self.P, self.centGrid.copy(),
-                                  self.bt0.copy(), self.bt1.copy() )
+        return CenteredGridTempBound( self.M, self.N, self.P, self.centGrid.copy(),
+                                      self.bt0.copy(), self.bt1.copy() )
 
     def LInftyNorm(self):
         return np.max( [ self.centGrid.LInftyNorm(),
