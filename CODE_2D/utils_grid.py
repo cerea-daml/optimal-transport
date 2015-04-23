@@ -131,6 +131,11 @@ class CenteredGrid:
 
         return StaggeredCenteredGrid(self.M, self.N, self.P, stagGrid, self)
 
+    def functionalJ(self):
+        return ( ( self.mx * self.mx +
+                   self.my * self.my ) * 
+                 ( self.f > 0 ) / self.f ).sum()
+
 ###############
 # To acces item
 ###############
