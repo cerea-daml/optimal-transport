@@ -2506,6 +2506,21 @@ class Boundary:
         else:
             self.bt1 = bt1
 
+        self.mInit  = ( P * self.bt0.sum() +
+                        M * ( self.bx0.sum() - self.bx1.sum() ) +
+                        N * ( self.by0.sum() - self.by1.sum() ) )
+
+        self.mFinal = P * self.bt1.sum()
+        self.deltaM = (1./P) * ( self.mInit - self.mFinal )
+
+    def adjustDeltaM(self):
+        self.mInit  = ( P * self.bt0.sum() +
+                        M * ( self.bx0.sum() - self.bx1.sum() ) +
+                        N * ( self.by0.sum() - self.by1.sum() ) )
+
+        self.mFinal = P * self.bt1.sum()
+        self.deltaM = (1./P) * ( self.mInit - self.mFinal )
+
     def __repr__(self):
         return ( 'Boundaries on a centered grid with shape ' +
                  str(self.M) + ' x ' +
@@ -2556,6 +2571,48 @@ class Boundary:
                          N*by0, -N*by1,
                          P*bt0, -P*bt1 )
     ones = staticmethod(ones)
+
+    def placeReservoir(self):
+        self.bx0 = np.zeros(shape=(N+1,P+1))
+        self.bx1 = np.zeros(shape=(N+1,P+1))
+        self.by0 = np.zeros(shape=(M+1,P+1))
+        self.by1 = np.zeros(shape=(M+1,P+1))
+
+        self.bt0[0,:]      = 0.
+        self.bt0[self.M,:] = 0.
+        self.bt0[:,0]      = 0.
+        self.bt0[:,self.N] = 0.
+
+        self.bt1[0,:]      = 0.
+        self.bt1[self.M,:] = 0.
+        self.bt1[:,0]      = 0.
+        self.bt1[:,self.N] = 0.
+
+        self.adjustDeltaM()
+        if self.deltaM < 0:
+            bswap = self.bt1.copy()
+            self.bt1 = self.bt0.copy()
+            self.bt0 = bswap
+            self.adjustDeltaM()
+
+    def normalize(self, normType):
+        mInit = ( P * self.bt0.sum() + 
+                  M * ( self.bx0.sum() - self.bx1.sum() ) +
+                  N * ( self.by0.sum() - self.by1.sum() ) )
+
+        mFinal = P * self.bt1.sum()
+
+        if normType == 0: 
+            # correct mass default by rescaling f1
+            self.bt1 *= ( mInit / mFinal )
+
+        elif normType == 1:
+            # mass exits leftward, rightward, upward and downward
+            self.bx0 += 0.25 * ( mFinal - mInit ) / ( self.M * ( self.N + 1. ) * ( self.P + 1. ) )
+            self.bx1 -= 0.25 * ( mFinal - mInit ) / ( self.M * ( self.N + 1. ) * ( self.P + 1. ) )
+
+            self.by0 += 0.25 * ( mFinal - mInit ) / ( ( self.M + 1.) * self.N * ( self.P + 1. ) )
+            self.by1 -= 0.25 * ( mFinal - mInit ) / ( ( self.M + 1.) * self.N * ( self.P + 1. ) )
 
 ##########################
 # Operations bewteen grids
@@ -2641,6 +2698,7 @@ class Boundary:
             self.by1 += other.by1
             self.bt0 += other.bt0
             self.bt1 += other.bt1
+            self.adjustDeltaM()
             return self
         else:
             self.bx0 += other
@@ -2649,6 +2707,7 @@ class Boundary:
             self.by1 += other
             self.bt0 += other
             self.bt1 += other
+            self.adjustDeltaM()
             return self
 
     def __isub__(self, other):
@@ -2659,6 +2718,7 @@ class Boundary:
             self.by1 -= other.by1
             self.bt0 -= other.bt0
             self.bt1 -= other.bt1
+            self.adjustDeltaM()
             return self
         else:
             self.bx0 -= other
@@ -2667,6 +2727,7 @@ class Boundary:
             self.by1 -= other
             self.bt0 -= other
             self.bt1 -= other
+            self.adjustDeltaM()
             return self
 
     def __imul__(self, other):
@@ -2677,6 +2738,7 @@ class Boundary:
             self.by1 *= other.by1
             self.bt0 *= other.bt0
             self.bt1 *= other.bt1
+            self.adjustDeltaM()
             return self
         else:
             self.bx0 *= other
@@ -2685,6 +2747,7 @@ class Boundary:
             self.by1 *= other
             self.bt0 *= other
             self.bt1 *= other
+            self.adjustDeltaM()
             return self
 
     def __idiv__(self, other):
@@ -2695,6 +2758,7 @@ class Boundary:
             self.by1 /= other.by1
             self.bt0 /= other.bt0
             self.bt1 /= other.bt1
+            self.adjustDeltaM()
             return self
         else:
             self.bx0 /= other
@@ -2703,6 +2767,7 @@ class Boundary:
             self.by1 /= other
             self.bt0 /= other
             self.bt1 /= other
+            self.adjustDeltaM()
             return self
 
     def __neg__(self):
