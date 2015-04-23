@@ -2454,3 +2454,271 @@ class CenteredGridResBound:
                                     np.abs(self.bx0), np.abs(self.bx1),
                                     np.abs(self.by0), np.abs(self.by1),
                                     np.abs(self.bt0), np.abs(self.bt1))
+
+################
+# Class Boundary
+################
+
+class Boundary:
+    '''
+    Class to deals with boundary conditions
+    '''
+
+#############
+# Constructor
+#############
+
+    def __init__(self, M, N, P, 
+                 bx0=None, bx1=None,
+                 by0=None, by1=None,
+                 bt0=None, bt1=None):
+        self.M = M
+        self.N = N
+        self.P = P
+
+        if bx0 is None:
+            self.bx0 = np.zeros(shape=(N+1,P+1))
+        else:
+            self.bx0 = bx0
+
+        if bx1 is None:
+            self.bx1 = np.zeros(shape=(N+1,P+1))
+        else:
+            self.bx1 = bx1
+
+        if by0 is None:
+            self.by0 = np.zeros(shape=(M+1,P+1))
+        else:
+            self.by0 = by0
+
+        if by1 is None:
+            self.by1 = np.zeros(shape=(M+1,P+1))
+        else:
+            self.by1 = by1
+
+        if bt0 is None:
+            self.bt0 = np.zeros(shape=(M+1,N+1))
+        else:
+            self.bt0 = bt0
+
+        if bt1 is None:
+            self.bt1 = np.zeros(shape=(M+1,N+1))
+        else:
+            self.bt1 = bt1
+
+    def __repr__(self):
+        return ( 'Boundaries on a centered grid with shape ' +
+                 str(self.M) + ' x ' +
+                 str(self.N) + ' x ' +
+                 str(self.P) )
+    
+    def __delattr__(self, nom_attr):
+        raise AttributeError('You can not delete any attribute from this class : Boundary')
+
+    def copy(self):
+        return Boundary( self.M, self.N, self.P,
+                         self.bx0.copy(), self.bx1.copy(), 
+                         self.by0.copy(), self.by1.copy(),
+                         self.bt0.copy(), self.bt1.copy() )
+
+    def LInftyNorm(self):
+        return np.max( [ np.abs(self.bx0).max(), np.abs(self.bx1).max(),
+                         np.abs(self.by0).max(), np.abs(self.by1).max(),
+                         np.abs(self.bt0).max(), np.abs(self.bt1).max() ] )
+
+    def L2Norm(self):
+        return np.sqrt( ( np.power(self.bx0,2) + np.power(self.bx1,2) +
+                          np.power(self.by0,2) + np.power(self.by1,2) +
+                          np.power(self.bt0,2) + np.power(self.bt1,2) ).mean() )
+
+    def random(M, N, P):
+        bx0 = np.random.rand(N+1,P+1)
+        bx1 = np.random.rand(N+1,P+1)
+        by0 = np.random.rand(M+1,P+1)
+        by1 = np.random.rand(M+1,P+1)
+        bt0 = np.random.rand(M+1,N+1)
+        bt1 = np.random.rand(M+1,N+1)
+        return Boundary( M, N, P,
+                         bx0, bx1,
+                         by0, by1,
+                         bt0, bt1 )
+    random = staticmethod(random)
+
+    def ones(M, N, P):
+        bx0 = np.ones(shape=(N+1,P+1))
+        bx1 = np.ones(shape=(N+1,P+1))
+        by0 = np.ones(shape=(M+1,P+1))
+        by1 = np.ones(shape=(M+1,P+1))
+        bt0 = np.ones(shape=(M+1,N+1))
+        bt1 = np.ones(shape=(M+1,N+1))
+        return Boundary( M, N, P,
+                         M*bx0, -M*bx1,
+                         N*by0, -N*by1,
+                         P*bt0, -P*bt1 )
+    ones = staticmethod(ones)
+
+##########################
+# Operations bewteen grids
+##########################
+
+    def __add__(self, other):
+        if isinstance(other,Boundary):
+            return Boundary(self.M, self.N, self.P, 
+                            self.bx0 + other.bx0, self.bx1 + other.bx1,
+                            self.by0 + other.by0, self.by1 + other.by1,
+                            self.bt0 + other.bt0, self.bt1 + other.bt1 )
+        else:
+            return Boundary(self.M, self.N, self.P,
+                            self.bx0 + other, self.bx1 + other,
+                            self.by0 + other, self.by1 + other,
+                            self.bt0 + other, self.bt1 + other )
+
+    def __sub__(self, other):
+        if isinstance(other,Boundary):
+            return Boundary(self.M, self.N, self.P, 
+                            self.bx0 - other.bx0, self.bx1 - other.bx1,
+                            self.by0 - other.by0, self.by1 - other.by1,
+                            self.bt0 - other.bt0, self.bt1 - other.bt1 )
+        else:
+            return Boundary(self.M, self.N, self.P,
+                            self.bx0 - other, self.bx1 - other,
+                            self.by0 - other, self.by1 - other,
+                            self.bt0 - other, self.bt1 - other )
+
+    def __mul__(self, other):
+        if isinstance(other,Boundary):
+            return Boundary(self.M, self.N, self.P, 
+                            self.bx0 * other.bx0, self.bx1 * other.bx1,
+                            self.by0 * other.by0, self.by1 * other.by1,
+                            self.bt0 * other.bt0, self.bt1 * other.bt1 )
+        else:
+            return Boundary(self.M, self.N, self.P,
+                            self.bx0 * other, self.bx1 * other,
+                            self.by0 * other, self.by1 * other,
+                            self.bt0 * other, self.bt1 * other )
+
+    def __div__(self, other):
+        if isinstance(other,Boundary):
+            return Boundary(self.M, self.N, self.P, 
+                            self.bx0 / other.bx0, self.bx1 / other.bx1,
+                            self.by0 / other.by0, self.by1 / other.by1,
+                            self.bt0 / other.bt0, self.bt1 / other.bt1 )
+        else:
+            return Boundary(self.M, self.N, self.P,
+                            self.bx0 / other, self.bx1 / other,
+                            self.by0 / other, self.by1 / other,
+                            self.bt0 / other, self.bt1 / other )
+
+    def __radd__(self, other):
+        return Boundary(self.M, self.N, self.P,
+                        other + self.bx0, other + self.bx1,
+                        other + self.by0, other + self.by1,
+                        other + self.bt0, other + self.bt1 )
+
+    def __rsub__(self, other):
+        return Boundary(self.M, self.N, self.P,
+                        other - self.bx0, other - self.bx1,
+                        other - self.by0, other - self.by1,
+                        other - self.bt0, other - self.bt1 )
+
+    def __rmul__(self, other):
+        return Boundary(self.M, self.N, self.P,
+                        other * self.bx0, other * self.bx1,
+                        other * self.by0, other * self.by1,
+                        other * self.bt0, other * self.bt1 )
+
+    def __rdiv__(self, other):
+        return Boundary(self.M, self.N, self.P,
+                        other / self.bx0, other / self.bx1,
+                        other / self.by0, other / self.by1,
+                        other / self.bt0, other / self.bt1 )
+
+    def __iadd__(self, other):
+        if isinstance(other,Boundary):
+            self.bx0 += other.bx0
+            self.bx1 += other.bx1
+            self.by0 += other.by0
+            self.by1 += other.by1
+            self.bt0 += other.bt0
+            self.bt1 += other.bt1
+            return self
+        else:
+            self.bx0 += other
+            self.bx1 += other
+            self.by0 += other
+            self.by1 += other
+            self.bt0 += other
+            self.bt1 += other
+            return self
+
+    def __isub__(self, other):
+        if isinstance(other,Boundary):
+            self.bx0 -= other.bx0
+            self.bx1 -= other.bx1
+            self.by0 -= other.by0
+            self.by1 -= other.by1
+            self.bt0 -= other.bt0
+            self.bt1 -= other.bt1
+            return self
+        else:
+            self.bx0 -= other
+            self.bx1 -= other
+            self.by0 -= other
+            self.by1 -= other
+            self.bt0 -= other
+            self.bt1 -= other
+            return self
+
+    def __imul__(self, other):
+        if isinstance(other,Boundary):
+            self.bx0 *= other.bx0
+            self.bx1 *= other.bx1
+            self.by0 *= other.by0
+            self.by1 *= other.by1
+            self.bt0 *= other.bt0
+            self.bt1 *= other.bt1
+            return self
+        else:
+            self.bx0 *= other
+            self.bx1 *= other
+            self.by0 *= other
+            self.by1 *= other
+            self.bt0 *= other
+            self.bt1 *= other
+            return self
+
+    def __idiv__(self, other):
+        if isinstance(other,Boundary):
+            self.bx0 /= other.bx0
+            self.bx1 /= other.bx1
+            self.by0 /= other.by0
+            self.by1 /= other.by1
+            self.bt0 /= other.bt0
+            self.bt1 /= other.bt1
+            return self
+        else:
+            self.bx0 /= other
+            self.bx1 /= other
+            self.by0 /= other
+            self.by1 /= other
+            self.bt0 /= other
+            self.bt1 /= other
+            return self
+
+    def __neg__(self):
+        return Boundary(self.M, self.N, self.P,
+                        - self.bx0, - self.bx1,
+                        - self.by0, - self.by1,
+                        - self.bt0, - self.bt1)
+
+    def __pos__(self):
+        return Boundary(self.M, self.N, self.P,
+                        + self.bx0, + self.bx1,
+                        + self.by0, + self.by1,
+                        + self.bt0, + self.bt1)
+
+    def __abs__(self):
+        return Boundary(self.M, self.N, self.P,
+                        np.abs(self.bx0), np.abs(self.bx1),
+                        np.abs(self.by0), np.abs(self.by1),
+                        np.abs(self.bt0), np.abs(self.bt1) )
