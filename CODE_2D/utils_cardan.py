@@ -2,6 +2,8 @@
 # Uses Cardan formula to find roots for degree 3 polynoms 
 #########################################################
 
+import numpy as np
+
 def reducePolynom(a,b,c,d):
     p = -1.*b*b/(3.*a*a)+1.*c/a
     q = (1.*b/(27.*a))*(2.*b*b/(a*a)-9.*c/a)+1.*d/a

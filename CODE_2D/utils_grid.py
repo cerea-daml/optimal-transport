@@ -1,4 +1,5 @@
 import numpy as np
+import utils_cardan as cardan
 
 ####################
 # Class CenteredGrid
@@ -135,6 +136,19 @@ class CenteredGrid:
         return ( ( self.mx * self.mx +
                    self.my * self.my ) * 
                  ( self.f > 0 ) / self.f ).sum()
+
+    def proxJ(self, gamma):
+        unity = np.ones(shape=self.f.shape)
+        fstar = cardan.maxRoot( unity, 
+                                2*gamma-self.f,
+                                gamma**2-2*gamma*self.f,
+                                -(gamma**2*self.f+0.5*gamma*(self.mx*self.mx+self.my*self.my)) )
+
+        denom = (fstar+gamma)*(fstar>0) + (1.-(fstar>0))
+        mx = ((fstar*self.mx)/(denom))*(fstar>0)+0.
+        my = ((fstar*self.my)/(denom))*(fstar>0)+0.
+
+        return CenteredGrid(self.M, self.N, self.P, mx, my, fstar)
 
 ###############
 # To acces item
