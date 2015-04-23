@@ -1,5 +1,4 @@
 import numpy as np
-import scipy.fftpack as fft
 import time as tm
 
 from utils_grid import *
