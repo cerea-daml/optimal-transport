@@ -1,4 +1,5 @@
 import numpy as np
+import pickle as pck
 
 from utils_grid import *
 
@@ -61,32 +62,21 @@ class AdrState:
 ###############
 # I/O functions A AJUSTER DES QUE POSSIBLE
 ###############
-'''
-    def tofile(self, fileName):
-        file = open(fileName, 'w')
-        np.array([self.M,self.N,self.P],dtype=float).tofile(file)
-        self.mx.tofile(file)
-        self.my.tofile(file)
-        self.f.tofile(file)
-        file.close()
+
+    def tofile(self,fileName):
+        f = open(fileName,'wb')
+        p = pck.Pickler(f)
+        p.dump(self)
+        f.close()
         return 0
-
+    
     def fromfile(fileName):
-        data = np.fromfile(fileName)
-        M = int(data[0])
-        N = int(data[1])
-        P = int(data[2])
-        mx = data[3:
-                      3+(M+1)*(N+1)*(P+1)].reshape((M+1,N+1,P+1))
-        my = data[3+(M+1)*(N+1)*(P+1):
-                      3+2*(M+1)*(N+1)*(P+1)].reshape((M+1,N+1,P+1))
-        f  = data[3+2*(M+1)*(N+1)*(P+1):
-                      3+3*(M+1)*(N+1)*(P+1)].reshape((M+1,N+1,P+1))
-        return CenteredGrid( M, N, P,
-                             mx, my, f )
-
+        f = open(fileName, 'rb')
+        p = pck.Unpickler(f)
+        state = p.load()
+        f.close()
+        return state
     fromfile = staticmethod(fromfile)
-'''
 
 ##########################
 # Operations bewteen grids
@@ -256,10 +246,85 @@ class AdrStep:
         stateNP1.w = stateN.w + self.alpha * ( self.prox1( 2 * stateN.z - stateN.w ) - stateN.z )
         stateNP1.z = self.prox2(stateNP1.w)
 
-"""
+class AdrConfig:
+    '''
+    Stores confiuration for the Adr algorithm
+    '''
+    def __init__(self, M, N, P, dynamics):
+        self.M = M
+        self.N = N
+        self.P = P
+        self.dynamics = dynamics
+
+        self.nModPrint
+        self.nModWrite
+
 class AdrAlgorithm:
     '''
     Adr algorithm
     '''
-    def __init__(self, M, N, P, proxCdiv, proxJ, proxCstagcent, alpha
-"""
+    def __init__(self, config, proxCdiv, proxJ, proxCstagcent, boundary):
+        self.config = config # Attention : pas encore ecrit
+        self.boundary = boundary
+        
+        self.prox1 = Prox1Adr(M, N, P, proxCdiv, proxJ)
+        self.prox2 = proxCstagcent
+
+        self.stepFunction = AdrStep(M, N, P, self.prox1, self.prox2, config.alpha)
+
+        self.stateN = AdrState( M, N, P, 
+                                StaggeredCenteredGrid(M, N, P),
+                                StaggeredCenteredGrid(M, N, P) )
+        self.stateNP1 = self.stateN.copy()
+        self.iterCount = 0
+
+    def __repr__(self):
+        return ( 'Adr algorithm on a grid with shape :' +
+                 str(self.config.M) + ' x ' +
+                 str(self.config.N) + ' x ' +
+                 str(self.config.P) )
+
+    def __delattr__(self, nom_attr):
+        raise AttributeError('You can not delete any attribute from this class : AdrAlgorithm')
+
+    def setState(self, newState):
+        self.stateN = newState
+
+    def initialize(self, fileName=None):
+        if fileName is None:
+            mxu = np.zeros(shape=(self.M+2,self.N+1,self.P+1))
+            myu = np.zeros(shape=(self.M+1,self.N+2,self.P+1))
+            fu  = np.zeros(shape=(self.M+1,self.N+1,self.P+2))
+
+            if self.config.dynamics == 0:
+                for i in xrange(self.P+2):
+                    t = float(i)/(self.P+1.)
+                    fu[:,:,i] = self.boundary.bt0[:,:]*(1-t) + self.boundary.bt1[:,:]*t
+
+                massIncomingX = 1.0*(self.M/self.P)*np.cumsum(self.boundary.bx0-self.boundary.bx1,1)
+                for j in xrange(self.N+1):
+                    for i in xrange(self.P+1):
+                        fu[:,j,i+1] = fu[:,j,i+1] + massIncomingX[j,i]/(self.M+1)
+
+                massIncomingY = 1.0*(self.N/self.P)*np.cumsum(self.boundary.by0-self.boundary.by1,1)
+                for j in xrange(self.M+1):
+                    for i in xrange(self.P+1):
+                        fu[j,:,i+1] = fu[j,:,i+1] + massIncomingY[j,i]/(self.N+1)
+
+            else:
+                for i in xrange(self.P+2):
+                    t = float(i)/(self.P+1.)
+                    fu[:,:,i] = self.boundary.bt0[:,:]*(1-t) + self.boundary.bt1[:,:]*t
+
+
+            stagGrid = self.prox1.proxCdiv(StaggeredGrid(self.M, self.N, self.P,
+                                                         mxu, myu, fu))
+            centGrid = stagGrid.interpolation()
+            z = StaggeredCenteredGrid(self.M, self.N, self.P, stagGrid, centGrid)
+            w = z.copy()
+
+            self.stateN = AdrState( M, N, P, z, w) 
+
+        else:
+            self.stateN = AdrState.fromfile(fileName)#Attention : Pas encore ecrit
+
