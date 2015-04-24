@@ -1,7 +1,8 @@
 import numpy as np
 import pickle as pck
-
+import time as tm
 from utils_grid import *
+import utils_proximals as proximals
 
 class AdrState:
     '''
@@ -59,8 +60,11 @@ class AdrState:
         return CenteredGrid(M, N, P, z, w)
     random = staticmethod(random)
 
+    def functionalJ(self):
+        return self.z.centGrid.functionalJ()
+
 ###############
-# I/O functions A AJUSTER DES QUE POSSIBLE
+# I/O functions
 ###############
 
     def tofile(self,fileName):
@@ -250,31 +254,53 @@ class AdrConfig:
     '''
     Stores confiuration for the Adr algorithm
     '''
-    def __init__(self, M, N, P, dynamics):
+    def __init__(self, M, N, P, gamma, alpha, dynamics, outputDir):
         self.M = M
         self.N = N
         self.P = P
+
+        self.gamma = gamma
+        self.alpha = alpha
+
         self.dynamics = dynamics
 
         self.nModPrint
         self.nModWrite
+        self.iterTarget = 0
+        self.outputDir = outputDir
+
+    def printConfig(self):
+        print( 'Number of iterations : ' + str(self.iterTarget) )
+        print( 'dynamics : ' + str(self.dynamics) )
+        print( 'alpha = ' + str(self.alpha) )
+        print( 'gamma = ' + str(self.gamma) )
+        print( 'output to : ' + outputDir )
+
+    def tofile(self, fileName):
+        f = open(fileName,'wb')
+        p = pck.Pickler(f)
+        p.dump(self)
+        f.close()
+        return 0
 
 class AdrAlgorithm:
     '''
     Adr algorithm
     '''
-    def __init__(self, config, proxCdiv, proxJ, proxCstagcent, boundary):
-        self.config = config # Attention : pas encore ecrit
+    def __init__(self, config, boundary):
+        self.config = config
         self.boundary = boundary
         
-        self.prox1 = Prox1Adr(M, N, P, proxCdiv, proxJ)
-        self.prox2 = proxCstagcent
+        proxCdiv,proxCsc,proxJ,proxCb = proximals.proximalForDynamics(config, boundary)
 
-        self.stepFunction = AdrStep(M, N, P, self.prox1, self.prox2, config.alpha)
+        self.prox1 = Prox1Adr(config.M, config.N, config.P, proxCdiv, proxJ)
+        self.prox2 = proxCsc
 
-        self.stateN = AdrState( M, N, P, 
-                                StaggeredCenteredGrid(M, N, P),
-                                StaggeredCenteredGrid(M, N, P) )
+        self.stepFunction = AdrStep(config.M, config.N, config.P, self.prox1, self.prox2, config.alpha)
+
+        self.stateN = AdrState( config.M, config.N, config.P, 
+                                StaggeredCenteredGrid(config.M, config.N, config.P),
+                                StaggeredCenteredGrid(config.M, config.N, config.P) )
         self.stateNP1 = self.stateN.copy()
         self.iterCount = 0
 
@@ -287,8 +313,32 @@ class AdrAlgorithm:
     def __delattr__(self, nom_attr):
         raise AttributeError('You can not delete any attribute from this class : AdrAlgorithm')
 
+    def saveState(self, outputDir=None):
+        if outputDir is None:
+            outputDir = self.config.outputDir
+
+        fileConfig   = outputDir + 'config.bin'
+        fileBoundary = outputDir + 'boundary.init'
+        fileState    = outputDir + 'finalState.bin'
+        
+        f = open(fileConfig, 'ab')
+        p = pck.Pickler(f)
+        p.dump(self.config)
+        f.close()
+
+        f = open(fileBoundary, 'wb')
+        p = pck.Pickler(f)
+        p.dump(self.boundary)
+        f.close()
+
+        f = open(fileState, 'wb')
+        p = pck.Pickler(f)
+        p.dump(self.stateN)
+        f.close()
+
     def setState(self, newState):
         self.stateN = newState
+        self.stateNP1 = self.stateN.copy()
 
     def initialize(self, fileName=None):
         if fileName is None:
@@ -326,5 +376,50 @@ class AdrAlgorithm:
             self.stateN = AdrState( M, N, P, z, w) 
 
         else:
-            self.stateN = AdrState.fromfile(fileName)#Attention : Pas encore ecrit
+            self.stateN = AdrState.fromfile(fileName)
 
+        self.stateNP1 = self.stateN.copy()
+
+
+    def run(self, iterTarget=1000):
+        self.config.iterTarget = iterTarget
+        self.iterCount = 0
+
+        fileCurrentState = outputDir + 'states.bin'
+
+        f = open(fileCurrentState, 'ab')
+        p = pck.Pickler(f)
+        
+        print('__________________________________________________')
+        print('Starting Adr algorithm...')
+        print('__________________________________________________')
+        self.config.printConfig()
+        print('__________________________________________________')
+        timeStart = tm.time()
+
+        while self.iterCount < iterTarget:
+            self.stepFunction(self.stateN,self.stateNP1)
+            self.stepFunction(self.stateNP1,self.stateNP)
+
+            if np.mod(self.iterCount, self.config.nModPrint) == 0:
+                print('_________________________')
+                print('iteration   : '+str(self.iterCount)+'/'+str(iterTarget))
+                print('elpsed time : '+str(tm.time-timeStart))
+                print('J = ',str(self.stateN.functionalJ()))
+
+            if np.mod(self.iterCount, self.config.nModWrite) == 0:
+                p.dump(self.stateN)
+            self.iterCount += 2
+
+        timeAlgo = tm.time() - timeStart
+        f.close()
+
+        print('__________________________________________________')
+        print('Adr algorithm finished')
+        print('Number of iterations run : '+str(iterTarget))
+        print('Final J = '+str(self.stateN.functionalJ()))
+        print('Time taken : '+str(timeAlgo))
+        print('Mean time per iteration : '+str(timeAlgo/iterTarget))
+        print('__________________________________________________')
+
+        self.saveState()
