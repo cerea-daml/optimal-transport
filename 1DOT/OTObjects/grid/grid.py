@@ -127,6 +127,10 @@ class Field( oto.OTObject ):
         return Field( self.N , self.P ,
                       self.m.copy() , self.f.copy() )
 
+    def LInftyNorm(self):
+        return np.max( [ np.abs(self.m).max() ,
+                         np.abs(self.f).max() ] )
+
 class StaggeredField( Field ):
     '''
     Class to handle a field defined on a staggered grid
@@ -342,3 +346,5 @@ class Divergence( oto.OTObject ):
         return Divergence( self.N , self.P ,
                            self.div.copy() )
 
+    def LInftyNorm(self):
+        return np.abs(self.div).max()
