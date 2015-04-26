@@ -6,7 +6,7 @@
 #
 
 import numpy as np
-from ../OTObject import OTObject
+import .OTObject 
 
 class Field( OTObject ):
     '''
