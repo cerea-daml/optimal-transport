@@ -11,9 +11,9 @@
 # Note that one must have kernel in Im(A)
 #
 
-import ..OTObject
+from .. import OTObject as oto
 
-class Projector( OTObject ):
+class Projector( oto.OTObject ):
     '''
     Default class for a projector on an affine space
     '''
@@ -21,8 +21,8 @@ class Projector( OTObject ):
     def __init__( self ,
                   N , P ,
                   kernel ):
-        OTObject._init__( self ,
-                          N , P )
+        oto.OTObject._init__( self ,
+                              N , P )
         self.kernel = kernel
 
     def __repr__(self):
@@ -47,5 +47,3 @@ class Projector( OTObject ):
         Avector  = self.TA( Avector )
         return ( vector - vector )
 
-    def test(self):
-        # requires the random functions

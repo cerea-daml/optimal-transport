@@ -6,9 +6,9 @@
 #
 
 import numpy as np
-import .OTObject 
+from .. import OTObject as oto
 
-class Field( OTObject ):
+class Field( oto.OTObject ):
     '''
     Default class to handle a field (m,f)
     '''
@@ -16,8 +16,8 @@ class Field( OTObject ):
     def __init__( self ,
                   N , P ,
                   m , f ):
-        OTObject.__init__( self ,
-                           N , P )
+        oto.OTObject.__init__( self ,
+                               N , P )
         self.m = m
         self.f = f
 
@@ -147,6 +147,10 @@ class StaggeredField( Field ):
     def __repr__(self):
         return 'Object representing a field (m,f) on a staggered grid'
 
+    def random(N, P):
+        return StaggeredField( N , P ,
+                               np.random.rand(N+2,P+1) , np.random.rand(N+1,P+2) )
+
     def interpolation(self):
         m = np.zeros(shape=(N+1,P+1))
         m[:,:]           = 0.5*self.m[0:self.N+1,:]
@@ -188,6 +192,10 @@ class CenteredField( Field ):
     def __repr__(self):
         return 'Object representing a field (m,f) on a centered grid'
 
+    def random(N, P):
+        return CenteredField( N , P ,
+                              np.random.rand(N+1,P+1) , np.random.rand(N+1,P+1) )
+
     def functionalJ(self):
         return ( ( self.m * self.m ) *
                  ( self.f > 0 ) / self.f ).sum()
@@ -204,7 +212,7 @@ class CenteredField( Field ):
         return StaggeredField( N, P,
                                m, f )
 
-class Divergence( OTObject ):
+class Divergence( oto.OTObject ):
     '''
     class to handle the divergence of a field
     '''
@@ -212,8 +220,8 @@ class Divergence( OTObject ):
                   N , P ,
                   div=None ):
 
-        OTObject.__init__( self ,
-                           N , P )
+        oto.OTObject.__init__( self ,
+                               N , P )
 
         if div is None:
             self.div = np.zeros(shape=(N+1,P+1))
@@ -222,6 +230,10 @@ class Divergence( OTObject ):
 
     def __repr__(self):
         return 'Object representing the divergence of a field'
+
+    def random(N, P):
+        return Divergence( N , P ,
+                           np.random.rand(N+1,P+1) )
 
     def Tdivergence(self):
         m = np.zeros(shape=(N+2,P+1))
