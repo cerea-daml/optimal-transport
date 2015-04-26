@@ -154,6 +154,7 @@ class StaggeredField( Field ):
     def random(N, P):
         return StaggeredField( N , P ,
                                np.random.rand(N+2,P+1) , np.random.rand(N+1,P+2) )
+    random = staticmethod(random)
 
     def interpolation(self):
         m = np.zeros(shape=(N+1,P+1))
@@ -199,6 +200,7 @@ class CenteredField( Field ):
     def random(N, P):
         return CenteredField( N , P ,
                               np.random.rand(N+1,P+1) , np.random.rand(N+1,P+1) )
+    random = staticmethod(random)
 
     def functionalJ(self):
         return ( ( self.m * self.m ) *
@@ -238,6 +240,7 @@ class Divergence( oto.OTObject ):
     def random(N, P):
         return Divergence( N , P ,
                            np.random.rand(N+1,P+1) )
+    random = staticmethod(random)
 
     def Tdivergence(self):
         m = np.zeros(shape=(N+2,P+1))
