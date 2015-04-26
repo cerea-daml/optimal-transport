@@ -162,7 +162,7 @@ class StaggeredField( Field ):
     def divergence(self):
         div = ( self.N*( self.m[1:self.N+2,:] - self.m[0:self.N+1,:] ) +
                 self.P*( self.f[:,1:self.P+2] - self.f[:,0:self.P+1]  ) )
-#        return Divergence(N,P,div)
+        return Divergence( N , P , div )
 
     # Boundary function
     # DivBound function
@@ -203,3 +203,130 @@ class CenteredField( Field ):
 
         return StaggeredField( N, P,
                                m, f )
+
+class Divergence( OTObject ):
+    '''
+    class to handle the divergence of a field
+    '''
+    def __init__( self ,
+                  N , P ,
+                  div=None ):
+
+        OTObject.__init__( self ,
+                           N , P )
+
+        if div is None:
+            self.div = np.zeros(shape=(N+1,P+1))
+        else:
+            self.div = div
+
+    def __repr__(self):
+        return 'Object representing the divergence of a field'
+
+    def Tdivergence(self):
+        m = np.zeros(shape=(N+2,P+1))
+        m[0:self.N+1,:] = -self.N*self.div[0:self.N+1,:]
+        m[1:self.N+2,:] += self.N*self.div[0:self.N+1,:]
+
+        f = np.zeros(shape=(N+1,P+2))
+        f[:,0:self.P+1] = -self.P*self.div[:,0:self.P+1]
+        f[:,1:self.P+2] += self.P*self.div[:,0:self.P+1]
+
+        return StaggeredField( N, P,
+                               m, f )
+
+    def __add__(self, other):
+        if isinstance(other,Divergence):
+            return Divergence( self.N , self.P ,
+                               self.div + other.div )
+        else:
+            return Divergence( self.N , self.P ,
+                               self.div + other )
+
+    def __sub__(self, other):
+        if isinstance(other,Divergence):
+            return Divergence( self.N , self.P ,
+                               self.div - other.div )
+        else:
+            return Divergence( self.N , self.P ,
+                               self.div - other )
+
+    def __mul__(self, other):
+        if isinstance(other,Divergence):
+            return Divergence( self.N , self.P ,
+                               self.div * other.div )
+        else:
+            return Divergence( self.N , self.P ,
+                               self.div * other )
+
+    def __div__(self, other):
+        if isinstance(other,Divergence):
+            return Divergence( self.N , self.P ,
+                               self.div / other.div )
+        else:
+            return Divergence( self.N , self.P ,
+                               self.div / other )
+
+    def __radd__(self, other):
+        return Divergence( self.N , self.P ,
+                           other + self.div )
+
+    def __rsub__(self, other):
+        return Divergence( self.N , self.P ,
+                           other - self.div )
+
+    def __rmul__(self, other):
+        return Divergence( self.N , self.P ,
+                           other * self.div )
+
+    def __rdiv__(self, other):
+        return Divergence( self.N , self.P ,
+                           other / self.div )
+
+    def __iadd__(self, other):
+        if isinstance(other,Divergence):
+            self.div += other.div
+            return self
+        else:
+            self.div += other
+            return self
+
+    def __isub__(self, other):
+        if isinstance(other,Divergence):
+            self.div -= other.div
+            return self
+        else:
+            self.div -= other
+            return self
+
+    def __imul__(self, other):
+        if isinstance(other,Divergence):
+            self.div *= other.div
+            return self
+        else:
+            self.div *= other
+            return self
+
+    def __idiv__(self, other):
+        if isinstance(other,Divergence):
+            self.div /= other.div
+            return self
+        else:
+            self.div /= other
+            return self
+
+    def __neg__(self):
+        return Divergence( self.N , self.P ,
+                           - self.div )
+
+    def __pos__(self):
+        return Divergence( self.N , self.P ,
+                           + self.div )
+
+    def __abs__(self):
+        return Divergence( self.N , self.P ,
+                           abs ( self.div ) )
+    def copy(self):
+        return Divergence( self.N , self.P ,
+                           self.div.copy() )
+
