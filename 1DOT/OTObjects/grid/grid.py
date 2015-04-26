@@ -131,3 +131,39 @@ class StaggeredField( Field ):
     '''
     Class to handle a field defined on a staggered grid
     '''
+    
+    def __init__( self ,
+                  N , P ,
+                  m=None , f=None ):
+        if m is None:
+            m = np.zeros(shape=(N+2,P+1))
+        if f is None:
+            f = np.zeros(shape=(N+1,P+2))
+
+        Field.__init__( self ,
+                        N , P ,
+                        m , f )
+
+    def __repr__(self):
+        return 'Object representing a field (m,f) on a staggered grid'
+
+    def interpolation(self):
+        m = np.zeros(shape=(N+1,P+1))
+        m[:,:]           = 0.5*self.m[0:self.N+1,:]
+        m[0:self.N+1,:] += 0.5*self.m[1:self.N+2,:]
+
+        f = np.zeros(shape=(N+1,P+1))
+        f[:,:]           = 0.5*self.f[:,0:self.P+1]
+        f[:,0:self.P+1] += 0.5*self.f[:,1:self.P+2]
+
+#        return CenteredField( self.N, self.P,
+#                             m, f )
+
+    def divergence(self):
+        div = ( self.N*( self.m[1:self.N+2,:] - self.m[0:self.N+1,:] ) +
+                self.P*( self.f[:,1:self.P+2] - self.f[:,0:self.P+1]  ) )
+#        return Divergence(N,P,div)
+
+    # Boundary function
+    # DivBound function
+    # DivTempBound function
