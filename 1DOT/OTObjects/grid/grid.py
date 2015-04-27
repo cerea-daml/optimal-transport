@@ -193,6 +193,10 @@ class StaggeredField( Field ):
         return DivergenceBoundaries( self.N, self.P,
                                      self.divergence(), self.boundaries() )
 
+    def divergenceTemporalBoundaries(self):
+        return DivergenceTemporalBoundaries( self.N, self.P,
+                                             self.divergence(), self.temporalBoundaries() )
+
     def __add__(self, other):
         if isinstance(other,StaggeredField):
             return StaggeredField( self.N , self.P ,
@@ -1132,4 +1136,152 @@ class DivergenceBoundaries( oto.OTObject ):
     def copy(self):
         return DivergenceBoundaries( self.N , self.P ,
                                      self.divergence.copy() , self.boundaries.copy() )
+
+#__________________________________________________
+
+class DivergenceTemporalBoundaries( oto.OTObject ):
+    '''
+    class to store the divergence and temporal boundary conditions of a field
+    '''
+
+    def __init__( self ,
+                  N , P ,
+                  divergence=None , temporalBoundaries=None ):
+        oto.OTObject.__init__( self ,
+                               N , P )
+        if divergence is None:
+            self.divergence = Divergence( N , P )
+        else:
+            self.divergence = divergence
+        if temporalBoundaries is None:
+            self.temporalBoundaries = TemporalBoundaries( N , P )
+        else:
+            self.temporalBoundaries = temporalBoundaries
+
+    def __repr__(self):
+        return "Object representing the divergence and temporal boundary conditions of a field"
+
+    def TdivergenceTemporalBoundaries(self):
+        gridDiv = self.divergence.Tdivergence()
+        gridB   = self.temporalBoundaries.TtemporalBoundaries()
+        return ( gridDiv + gridB )
+
+    def applyGaussForward(self):
+        self.divergence.div[:,0]      += self.P*self.temporalBoundaries.bt0[:]
+        self.divergence.div[:,self.P] -= self.P*self.temporalBoundaries.bt1[:]
+
+    def applyGaussBackward(self):
+        self.temporalBoundaries.bt0 += self.P*self.divergence.div[:,0]
+        self.temporalBoundaries.bt1 -= self.P*self.divergence.div[:,self.P]
+
+    def random( N , P ):
+        return DivergenceBoundaries( N , P ,
+                                     Divergence.random(N,P) , TemporalBoundaries.random(N,P) )
+    random = staticmethod(random)
+
+    def LInftyNorm(self):
+        return np.max( [ self.divergence.LInftyNorm() , self.temporalBoundaries.LInftyNorm() ] )
+
+    def __add__(self, other):
+        if isinstance(other,DivergenceTemporalBoundaries):
+            return DivergenceTemporalBoundaries( self.N , self.P ,
+                                                 self.divergence + other.divergence , self.temporalBoundaries + other.temporalBoundaries )
+        else:
+            return DivergenceTemporalBoundaries( self.N , self.P ,
+                                                 self.divergence + other , self.temporalBoundaries + other )
+
+    def __sub__(self, other):
+        if isinstance(other,DivergenceTemporalBoundaries):
+            return DivergenceTemporalBoundaries( self.N , self.P ,
+                                                 self.divergence - other.divergence , self.temporalBoundaries - other.temporalBoundaries )
+        else:
+            return DivergenceTemporalBoundaries( self.N , self.P ,
+                                                 self.divergence - other , self.temporalBoundaries - other )
+
+    def __mul__(self, other):
+        if isinstance(other,DivergenceTemporalBoundaries):
+            return DivergenceTemporalBoundaries( self.N , self.P ,
+                                                 self.divergence * other.divergence , self.temporalBoundaries * other.temporalBoundaries )
+        else:
+            return DivergenceTemporalBoundaries( self.N , self.P ,
+                                                 self.divergence * other , self.temporalBoundaries * other )
+
+    def __div__(self, other):
+        if isinstance(other,DivergenceTemporalBoundaries):
+            return DivergenceTemporalBoundaries( self.N , self.P ,
+                                                 self.divergence / other.divergence , self.temporalBoundaries / other.temporalBoundaries )
+        else:
+            return DivergenceTemporalBoundaries( self.N , self.P ,
+                                                 self.divergence / other , self.temporalBoundaries / other )
+
+    def __radd__(self, other):
+        return DivergenceTemporalBoundaries( self.N , self.P ,
+                                             other + self.divergence , other + self.temporalBoundaries )
+
+    def __rsub__(self, other):
+        return DivergenceTemporalBoundaries( self.N , self.P ,
+                                             other - self.divergence , other - self.temporalBoundaries )
+
+    def __rmul__(self, other):
+        return DivergenceTemporalBoundaries( self.N , self.P ,
+                                             other * self.divergence , other * self.temporalBoundaries )
+
+    def __rdiv__(self, other):
+        return DivergenceTemporalBoundaries( self.N , self.P ,
+                                             other / self.divergence , other / self.temporalBoundaries )
+
+    def __iadd__(self, other):
+        if isinstance(other,DivergenceTemporalBoundaries):
+            self.divergence += other.divergence
+            self.temporalBoundaries += other.temporalBoundaries
+            return self
+        else:
+            self.divergence += other
+            self.temporalBoundaries += other
+            return self
+
+    def __isub__(self, other):
+        if isinstance(other,DivergenceTemporalBoundaries):
+            self.divergence -= other.divergence
+            self.temporalBoundaries -= other.temporalBoundaries
+            return self
+        else:
+            self.divergence -= other
+            self.temporalBoundaries -= other
+            return self
+
+    def __imul__(self, other):
+        if isinstance(other,DivergenceTemporalBoundaries):
+            self.divergence *= other.divergence
+            self.temporalBoundaries *= other.temporalBoundaries
+            return self
+        else:
+            self.divergence *= other
+            self.temporalBoundaries *= other
+            return self
+
+    def __idiv__(self, other):
+        if isinstance(other,DivergenceTemporalBoundaries):
+            self.divergence /= other.divergence
+            self.temporalBoundaries /= other.temporalBoundaries
+            return self
+        else:
+            self.divergence /= other
+            self.temporalBoundaries /= other
+            return self
+
+    def __neg__(self):
+        return DivergenceTemporalBoundaries( self.N , self.P ,
+                                             - self.divergence , - self.temporalBoundaries )
+
+    def __pos__(self):
+        return DivergenceTemporalBoundaries( self.N , self.P ,
+                                             + self.divergence , + self.temporalBoundaries )
+
+    def __abs__(self):
+        return DivergenceTemporalBoundaries( self.N , self.P ,
+                                             abs ( self.divergence ) , abs ( self.temporalBoundaries ) )
+    def copy(self):
+        return DivergenceTemporalBoundaries( self.N , self.P ,
+                                             self.divergence.copy() , self.temporalBoundaries.copy() )
 
