@@ -1455,8 +1455,8 @@ class CenteredFieldBoundaries( oto.OTObject ):
     def __init__( self ,
                   N , P ,
                   centeredField , boundaries ):
-        OTObject.__init__( self ,
-                           N , P )
+        oto.OTObject.__init__( self ,
+                               N , P )
         if centeredField is None:
             self.centeredField = CenteredField(N,P)
         else:
