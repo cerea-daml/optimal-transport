@@ -1175,8 +1175,8 @@ class DivergenceTemporalBoundaries( oto.OTObject ):
         self.temporalBoundaries.bt1 -= self.P*self.divergence.div[:,self.P]
 
     def random( N , P ):
-        return DivergenceBoundaries( N , P ,
-                                     Divergence.random(N,P) , TemporalBoundaries.random(N,P) )
+        return DivergenceTemporalBoundaries( N , P ,
+                                             Divergence.random(N,P) , TemporalBoundaries.random(N,P) )
     random = staticmethod(random)
 
     def LInftyNorm(self):
