@@ -8,6 +8,8 @@
 import numpy as np
 from .. import OTObject as oto
 
+#__________________________________________________
+
 class Field( oto.OTObject ):
     '''
     Default class to handle a field (m,f)
@@ -131,6 +133,8 @@ class Field( oto.OTObject ):
         return np.max( [ np.abs(self.m).max() ,
                          np.abs(self.f).max() ] )
 
+#__________________________________________________
+
 class StaggeredField( Field ):
     '''
     Class to handle a field defined on a staggered grid
@@ -177,6 +181,8 @@ class StaggeredField( Field ):
     # DivBound function
     # DivTempBound function
 
+#__________________________________________________
+
 class CenteredField( Field ):
     '''
     Class to handle a field defined on a centered grid
@@ -217,6 +223,8 @@ class CenteredField( Field ):
 
         return StaggeredField( N, P,
                                m, f )
+
+#__________________________________________________
 
 class Divergence( oto.OTObject ):
     '''
@@ -351,3 +359,386 @@ class Divergence( oto.OTObject ):
 
     def LInftyNorm(self):
         return np.abs(self.div).max()
+
+#__________________________________________________
+
+class TemporalBoundaries( oto.OTObject ):
+    '''
+    class to store the temporal boundaries of a field
+    '''
+
+    def __init__( self ,
+                  N , P ,
+                  bt0=None , bt1=None ):
+        oto.OTObject.__init__( self ,
+                               N , P )
+        if bt0 is None:
+            self.bt0 = np.zeros(N+1)
+        else:
+            self.bt0 = bt0
+        if bt1 is None:
+            self.bt1 = np.zeros(N+1)
+        else:
+            self.bt1 = bt1
+
+    def __repr__(self):
+        return "Object representing the temporal boundaries of a field"
+
+    def __add__(self, other):
+        if isinstance(other,TemporalBoundaries):
+            return TemporalBoundaries( self.N , self.P ,
+                                       self.bt0 + other.bt0 , self.bt1 + other.bt1 )
+        else:
+            return TemporalBoundaries( self.N , self.P ,
+                                       self.bt0 + other , self.bt1 + other )
+
+    def __sub__(self, other):
+        if isinstance(other,TemporalBoundaries):
+            return TemporalBoundaries( self.N , self.P ,
+                                       self.bt0 - other.bt0 , self.bt1 - other.bt1 )
+        else:
+            return TemporalBoundaries( self.N , self.P ,
+                                       self.bt0 - other , self.bt1 - other )
+
+    def __mul__(self, other):
+        if isinstance(other,TemporalBoundaries):
+            return TemporalBoundaries( self.N , self.P ,
+                                       self.bt0 * other.bt0 , self.bt1 * other.bt1 )
+        else:
+            return TemporalBoundaries( self.N , self.P ,
+                                       self.bt0 * other , self.bt1 * other )
+
+    def __div__(self, other):
+        if isinstance(other,TemporalBoundaries):
+            return TemporalBoundaries( self.N , self.P ,
+                                       self.bt0 / other.bt0 , self.bt1 / other.bt1 )
+        else:
+            return TemporalBoundaries( self.N , self.P ,
+                                       self.bt0 / other , self.bt1 / other )
+
+    def __radd__(self, other):
+        return TemporalBoundaries( self.N , self.P ,
+                                   other + self.bt0 , other + self.bt1 )
+
+    def __rsub__(self, other):
+        return TemporalBoundaries( self.N , self.P ,
+                                   other - self.bt0 , other - self.bt1 )
+
+    def __rmul__(self, other):
+        return TemporalBoundaries( self.N , self.P ,
+                                   other * self.bt0 , other * self.bt1 )
+
+    def __rdiv__(self, other):
+        return TemporalBoundaries( self.N , self.P ,
+                                   other / self.bt0 , other / self.bt1 )
+
+    def __iadd__(self, other):
+        if isinstance(other,TemporalBoundaries):
+            self.bt0 += other.bt0
+            self.bt1 += other.bt1
+            return self
+        else:
+            self.bt0 += other
+            self.bt1 += other
+            return self
+
+    def __isub__(self, other):
+        if isinstance(other,TemporalBoundaries):
+            self.bt0 -= other.bt0
+            self.bt1 -= other.bt1
+            return self
+        else:
+            self.bt0 -= other
+            self.bt1 -= other
+            return self
+
+    def __imul__(self, other):
+        if isinstance(other,TemporalBoundaries):
+            self.bt0 *= other.bt0
+            self.bt1 *= other.bt1
+            return self
+        else:
+            self.bt0 *= other
+            self.bt1 *= other
+            return self
+
+    def __idiv__(self, other):
+        if isinstance(other,TemporalBoundaries):
+            self.bt0 /= other.bt0
+            self.bt1 /= other.bt1
+            return self
+        else:
+            self.bt0 /= other
+            self.bt1 /= other
+            return self
+
+    def __neg__(self):
+        return TemporalBoundaries( self.N , self.P ,
+                                   - self.bt0 , - self.bt1 )
+
+    def __pos__(self):
+        return TemporalBoundaries( self.N , self.P ,
+                                   + self.bt0 , + self.bt1 )
+
+    def __abs__(self):
+        return TemporalBoundaries( self.N , self.P ,
+                                   abs ( self.bt0 ) , abs ( self.bt1 ) )
+    def copy(self):
+        return TemporalBoundaries( self.N , self.P ,
+                                   self.bt0.copy() , self.bt1.copy() )
+
+#__________________________________________________
+
+class SpatialBoundaries( oto.OTObject ):
+    '''
+    class to store the spatial boundaries of a field
+    '''
+
+    def __init__( self ,
+                  N , P ,
+                  bx0=None , bx1=None ):
+        oto.OTObject.__init__( self ,
+                               N , P )
+        if bx0 is None:
+            self.bx0 = np.zeros(P+1)
+        else:
+            self.bx0 = bx0
+        if bx1 is None:
+            self.bx1 = np.zeros(P+1)
+        else:
+            self.bx1 = bx1
+
+    def __repr__(self):
+        return "Object representing the spatial boundaries of a field"
+
+    def __add__(self, other):
+        if isinstance(other,SpatialBoundaries):
+            return SpatialBoundaries( self.N , self.P ,
+                                      self.bx0 + other.bx0 , self.bx1 + other.bx1 )
+        else:
+            return SpatialBoundaries( self.N , self.P ,
+                                      self.bx0 + other , self.bx1 + other )
+
+    def __sub__(self, other):
+        if isinstance(other,SpatialBoundaries):
+            return SpatialBoundaries( self.N , self.P ,
+                                      self.bx0 - other.bx0 , self.bx1 - other.bx1 )
+        else:
+            return SpatialBoundaries( self.N , self.P ,
+                                      self.bx0 - other , self.bx1 - other )
+
+    def __mul__(self, other):
+        if isinstance(other,SpatialBoundaries):
+            return SpatialBoundaries( self.N , self.P ,
+                                      self.bx0 * other.bx0 , self.bx1 * other.bx1 )
+        else:
+            return SpatialBoundaries( self.N , self.P ,
+                                      self.bx0 * other , self.bx1 * other )
+
+    def __div__(self, other):
+        if isinstance(other,SpatialBoundaries):
+            return SpatialBoundaries( self.N , self.P ,
+                                      self.bx0 / other.bx0 , self.bx1 / other.bx1 )
+        else:
+            return SpatialBoundaries( self.N , self.P ,
+                                      self.bx0 / other , self.bx1 / other )
+
+    def __radd__(self, other):
+        return SpatialBoundaries( self.N , self.P ,
+                                  other + self.bx0 , other + self.bx1 )
+
+    def __rsub__(self, other):
+        return SpatialBoundaries( self.N , self.P ,
+                                  other - self.bx0 , other - self.bx1 )
+
+    def __rmul__(self, other):
+        return SpatialBoundaries( self.N , self.P ,
+                                  other * self.bx0 , other * self.bx1 )
+
+    def __rdiv__(self, other):
+        return SpatialBoundaries( self.N , self.P ,
+                                  other / self.bx0 , other / self.bx1 )
+
+    def __iadd__(self, other):
+        if isinstance(other,SpatialBoundaries):
+            self.bx0 += other.bx0
+            self.bx1 += other.bx1
+            return self
+        else:
+            self.bx0 += other
+            self.bx1 += other
+            return self
+
+    def __isub__(self, other):
+        if isinstance(other,SpatialBoundaries):
+            self.bx0 -= other.bx0
+            self.bx1 -= other.bx1
+            return self
+        else:
+            self.bx0 -= other
+            self.bx1 -= other
+            return self
+
+    def __imul__(self, other):
+        if isinstance(other,SpatialBoundaries):
+            self.bx0 *= other.bx0
+            self.bx1 *= other.bx1
+            return self
+        else:
+            self.bx0 *= other
+            self.bx1 *= other
+            return self
+
+    def __idiv__(self, other):
+        if isinstance(other,SpatialBoundaries):
+            self.bx0 /= other.bx0
+            self.bx1 /= other.bx1
+            return self
+        else:
+            self.bx0 /= other
+            self.bx1 /= other
+            return self
+
+    def __neg__(self):
+        return SpatialBoundaries( self.N , self.P ,
+                                  - self.bx0 , - self.bx1 )
+
+    def __pos__(self):
+        return SpatialBoundaries( self.N , self.P ,
+                                  + self.bx0 , + self.bx1 )
+
+    def __abs__(self):
+        return SpatialBoundaries( self.N , self.P ,
+                                  abs ( self.bx0 ) , abs ( self.bx1 ) )
+    def copy(self):
+        return SpatialBoundaries( self.N , self.P ,
+                                  self.bx0.copy() , self.bx1.copy() )
+
+#__________________________________________________
+
+class Boundaries( oto.OTObject ):
+    '''
+    class to store the boundaries of a field
+    '''
+
+    def __init__( self ,
+                  N , P ,
+                  temporalBoundaries=None , spatialBoundaries=None ):
+        oto.OTObject.__init__( self ,
+                           N , P )
+        if temporalBoundaries is None:
+            self.temporalBoundaries = TemporalBoundaries( N , P )
+        else:
+            self.temporalBoundaries = temporalBoundaries
+        if self.spatialBoundaries is None:
+            self.spatialBoundaries = SpatialBoundaries( N , P )
+        else:
+            self.spatialBoundaries = spatialBoundaries
+
+    def __repr__(self):
+        return "Object representing the boundaries of a field"
+
+    def __add__(self, other):
+        if isinstance(other,Boundaries):
+            return Boundaries( self.N , self.P ,
+                               self.temporalBoundaries + other.temporalBoundaries , self.spatialBoundaries + other.spatialBoundaries )
+        else:
+            return Boundaries( self.N , self.P ,
+                               self.temporalBoundaries + other , self.spatialBoundaries + other )
+
+    def __sub__(self, other):
+        if isinstance(other,Boundaries):
+            return Boundaries( self.N , self.P ,
+                               self.temporalBoundaries - other.temporalBoundaries , self.spatialBoundaries - other.spatialBoundaries )
+        else:
+            return Boundaries( self.N , self.P ,
+                               self.temporalBoundaries - other , self.spatialBoundaries - other )
+
+    def __mul__(self, other):
+        if isinstance(other,Boundaries):
+            return Boundaries( self.N , self.P ,
+                               self.temporalBoundaries * other.temporalBoundaries , self.spatialBoundaries * other.spatialBoundaries )
+        else:
+            return Boundaries( self.N , self.P ,
+                               self.temporalBoundaries * other , self.spatialBoundaries * other )
+
+    def __div__(self, other):
+        if isinstance(other,Boundaries):
+            return Boundaries( self.N , self.P ,
+                               self.temporalBoundaries / other.temporalBoundaries , self.spatialBoundaries / other.spatialBoundaries )
+        else:
+            return Boundaries( self.N , self.P ,
+                               self.temporalBoundaries / other , self.spatialBoundaries / other )
+
+    def __radd__(self, other):
+        return Boundaries( self.N , self.P ,
+                           other + self.temporalBoundaries , other + self.spatialBoundaries )
+
+    def __rsub__(self, other):
+        return Boundaries( self.N , self.P ,
+                           other - self.temporalBoundaries , other - self.spatialBoundaries )
+
+    def __rmul__(self, other):
+        return Boundaries( self.N , self.P ,
+                           other * self.temporalBoundaries , other * self.spatialBoundaries )
+
+    def __rdiv__(self, other):
+        return Boundaries( self.N , self.P ,
+                           other / self.temporalBoundaries , other / self.spatialBoundaries )
+
+    def __iadd__(self, other):
+        if isinstance(other,Boundaries):
+            self.temporalBoundaries += other.temporalBoundaries
+            self.spatialBoundaries += other.spatialBoundaries
+            return self
+        else:
+            self.temporalBoundaries += other
+            self.spatialBoundaries += other
+            return self
+
+    def __isub__(self, other):
+        if isinstance(other,Boundaries):
+            self.temporalBoundaries -= other.temporalBoundaries
+            self.spatialBoundaries -= other.spatialBoundaries
+            return self
+        else:
+            self.temporalBoundaries -= other
+            self.spatialBoundaries -= other
+            return self
+
+    def __imul__(self, other):
+        if isinstance(other,Boundaries):
+            self.temporalBoundaries *= other.temporalBoundaries
+            self.spatialBoundaries *= other.spatialBoundaries
+            return self
+        else:
+            self.temporalBoundaries *= other
+            self.spatialBoundaries *= other
+            return self
+
+    def __idiv__(self, other):
+        if isinstance(other,Boundaries):
+            self.temporalBoundaries /= other.temporalBoundaries
+            self.spatialBoundaries /= other.spatialBoundaries
+            return self
+        else:
+            self.temporalBoundaries /= other
+            self.spatialBoundaries /= other
+            return self
+
+    def __neg__(self):
+        return Boundaries( self.N , self.P ,
+                           - self.temporalBoundaries , - self.spatialBoundaries )
+
+    def __pos__(self):
+        return Boundaries( self.N , self.P ,
+                           + self.temporalBoundaries , + self.spatialBoundaries )
+
+    def __abs__(self):
+        return Boundaries( self.N , self.P ,
+                           abs ( self.temporalBoundaries ) , abs ( self.spatialBoundaries ) )
+    def copy(self):
+        return Boundaries( self.N , self.P ,
+                           self.temporalBoundaries.copy() , self.spatialBoundaries.copy() )
+
+#__________________________________________________
