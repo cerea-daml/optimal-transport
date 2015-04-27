@@ -400,6 +400,13 @@ class TemporalBoundaries( oto.OTObject ):
     def __repr__(self):
         return "Object representing the temporal boundaries of a field"
 
+    def random( N , P ):
+        bt0 = np.random.rand(N+1)
+        bt1 = np.random.rand(N+1)
+        return TemporalBoundaries( N , P ,
+                                   bt0 , bt1 )
+    staticmethod(random)
+
     def TtemporalBoundaries(self):
         m = np.zeros(shape=(self.N+1,self.P+1))
         f = np.zeros(shape=(self.N+1,self.P+2))
@@ -537,6 +544,13 @@ class SpatialBoundaries( oto.OTObject ):
     def __repr__(self):
         return "Object representing the spatial boundaries of a field"
 
+    def random( N , P ):
+        bx0 = np.random.rand(P+1)
+        bx1 = np.random.rand(P+1)
+        return SpatialBoundaries( N , P ,
+                                  bx0 , bx1 )
+    random = staticmethod(random)
+
     def TspatialBoundaries(self):
         m = np.zeros(shape=(self.N+2,self.P+1))
         f = np.zeros(shape=(self.N+1,self.P+2))
@@ -671,13 +685,18 @@ class Boundaries( oto.OTObject ):
         else:
             self.spatialBoundaries = spatialBoundaries
 
+    def __repr__(self):
+        return "Object representing the boundaries of a field"
+
     def Tboundaries(self):
         gridT = self.temporalBoundaries.TtemporalBoundaries()
         gridS = self.spatialBoundaries.TspatialBoundaries()
         return ( gridT + gridS )
 
-    def __repr__(self):
-        return "Object representing the boundaries of a field"
+    def random( N , P ):
+        return Boundaries( N , P ,
+                           TemporalBoundaries.random(N,P) , spatialBoundaries.random(N,P) )
+    random = staticmethod(random)
 
     def __add__(self, other):
         if isinstance(other,Boundaries):
@@ -803,13 +822,29 @@ class DivergenceBoundaries( oto.OTObject ):
         else:
             self.boundaries = boundaries
 
+    def __repr__(self):
+        return "Object representing the divergence and boundary conditions of a field"
+
     def TdivergenceBoundaries(self):
         gridDiv = self.divergence.Tdivergence()
         gridB   = self.boundaries.Tboundaries()
         return ( gridDiv + gridB )
 
-    def __repr__(self):
-        return "Object representing the divergence and boundary conditions of a field"
+    def applyGaussForward(self):
+        self.divergence.div[0,:]      += self.N*self.boundaries.spatialBoundaries.bx0[:]
+        self.divergence.div[self.N,:] -= self.N*self.boundaries.spatialBoundaries.bx1[:]
+        self.divergence.div[:,0]      += self.P*self.boundaries.temporalBoundaries.bt0[:]
+        self.divergence.div[:,self.P] -= self.P*self.boundaries.temporalBoundaries.bt1[:]
+
+    def applyGaussBackward(self):
+        self.boundaries.spatialBoundaries.bx0  += self.N*self.divergence.div[0,:]
+        self.boundaries.spatialBoundaries.bx1  -= self.N*self.divergence.div[self.N,:]
+        self.boundaries.temporalBoundaries.bt0 += self.P*self.divergence.div[:,0]
+        self.boundaries.temporalBoundaries.bt1 -= self.P*self.divergence.div[:,self.P]
+
+    def random( N , P ):
+        return DivergenceBoundaries( N , P ,
+                                     Divergence.random(N,P) , Boundaries.random(N,P) )
 
     def __add__(self, other):
         if isinstance(other,DivergenceBoundaries):
