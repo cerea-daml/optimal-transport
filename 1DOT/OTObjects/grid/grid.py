@@ -303,6 +303,20 @@ class CenteredField( Field ):
         return StaggeredField( N, P,
                                m, f )
 
+    def T_interpolationDefault(self):
+        mu = np.zeros(shape=(self.N+2,self.P+1))
+        fu = np.zeros(shape=(self.N+1,self.P+2))
+
+        mu[0:self.N+1,:] = -0.5*self.m[:,:]
+        mu[1:self.N+2,:] -= 0.5*self.m[:,:]
+
+        fu[:,0:self.P+1] = -0.5*self.f[:,:]
+        fu[:,1:self.P+2] -= 0.5*self.f[:,:]
+
+        staggeredField = StaggeredField( self.N , self.P , mu , fu )
+
+        return StaggeredCenteredField( self.N , self.P , staggeredField , self )
+
     def __add__(self, other):
         if isinstance(other,CenteredField):
             return CenteredField( self.N , self.P ,
@@ -1284,4 +1298,144 @@ class DivergenceTemporalBoundaries( oto.OTObject ):
     def copy(self):
         return DivergenceTemporalBoundaries( self.N , self.P ,
                                              self.divergence.copy() , self.temporalBoundaries.copy() )
+
+#__________________________________________________
+
+class StaggeredCenteredField( oto.OTObject ):
+    '''
+    class to store a staggered and a centered field
+    '''
+
+    def __init__( self ,
+                  N , P ,
+                  staggeredField=None , centeredField=None ):
+        oto.OTObject.__init__( self ,
+                               N , P )
+
+        if staggeredField is None:
+            self.staggeredField = StaggeredField( N , P )
+        else:
+            self.staggeredField = staggeredField
+
+        if centeredField is None:
+            self.centeredField = CenteredField( N , P )
+        else:
+            self.centeredField = centeredField
+
+    def __repr__(self):
+        return 'Object representing a staggered and a centered field'
+
+    def interpolationDefault(self):
+        return ( self.centeredField - self.staggeredField.interpolation() )
+
+    def random( N , P ):
+        return StaggeredCenteredField( N , P ,
+                                       StaggeredField.random(N,P) , CenteredField.random(N,P) )
+    random = staticmethod(random)
+
+    def LInftyNorm(self):
+        return np.max( [ self.staggeredField.LInftyNorm() , self.centeredField.LInftyNorm() ] )
+
+    def __add__(self, other):
+        if isinstance(other,StaggeredCenteredField):
+            return StaggeredCenteredField( self.N , self.P ,
+                                           self.staggeredField + other.staggeredField , self.centeredField + other.centeredField )
+        else:
+            return StaggeredCenteredField( self.N , self.P ,
+                                           self.staggeredField + other , self.centeredField + other )
+
+    def __sub__(self, other):
+        if isinstance(other,StaggeredCenteredField):
+            return StaggeredCenteredField( self.N , self.P ,
+                                           self.staggeredField - other.staggeredField , self.centeredField - other.centeredField )
+        else:
+            return StaggeredCenteredField( self.N , self.P ,
+                                           self.staggeredField - other , self.centeredField - other )
+
+    def __mul__(self, other):
+        if isinstance(other,StaggeredCenteredField):
+            return StaggeredCenteredField( self.N , self.P ,
+                                           self.staggeredField * other.staggeredField , self.centeredField * other.centeredField )
+        else:
+            return StaggeredCenteredField( self.N , self.P ,
+                                           self.staggeredField * other , self.centeredField * other )
+
+    def __div__(self, other):
+        if isinstance(other,StaggeredCenteredField):
+            return StaggeredCenteredField( self.N , self.P ,
+                                           self.staggeredField / other.staggeredField , self.centeredField / other.centeredField )
+        else:
+            return StaggeredCenteredField( self.N , self.P ,
+                                           self.staggeredField / other , self.centeredField / other )
+
+    def __radd__(self, other):
+        return StaggeredCenteredField( self.N , self.P ,
+                                       other + self.staggeredField , other + self.centeredField )
+
+    def __rsub__(self, other):
+        return StaggeredCenteredField( self.N , self.P ,
+                                       other - self.staggeredField , other - self.centeredField )
+
+    def __rmul__(self, other):
+        return StaggeredCenteredField( self.N , self.P ,
+                                       other * self.staggeredField , other * self.centeredField )
+
+    def __rdiv__(self, other):
+        return StaggeredCenteredField( self.N , self.P ,
+                                       other / self.staggeredField , other / self.centeredField )
+
+    def __iadd__(self, other):
+        if isinstance(other,StaggeredCenteredField):
+            self.staggeredField += other.staggeredField
+            self.centeredField += other.centeredField
+            return self
+        else:
+            self.staggeredField += other
+            self.centeredField += other
+            return self
+
+    def __isub__(self, other):
+        if isinstance(other,StaggeredCenteredField):
+            self.staggeredField -= other.staggeredField
+            self.centeredField -= other.centeredField
+            return self
+        else:
+            self.staggeredField -= other
+            self.centeredField -= other
+            return self
+
+    def __imul__(self, other):
+        if isinstance(other,StaggeredCenteredField):
+            self.staggeredField *= other.staggeredField
+            self.centeredField *= other.centeredField
+            return self
+        else:
+            self.staggeredField *= other
+            self.centeredField *= other
+            return self
+
+    def __idiv__(self, other):
+        if isinstance(other,StaggeredCenteredField):
+            self.staggeredField /= other.staggeredField
+            self.centeredField /= other.centeredField
+            return self
+        else:
+            self.staggeredField /= other
+            self.centeredField /= other
+            return self
+
+    def __neg__(self):
+        return StaggeredCenteredField( self.N , self.P ,
+                                       - self.staggeredField , - self.centeredField )
+
+    def __pos__(self):
+        return StaggeredCenteredField( self.N , self.P ,
+                                       + self.staggeredField , + self.centeredField )
+
+    def __abs__(self):
+        return StaggeredCenteredField( self.N , self.P ,
+                                       abs ( self.staggeredField ) , abs ( self.centeredField ) )
+    def copy(self):
+        return StaggeredCenteredField( self.N , self.P ,
+                                       self.staggeredField.copy() , self.centeredField.copy() )
 
