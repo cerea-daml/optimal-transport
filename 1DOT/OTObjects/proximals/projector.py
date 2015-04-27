@@ -21,8 +21,8 @@ class Projector( oto.OTObject ):
     def __init__( self ,
                   N , P ,
                   kernel ):
-        oto.OTObject._init__( self ,
-                              N , P )
+        oto.OTObject.__init__( self ,
+                               N , P )
         self.kernel = kernel
 
     def __repr__(self):
@@ -43,7 +43,7 @@ class Projector( oto.OTObject ):
     def __call__(self, vector):
         Avector  = self.A( vector )
         Avector -= self.kernel
-        Avector  = self.invATA( Avector )
+        Avector  = self.inverseATA( Avector )
         Avector  = self.TA( Avector )
         return ( vector - vector )
 

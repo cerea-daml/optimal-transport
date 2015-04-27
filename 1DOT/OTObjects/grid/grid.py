@@ -171,7 +171,7 @@ class StaggeredField( Field ):
     def divergence(self):
         div = ( self.N*( self.m[1:self.N+2,:] - self.m[0:self.N+1,:] ) +
                 self.P*( self.f[:,1:self.P+2] - self.f[:,0:self.P+1]  ) )
-        return Divergence( N , P , div )
+        return Divergence( self.N , self.P , div )
 
     # Boundary function
     # DivBound function
@@ -243,15 +243,15 @@ class Divergence( oto.OTObject ):
     random = staticmethod(random)
 
     def Tdivergence(self):
-        m = np.zeros(shape=(N+2,P+1))
+        m = np.zeros(shape=(self.N+2,self.P+1))
         m[0:self.N+1,:] = -self.N*self.div[0:self.N+1,:]
         m[1:self.N+2,:] += self.N*self.div[0:self.N+1,:]
 
-        f = np.zeros(shape=(N+1,P+2))
+        f = np.zeros(shape=(self.N+1,self.P+2))
         f[:,0:self.P+1] = -self.P*self.div[:,0:self.P+1]
         f[:,1:self.P+2] += self.P*self.div[:,0:self.P+1]
 
-        return StaggeredField( N, P,
+        return StaggeredField( self.N, self.P,
                                m, f )
 
     def __add__(self, other):
