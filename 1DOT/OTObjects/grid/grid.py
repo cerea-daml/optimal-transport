@@ -278,6 +278,9 @@ class Divergence( oto.OTObject ):
         return StaggeredField( self.N, self.P,
                                m, f )
 
+    def sum(self):
+        return self.div.sum()
+
     def __add__(self, other):
         if isinstance(other,Divergence):
             return Divergence( self.N , self.P ,
@@ -416,6 +419,9 @@ class TemporalBoundaries( oto.OTObject ):
 
         return StaggeredField( N, P,
                                m, f )
+
+    def massDefault(self):
+        return ( self.P * ( self.bt0 - self.bt1 ) )
 
     def __add__(self, other):
         if isinstance(other,TemporalBoundaries):
@@ -561,6 +567,9 @@ class SpatialBoundaries( oto.OTObject ):
         return StaggeredField( N, P,
                                m, f )
 
+    def massDefault(self):
+        return ( self.N * ( self.bx0 - self.bx1 ) )
+
     def __add__(self, other):
         if isinstance(other,SpatialBoundaries):
             return SpatialBoundaries( self.N , self.P ,
@@ -697,6 +706,9 @@ class Boundaries( oto.OTObject ):
         return Boundaries( N , P ,
                            TemporalBoundaries.random(N,P) , spatialBoundaries.random(N,P) )
     random = staticmethod(random)
+
+    def massDefault(self):
+        return ( self.temporalBoundaries.massDefault() + self.spatialBoundaries.massDefault() )
 
     def __add__(self, other):
         if isinstance(other,Boundaries):
@@ -841,6 +853,27 @@ class DivergenceBoundaries( oto.OTObject ):
         self.boundaries.spatialBoundaries.bx1  -= self.N*self.divergence.div[self.N,:]
         self.boundaries.temporalBoundaries.bt0 += self.P*self.divergence.div[:,0]
         self.boundaries.temporalBoundaries.bt1 -= self.P*self.divergence.div[:,self.P]
+
+    def massDefault(self):
+        return ( self.divergence.massDefault() +
+                 self.boundaries.massDefault() )
+
+    def correctMassDefault(self, EPS):
+        deltaM = self.massDefault()
+
+        if abs(deltaM) > EPS:
+            nbrPts = ( (self.N+1.)*(self.P+1.) +
+                       2.*(self.P+1.) +
+                       2.*(self.N+1.) )
+
+            self.divergence -= deltaM / nbrPts
+            self.boundaries.spatialBoundaries.bx0 -= deltaM / ( self.N * nbrPts )
+            self.boundaries.spatialBoundaries.bx1 += deltaM / ( self.N * nbrPts )
+            self.boundaries.spatialBoundaries.bt0 -= deltaM / ( self.P * nbrPts )
+            self.boundaries.spatialBoundaries.bt1 += deltaM / ( self.P * nbrPts )
+
+            deltaM = self.massDefault()
+        return deltaM
 
     def random( N , P ):
         return DivergenceBoundaries( N , P ,
