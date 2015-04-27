@@ -1328,6 +1328,12 @@ class StaggeredCenteredField( oto.OTObject ):
     def interpolationError(self):
         return ( self.centeredField - self.staggeredField.interpolation() )
 
+    def interpolationErrorBoundaries(self):
+        centeredField = self.centeredField - self.staggeredField.interpolation()
+        boundaries    = self.staggeredField.boundaries()
+        return CenteredFieldBoundaries(self.N, self.P, 
+                                       centeredField, boundaries) 
+
     def random( N , P ):
         return StaggeredCenteredField( N , P ,
                                        StaggeredField.random(N,P) , CenteredField.random(N,P) )
@@ -1438,4 +1444,147 @@ class StaggeredCenteredField( oto.OTObject ):
     def copy(self):
         return StaggeredCenteredField( self.N , self.P ,
                                        self.staggeredField.copy() , self.centeredField.copy() )
+
+#__________________________________________________
+
+class CenteredFieldBoundaries( oto.OTObject ):
+    '''
+    class to store a centered field and boundary conditions
+    '''
+
+    def __init__( self ,
+                  N , P ,
+                  centeredField , boundaries ):
+        OTObject.__init__( self ,
+                           N , P )
+        if centeredField is None:
+            self.centeredField = CenteredField(N,P)
+        else:
+            self.centeredField = centeredField
+
+        if boundaries is None:
+            self.boundaries = Boundaries(N,P)
+        else:
+            self.boundaries = boundaries
+
+    def __repr__(self):
+        return 'Object representing a centered field and boundary conditions'
+
+    def TinterpolationErrorBoundaries(self):
+        scField  = self.centeredField.TinterpolationError()
+        scField += StaggeredCenteredField( self.N , self.P ,
+                                           self.boundaries.Tboundaries(),
+                                           self.centeredField )
+        return scField
+
+    def random( N , P ):
+        return CenteredFieldBoundaries( N , P ,
+                                        CenteredField.random(N,P) , Boundaries.random(N,P) )
+    random = staticmethod(random)
+
+    def LInftyNorm(self):
+        return np.max( [ self.centeredField.LInftyNorm() , self.boundaries.LInftyNorm() ] )
+
+    def __add__(self, other):
+        if isinstance(other,CenteredFieldBoundaries):
+            return CenteredFieldBoundaries( self.N , self.P ,
+                                            self.centeredField + other.centeredField , self.boundaries + other.boundaries )
+        else:
+            return CenteredFieldBoundaries( self.N , self.P ,
+                                            self.centeredField + other , self.boundaries + other )
+
+    def __sub__(self, other):
+        if isinstance(other,CenteredFieldBoundaries):
+            return CenteredFieldBoundaries( self.N , self.P ,
+                                            self.centeredField - other.centeredField , self.boundaries - other.boundaries )
+        else:
+            return CenteredFieldBoundaries( self.N , self.P ,
+                                            self.centeredField - other , self.boundaries - other )
+
+    def __mul__(self, other):
+        if isinstance(other,CenteredFieldBoundaries):
+            return CenteredFieldBoundaries( self.N , self.P ,
+                                            self.centeredField * other.centeredField , self.boundaries * other.boundaries )
+        else:
+            return CenteredFieldBoundaries( self.N , self.P ,
+                                            self.centeredField * other , self.boundaries * other )
+
+    def __div__(self, other):
+        if isinstance(other,CenteredFieldBoundaries):
+            return CenteredFieldBoundaries( self.N , self.P ,
+                                            self.centeredField / other.centeredField , self.boundaries / other.boundaries )
+        else:
+            return CenteredFieldBoundaries( self.N , self.P ,
+                                            self.centeredField / other , self.boundaries / other )
+
+    def __radd__(self, other):
+        return CenteredFieldBoundaries( self.N , self.P ,
+                                        other + self.centeredField , other + self.boundaries )
+
+    def __rsub__(self, other):
+        return CenteredFieldBoundaries( self.N , self.P ,
+                                        other - self.centeredField , other - self.boundaries )
+
+    def __rmul__(self, other):
+        return CenteredFieldBoundaries( self.N , self.P ,
+                                        other * self.centeredField , other * self.boundaries )
+
+    def __rdiv__(self, other):
+        return CenteredFieldBoundaries( self.N , self.P ,
+                                        other / self.centeredField , other / self.boundaries )
+
+    def __iadd__(self, other):
+        if isinstance(other,CenteredFieldBoundaries):
+            self.centeredField += other.centeredField
+            self.boundaries += other.boundaries
+            return self
+        else:
+            self.centeredField += other
+            self.boundaries += other
+            return self
+
+    def __isub__(self, other):
+        if isinstance(other,CenteredFieldBoundaries):
+            self.centeredField -= other.centeredField
+            self.boundaries -= other.boundaries
+            return self
+        else:
+            self.centeredField -= other
+            self.boundaries -= other
+            return self
+
+    def __imul__(self, other):
+        if isinstance(other,CenteredFieldBoundaries):
+            self.centeredField *= other.centeredField
+            self.boundaries *= other.boundaries
+            return self
+        else:
+            self.centeredField *= other
+            self.boundaries *= other
+            return self
+
+    def __idiv__(self, other):
+        if isinstance(other,CenteredFieldBoundaries):
+            self.centeredField /= other.centeredField
+            self.boundaries /= other.boundaries
+            return self
+        else:
+            self.centeredField /= other
+            self.boundaries /= other
+            return self
+
+    def __neg__(self):
+        return CenteredFieldBoundaries( self.N , self.P ,
+                                        - self.centeredField , - self.boundaries )
+
+    def __pos__(self):
+        return CenteredFieldBoundaries( self.N , self.P ,
+                                        + self.centeredField , + self.boundaries )
+
+    def __abs__(self):
+        return CenteredFieldBoundaries( self.N , self.P ,
+                                        abs ( self.centeredField ) , abs ( self.boundaries ) )
+    def copy(self):
+        return CenteredFieldBoundaries( self.N , self.P ,
+                                        self.centeredField.copy() , self.boundaries.copy() )
 
