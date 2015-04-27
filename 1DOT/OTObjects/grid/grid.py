@@ -161,11 +161,11 @@ class StaggeredField( Field ):
     random = staticmethod(random)
 
     def interpolation(self):
-        m = np.zeros(shape=(N+1,P+1))
+        m = np.zeros(shape=(self.N+1,self.P+1))
         m[:,:]           = 0.5*self.m[0:self.N+1,:]
         m[0:self.N+1,:] += 0.5*self.m[1:self.N+2,:]
 
-        f = np.zeros(shape=(N+1,P+1))
+        f = np.zeros(shape=(self.N+1,self.P+1))
         f[:,:]           = 0.5*self.f[:,0:self.P+1]
         f[:,0:self.P+1] += 0.5*self.f[:,1:self.P+2]
 
@@ -292,18 +292,18 @@ class CenteredField( Field ):
                  ( self.f > 0 ) / self.f ).sum()
 
     def Tinterpolation(self):
-        m = np.zeros(shape=(N+2,P+1))
+        m = np.zeros(shape=(self.N+2,self.P+1))
         m[0:self.N+1,:]  = 0.5*self.m[:,:]
         m[1:self.N+2,:] += 0.5*self.m[:,:]
 
-        f = np.zeros(shape=(N+1,P+2))
+        f = np.zeros(shape=(self.N+1,self.P+2))
         f[:,0:self.P+1]  = 0.5*self.f[:,:]
         f[:,1:self.P+2] += 0.5*self.f[:,:]
 
-        return StaggeredField( N, P,
+        return StaggeredField( self.N, self.P,
                                m, f )
 
-    def T_interpolationDefault(self):
+    def TinterpolationError(self):
         mu = np.zeros(shape=(self.N+2,self.P+1))
         fu = np.zeros(shape=(self.N+1,self.P+2))
 
@@ -1325,7 +1325,7 @@ class StaggeredCenteredField( oto.OTObject ):
     def __repr__(self):
         return 'Object representing a staggered and a centered field'
 
-    def interpolationDefault(self):
+    def interpolationError(self):
         return ( self.centeredField - self.staggeredField.interpolation() )
 
     def random( N , P ):
