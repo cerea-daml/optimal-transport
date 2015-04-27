@@ -193,9 +193,68 @@ class StaggeredField( Field ):
         return DivergenceBoundaries( self.N, self.P,
                                      self.divergence(), self.boundaries() )
 
-    # Boundary function
-    # DivBound function
-    # DivTempBound function
+    def __add__(self, other):
+        if isinstance(other,StaggeredField):
+            return StaggeredField( self.N , self.P ,
+                                   self.m + other.m , self.f + other.f )
+        else:
+            return StaggeredField( self.N , self.P ,
+                                   self.m + other , self.f + other )
+
+    def __sub__(self, other):
+        if isinstance(other,StaggeredField):
+            return StaggeredField( self.N , self.P ,
+                                   self.m - other.m , self.f - other.f )
+        else:
+            return StaggeredField( self.N , self.P ,
+                                   self.m - other , self.f - other )
+
+    def __mul__(self, other):
+        if isinstance(other,StaggeredField):
+            return StaggeredField( self.N , self.P ,
+                                   self.m * other.m , self.f * other.f )
+        else:
+            return StaggeredField( self.N , self.P ,
+                                   self.m * other , self.f * other )
+
+    def __div__(self, other):
+        if isinstance(other,StaggeredField):
+            return StaggeredField( self.N , self.P ,
+                                   self.m / other.m , self.f / other.f )
+        else:
+            return StaggeredField( self.N , self.P ,
+                                   self.m / other , self.f / other )
+
+    def __radd__(self, other):
+        return StaggeredField( self.N , self.P ,
+                               other + self.m , other + self.f )
+
+    def __rsub__(self, other):
+        return StaggeredField( self.N , self.P ,
+                               other - self.m , other - self.f )
+
+    def __rmul__(self, other):
+        return StaggeredField( self.N , self.P ,
+                               other * self.m , other * self.f )
+
+    def __rdiv__(self, other):
+        return StaggeredField( self.N , self.P ,
+                               other / self.m , other / self.f )
+
+    def __neg__(self):
+        return StaggeredField( self.N , self.P ,
+                               - self.m , - self.f )
+
+    def __pos__(self):
+        return StaggeredField( self.N , self.P ,
+                               + self.m , + self.f )
+
+    def __abs__(self):
+        return StaggeredField( self.N , self.P ,
+                               abs ( self.m ) , abs ( self.f ) )
+    def copy(self):
+        return StaggeredField( self.N , self.P ,
+                               self.m.copy() , self.f.copy() )
 
 #__________________________________________________
 
@@ -239,6 +298,69 @@ class CenteredField( Field ):
 
         return StaggeredField( N, P,
                                m, f )
+
+    def __add__(self, other):
+        if isinstance(other,CenteredField):
+            return CenteredField( self.N , self.P ,
+                                  self.m + other.m , self.f + other.f )
+        else:
+            return CenteredField( self.N , self.P ,
+                                  self.m + other , self.f + other )
+
+    def __sub__(self, other):
+        if isinstance(other,CenteredField):
+            return CenteredField( self.N , self.P ,
+                                  self.m - other.m , self.f - other.f )
+        else:
+            return CenteredField( self.N , self.P ,
+                                  self.m - other , self.f - other )
+
+    def __mul__(self, other):
+        if isinstance(other,CenteredField):
+            return CenteredField( self.N , self.P ,
+                                  self.m * other.m , self.f * other.f )
+        else:
+            return CenteredField( self.N , self.P ,
+                                  self.m * other , self.f * other )
+
+    def __div__(self, other):
+        if isinstance(other,CenteredField):
+            return CenteredField( self.N , self.P ,
+                                  self.m / other.m , self.f / other.f )
+        else:
+            return CenteredField( self.N , self.P ,
+                                  self.m / other , self.f / other )
+
+    def __radd__(self, other):
+        return CenteredField( self.N , self.P ,
+                              other + self.m , other + self.f )
+
+    def __rsub__(self, other):
+        return CenteredField( self.N , self.P ,
+                              other - self.m , other - self.f )
+
+    def __rmul__(self, other):
+        return CenteredField( self.N , self.P ,
+                              other * self.m , other * self.f )
+
+    def __rdiv__(self, other):
+        return CenteredField( self.N , self.P ,
+                              other / self.m , other / self.f )
+
+    def __neg__(self):
+        return CenteredField( self.N , self.P ,
+                              - self.m , - self.f )
+
+    def __pos__(self):
+        return CenteredField( self.N , self.P ,
+                              + self.m , + self.f )
+
+    def __abs__(self):
+        return CenteredField( self.N , self.P ,
+                              abs ( self.m ) , abs ( self.f ) )
+    def copy(self):
+        return CenteredField( self.N , self.P ,
+                              self.m.copy() , self.f.copy() )
 
 #__________________________________________________
 
@@ -408,20 +530,23 @@ class TemporalBoundaries( oto.OTObject ):
         bt1 = np.random.rand(N+1)
         return TemporalBoundaries( N , P ,
                                    bt0 , bt1 )
-    staticmethod(random)
+    random = staticmethod(random)
 
     def TtemporalBoundaries(self):
-        m = np.zeros(shape=(self.N+1,self.P+1))
+        m = np.zeros(shape=(self.N+2,self.P+1))
         f = np.zeros(shape=(self.N+1,self.P+2))
 
         f[:,0]        = self.bt0[:]
         f[:,self.P+1] = self.bt1[:]
 
-        return StaggeredField( N, P,
+        return StaggeredField( self.N, self.P,
                                m, f )
 
     def massDefault(self):
-        return ( self.P * ( self.bt0 - self.bt1 ) )
+        return ( self.P * ( self.bt0.sum() - self.bt1.sum() ) )
+
+    def LInftyNorm(self):
+        return np.max( [ abs(self.bt0).max() , abs(self.bt1).max() ] )
 
     def __add__(self, other):
         if isinstance(other,TemporalBoundaries):
@@ -564,11 +689,14 @@ class SpatialBoundaries( oto.OTObject ):
         m[0,:]        = self.bx0[:]
         m[self.N+1,:] = self.bx1[:]
 
-        return StaggeredField( N, P,
+        return StaggeredField( self.N, self.P,
                                m, f )
 
     def massDefault(self):
-        return ( self.N * ( self.bx0 - self.bx1 ) )
+        return ( self.N * ( self.bx0.sum() - self.bx1.sum() ) )
+
+    def LInftyNorm(self):
+        return np.max( [ abs(self.bx0).max() , abs(self.bx1).max() ] )
 
     def __add__(self, other):
         if isinstance(other,SpatialBoundaries):
@@ -689,7 +817,7 @@ class Boundaries( oto.OTObject ):
             self.temporalBoundaries = TemporalBoundaries( N , P )
         else:
             self.temporalBoundaries = temporalBoundaries
-        if self.spatialBoundaries is None:
+        if spatialBoundaries is None:
             self.spatialBoundaries = SpatialBoundaries( N , P )
         else:
             self.spatialBoundaries = spatialBoundaries
@@ -704,11 +832,14 @@ class Boundaries( oto.OTObject ):
 
     def random( N , P ):
         return Boundaries( N , P ,
-                           TemporalBoundaries.random(N,P) , spatialBoundaries.random(N,P) )
+                           TemporalBoundaries.random(N,P) , SpatialBoundaries.random(N,P) )
     random = staticmethod(random)
 
     def massDefault(self):
         return ( self.temporalBoundaries.massDefault() + self.spatialBoundaries.massDefault() )
+
+    def LInftyNorm(self):
+        return np.max( [ self.temporalBoundaries.LInftyNorm() , self.spatialBoundaries.LInftyNorm() ] )
 
     def __add__(self, other):
         if isinstance(other,Boundaries):
@@ -823,8 +954,8 @@ class DivergenceBoundaries( oto.OTObject ):
     def __init__( self ,
                   N , P ,
                   divergence=None , boundaries=None ):
-        OTObject.__init__( self ,
-                           N , P )
+        oto.OTObject.__init__( self ,
+                               N , P )
         if divergence is None:
             self.divergence = Divergence( N , P )
         else:
@@ -855,7 +986,7 @@ class DivergenceBoundaries( oto.OTObject ):
         self.boundaries.temporalBoundaries.bt1 -= self.P*self.divergence.div[:,self.P]
 
     def massDefault(self):
-        return ( self.divergence.massDefault() +
+        return ( self.divergence.sum() +
                  self.boundaries.massDefault() )
 
     def correctMassDefault(self, EPS):
@@ -867,10 +998,10 @@ class DivergenceBoundaries( oto.OTObject ):
                        2.*(self.N+1.) )
 
             self.divergence -= deltaM / nbrPts
-            self.boundaries.spatialBoundaries.bx0 -= deltaM / ( self.N * nbrPts )
-            self.boundaries.spatialBoundaries.bx1 += deltaM / ( self.N * nbrPts )
-            self.boundaries.spatialBoundaries.bt0 -= deltaM / ( self.P * nbrPts )
-            self.boundaries.spatialBoundaries.bt1 += deltaM / ( self.P * nbrPts )
+            self.boundaries.spatialBoundaries.bx0  -= deltaM / ( self.N * nbrPts )
+            self.boundaries.spatialBoundaries.bx1  += deltaM / ( self.N * nbrPts )
+            self.boundaries.temporalBoundaries.bt0 -= deltaM / ( self.P * nbrPts )
+            self.boundaries.temporalBoundaries.bt1 += deltaM / ( self.P * nbrPts )
 
             deltaM = self.massDefault()
         return deltaM
@@ -878,6 +1009,26 @@ class DivergenceBoundaries( oto.OTObject ):
     def random( N , P ):
         return DivergenceBoundaries( N , P ,
                                      Divergence.random(N,P) , Boundaries.random(N,P) )
+    random = staticmethod(random)
+
+    def ones( N , P ):
+        div =  np.ones(shape=(N+1,P+1))
+        bx0 =  N*np.ones(P+1)
+        bx1 = -N*np.ones(P+1)
+        bt0 =  P*np.ones(N+1)
+        bt1 = -P*np.ones(N+1)
+        return DivergenceBoundaries( N , P , 
+                                     Divergence( N , P ,
+                                                 div ) ,
+                                     Boundaries( N , P ,
+                                                 TemporalBoundaries( N , P ,
+                                                                     bt0 , bt1 ) ,
+                                                 SpatialBoundaries( N , P ,
+                                                                    bx0 , bx1 ) ) )
+    ones = staticmethod(ones)
+
+    def LInftyNorm(self):
+        return np.max( [ self.divergence.LInftyNorm() , self.boundaries.LInftyNorm() ] )
 
     def __add__(self, other):
         if isinstance(other,DivergenceBoundaries):

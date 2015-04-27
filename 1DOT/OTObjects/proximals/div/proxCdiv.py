@@ -60,23 +60,18 @@ class ProxCdiv( proj.Projector ):
     def test(self):
         div1 = grid.Divergence.random(self.N, self.P)
         e = 0.
-        t = 0.
 
         div2 = div1.copy()
-        time_start = tm.time()
         div2 = self.inverseATA(div2)
         div2 = self.ATA(div2)
-        t += tm.time() - time_start
         e += ( div1 - div2 ).LInftyNorm()
 
         div2 = div1.copy()
-        time_start = tm.time()
         div2 = self.ATA(div2)
         div2 = self.inverseATA(div2)
-        t += tm.time() - time_start
         e += ( div1 - div2 ).LInftyNorm()
 
-        return e, t
+        return e
 
     def timing(self,nTiming):
         t = 0.
