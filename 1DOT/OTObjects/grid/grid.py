@@ -181,6 +181,12 @@ class StaggeredField( Field ):
         return TemporalBoundaries( self.N, self.P,
                                    self.f[:,0], self.f[:,self.P+1] )
 
+    def temporalReservoirBoundaries(self):
+        trb = self.temporalBoundaries()
+        trb.bt1[0] = 0.
+        trb.bt1[self.N] = 0.
+        return trb
+
     def spatialBoundaries(self):
         return SpatialBoundaries( self.N, self.P,
                                   self.m[0,:], self.m[self.N+1,:] )
@@ -189,6 +195,10 @@ class StaggeredField( Field ):
         return Boundaries( self.N, self.P,
                            self.temporalBoundaries(), self.spatialBoundaries() )
 
+    def reservoirBoundaries(self):
+        return Boundaries( self.N, self.P,
+                           self.temporalReservoirBoundaries(), self.spatialBoundaries() )
+    
     def divergenceBoundaries(self):
         return DivergenceBoundaries( self.N, self.P,
                                      self.divergence(), self.boundaries() )
@@ -560,6 +570,16 @@ class TemporalBoundaries( oto.OTObject ):
         return StaggeredField( self.N, self.P,
                                m, f )
 
+    def TtemporalReservoirBoundaries(self):
+        m = np.zeros(shape=(self.N+2,self.P+1))
+        f = np.zeros(shape=(self.N+1,self.P+2))
+
+        f[:,0]               = self.bt0[:]
+        f[1:self.N,self.P+1] = self.bt1[1:self.N]
+
+        return StaggeredField( self.N, self.P,
+                               m, f )
+
     def massDefault(self):
         return ( self.P * ( self.bt0.sum() - self.bt1.sum() ) )
 
@@ -845,6 +865,11 @@ class Boundaries( oto.OTObject ):
 
     def Tboundaries(self):
         gridT = self.temporalBoundaries.TtemporalBoundaries()
+        gridS = self.spatialBoundaries.TspatialBoundaries()
+        return ( gridT + gridS )
+
+    def TreservoirBoundaries(self):
+        gridT = self.temporalBoundaries.TtemporalReservoirBoundaries()
         gridS = self.spatialBoundaries.TspatialBoundaries()
         return ( gridT + gridS )
 
@@ -1334,6 +1359,18 @@ class StaggeredCenteredField( oto.OTObject ):
         return CenteredFieldBoundaries(self.N, self.P, 
                                        centeredField, boundaries) 
 
+    def interpolationErrorReservoirBoundaries(self):
+        centeredField = self.centeredField - self.staggeredField.interpolation()
+        boundaries    = self.staggeredField.reservoirBoundaries()
+        return CenteredFieldBoundaries(self.N, self.P, 
+                                       centeredField, boundaries) 
+
+    def interpolationErrorTemporalBoundaries(self):
+        centeredField      = self.centeredField - self.staggeredField.interpolation()
+        temporalBoundaries = self.staggeredField.temporalBoundaries()
+        return CenteredFieldTemporalBoundaries(self.N, self.P, 
+                                               centeredField, temporalBoundaries) 
+
     def random( N , P ):
         return StaggeredCenteredField( N , P ,
                                        StaggeredField.random(N,P) , CenteredField.random(N,P) )
@@ -1454,9 +1491,11 @@ class CenteredFieldBoundaries( oto.OTObject ):
 
     def __init__( self ,
                   N , P ,
-                  centeredField , boundaries ):
+                  centeredField=None , boundaries=None ):
+
         oto.OTObject.__init__( self ,
                                N , P )
+
         if centeredField is None:
             self.centeredField = CenteredField(N,P)
         else:
@@ -1473,8 +1512,13 @@ class CenteredFieldBoundaries( oto.OTObject ):
     def TinterpolationErrorBoundaries(self):
         scField  = self.centeredField.TinterpolationError()
         scField += StaggeredCenteredField( self.N , self.P ,
-                                           self.boundaries.Tboundaries(),
-                                           self.centeredField )
+                                           self.boundaries.Tboundaries() )
+        return scField
+
+    def TinterpolationErrorReservoirBoundaries(self):
+        scField  = self.centeredField.TinterpolationError()
+        scField += StaggeredCenteredField( self.N , self.P ,
+                                           self.boundaries.TreservoirBoundaries() )
         return scField
 
     def random( N , P ):
@@ -1587,4 +1631,146 @@ class CenteredFieldBoundaries( oto.OTObject ):
     def copy(self):
         return CenteredFieldBoundaries( self.N , self.P ,
                                         self.centeredField.copy() , self.boundaries.copy() )
+
+#__________________________________________________
+
+class CenteredFieldTemporalBoundaries( oto.OTObject ):
+    '''
+    class to store a centered field and temporal boundary conditions
+    '''
+
+    def __init__( self ,
+                  N , P ,
+                  centeredField=None , temporalBoundaries=None ):
+        oto.OTObject.__init__( self ,
+                               N , P )
+        if centeredField is None:
+            self.centeredField = CenteredField( N , P )
+        else:
+            self.centeredField = centeredField
+
+        if temporalBoundaries is None:
+            self.temporalBoundaries = TemporalBoundaries( N , P )
+        else:
+            self.temporalBoundaries = temporalBoundaries
+
+    def __repr__(self):
+        return 'Object representing a centered field and temporal boundary conditions'
+
+    def TinterpolationErrorTemporalBoundaries(self):
+        scField  = self.centeredField.TinterpolationError()
+        scField += StaggeredCenteredField( self.N , self.P ,
+                                           self.temporalBoundaries.TtemporalBoundaries() )
+        return scField
+
+    def random( N , P ):
+        return CenteredFieldTemporalBoundaries( N , P ,
+                                                CenteredField.random(N,P) , TemporalBoundaries.random(N,P) )
+    random = staticmethod(random)
+
+    def LInftyNorm(self):
+        return np.max( [ self.centeredField.LInftyNorm() , self.temporalBoundaries.LInftyNorm() ] )
+
+    def __add__(self, other):
+        if isinstance(other,CenteredFieldTemporalBoundaries):
+            return CenteredFieldTemporalBoundaries( self.N , self.P ,
+                                                    self.centeredField + other.centeredField , self.temporalBoundaries + other.temporalBoundaries )
+        else:
+            return CenteredFieldTemporalBoundaries( self.N , self.P ,
+                                                    self.centeredField + other , self.temporalBoundaries + other )
+
+    def __sub__(self, other):
+        if isinstance(other,CenteredFieldTemporalBoundaries):
+            return CenteredFieldTemporalBoundaries( self.N , self.P ,
+                                                    self.centeredField - other.centeredField , self.temporalBoundaries - other.temporalBoundaries )
+        else:
+            return CenteredFieldTemporalBoundaries( self.N , self.P ,
+                                                    self.centeredField - other , self.temporalBoundaries - other )
+
+    def __mul__(self, other):
+        if isinstance(other,CenteredFieldTemporalBoundaries):
+            return CenteredFieldTemporalBoundaries( self.N , self.P ,
+                                                    self.centeredField * other.centeredField , self.temporalBoundaries * other.temporalBoundaries )
+        else:
+            return CenteredFieldTemporalBoundaries( self.N , self.P ,
+                                                    self.centeredField * other , self.temporalBoundaries * other )
+
+    def __div__(self, other):
+        if isinstance(other,CenteredFieldTemporalBoundaries):
+            return CenteredFieldTemporalBoundaries( self.N , self.P ,
+                                                    self.centeredField / other.centeredField , self.temporalBoundaries / other.temporalBoundaries )
+        else:
+            return CenteredFieldTemporalBoundaries( self.N , self.P ,
+                                                    self.centeredField / other , self.temporalBoundaries / other )
+
+    def __radd__(self, other):
+        return CenteredFieldTemporalBoundaries( self.N , self.P ,
+                                                other + self.centeredField , other + self.temporalBoundaries )
+
+    def __rsub__(self, other):
+        return CenteredFieldTemporalBoundaries( self.N , self.P ,
+                                                other - self.centeredField , other - self.temporalBoundaries )
+
+    def __rmul__(self, other):
+        return CenteredFieldTemporalBoundaries( self.N , self.P ,
+                                                other * self.centeredField , other * self.temporalBoundaries )
+
+    def __rdiv__(self, other):
+        return CenteredFieldTemporalBoundaries( self.N , self.P ,
+                                                other / self.centeredField , other / self.temporalBoundaries )
+
+    def __iadd__(self, other):
+        if isinstance(other,CenteredFieldTemporalBoundaries):
+            self.centeredField += other.centeredField
+            self.temporalBoundaries += other.temporalBoundaries
+            return self
+        else:
+            self.centeredField += other
+            self.temporalBoundaries += other
+            return self
+
+    def __isub__(self, other):
+        if isinstance(other,CenteredFieldTemporalBoundaries):
+            self.centeredField -= other.centeredField
+            self.temporalBoundaries -= other.temporalBoundaries
+            return self
+        else:
+            self.centeredField -= other
+            self.temporalBoundaries -= other
+            return self
+
+    def __imul__(self, other):
+        if isinstance(other,CenteredFieldTemporalBoundaries):
+            self.centeredField *= other.centeredField
+            self.temporalBoundaries *= other.temporalBoundaries
+            return self
+        else:
+            self.centeredField *= other
+            self.temporalBoundaries *= other
+            return self
+
+    def __idiv__(self, other):
+        if isinstance(other,CenteredFieldTemporalBoundaries):
+            self.centeredField /= other.centeredField
+            self.temporalBoundaries /= other.temporalBoundaries
+            return self
+        else:
+            self.centeredField /= other
+            self.temporalBoundaries /= other
+            return self
+
+    def __neg__(self):
+        return CenteredFieldTemporalBoundaries( self.N , self.P ,
+                                                - self.centeredField , - self.temporalBoundaries )
+
+    def __pos__(self):
+        return CenteredFieldTemporalBoundaries( self.N , self.P ,
+                                                + self.centeredField , + self.temporalBoundaries )
+
+    def __abs__(self):
+        return CenteredFieldTemporalBoundaries( self.N , self.P ,
+                                                abs ( self.centeredField ) , abs ( self.temporalBoundaries ) )
+    def copy(self):
+        return CenteredFieldTemporalBoundaries( self.N , self.P ,
+                                                self.centeredField.copy() , self.temporalBoundaries.copy() )
 

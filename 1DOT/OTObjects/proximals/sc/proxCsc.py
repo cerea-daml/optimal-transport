@@ -7,7 +7,6 @@
 
 import time as tm
 import numpy as np
-import scipy.fftpack as fft
 from .. import projector as proj
 from ...grid import grid
 
