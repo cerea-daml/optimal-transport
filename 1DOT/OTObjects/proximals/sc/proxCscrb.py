@@ -122,6 +122,65 @@ class ProxCscrb( proj.Projector ):
 
         return cFieldrb
 
+    def inverseATAV2(self, cFieldrb, alpha=0.5):
+        m = np.zeros(shape=(self.N+3,self.P+1))
+        m[0,:]          = cFieldrb.boundaries.spatialBoundaries.bx0[:]
+        m[1:self.N+2,:] = cFieldrb.centeredField.m[0:self.N+1,:]
+        m[self.N+2,:]   = cFieldrb.boundaries.spatialBoundaries.bx1[:]
+        m = np.tensordot( self.inverseATAm , m , ([1],[0]) )
+
+        f = np.zeros(shape=(self.N+1,self.P+3))
+        f[:,0] = cFieldrb.boundaries.temporalBoundaries.bt0[:]
+        f[:,1:self.P+2] = cFieldrb.centeredField.f[:,0:self.P+1]
+        f[:,self.P+2] = cFieldrb.boundaries.temporalBoundaries.bt1[:]
+        f[0,self.P+2] = -alpha * f[0,self.P+1]
+        f[self.N,self.P+2] = -alpha * f[self.N,self.P+1]
+
+        f = np.tensordot( self.inverseATAf , f , ([1],[1]) ).transpose()
+
+        cFieldrb.centeredField.m                   = m[1:self.N+2,:]
+        cFieldrb.centeredField.f                   = f[:,1:self.P+2]
+        cFieldrb.boundaries.spatialBoundaries.bx0  = m[0,:]
+        cFieldrb.boundaries.spatialBoundaries.bx1  = m[self.N+2,:]
+        cFieldrb.boundaries.temporalBoundaries.bt0 = f[:,0]
+        cFieldrb.boundaries.temporalBoundaries.bt1 = f[:,self.P+2]
+
+        return cFieldrb
+
+    def bigTest(self,down,up,n1,n2):
+        alpha = np.linspace(down,up,n1)
+        res   = np.zeros(n1)
+        for i in xrange(n1):
+            if np.mod(i,100)==0:
+                print 'i=',i,'/',n1
+            for j in xrange(n2):
+                field1 = grid.CenteredFieldBoundaries.random(self.N , self.P)
+                field2 = field1.copy()
+                res[i] += ( self.inverseATAV2(field2,alpha[i]) - self.inverseATA(field1) ).LInftyNorm()
+        return res/n2,alpha
+
+    def timingV2(self,n):
+        t0 = 0.
+        t1 = 0.
+
+        for i in xrange(n):
+            field1 = grid.CenteredFieldBoundaries.random(self.N , self.P)
+            field2 = field1.copy()
+            time_start = tm.time()
+            self.inverseATAV2(field1)
+            time0 = tm.time()
+            self.inverseATA(field2)
+            time1 = tm.time()
+            t0 += time0-time_start
+            t1 += time1-time0
+        return t0,t1
+
+    def testV2(self):
+        field1 = grid.CenteredFieldBoundaries.random(self.N , self.P)
+        field2 = field1.copy()
+        return ( self.inverseATAV2(field2) , self.inverseATA(field1) )
+        #return ( self.inverseATA_V2(field2) - self.inverseATA(field1) ).LInftyNorm() 
+
     def test(self):
         field1 = grid.CenteredFieldBoundaries.random(self.N , self.P)
         field1.boundaries.temporalBoundaries.bt1[0]      = 0.
