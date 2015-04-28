@@ -71,12 +71,12 @@ def boundariesFromFile(fileNames):
     m0[0:bx0.size] = bx0[:]
     m1[0:bx1.size] = bx1[:]
 
-    temporalBoundaries = TemporalBoundaries( N , P ,
-                                             f0 , f1 )
-    spatialBoundaries = SpatialBoundaries( N , P ,
-                                           m0 , m1 )
-    boundaries = Boundaries( N , P ,
-                             temporalBoundaries, spatialBoundaries )
+    temporalBoundaries = grid.TemporalBoundaries( N , P ,
+                                                  f0 , f1 )
+    spatialBoundaries = grid.SpatialBoundaries( N , P ,
+                                                m0 , m1 )
+    boundaries = grid.Boundaries( N , P ,
+                                  temporalBoundaries, spatialBoundaries )
 
     return boundaries
 
@@ -97,9 +97,9 @@ def boundariesForConfig(config):
     config.boundaries.normalize(config.normType)
 
     if config.dynamics == 1:
-        config.boundaries.spatialBoundaries = SpatialBoundaries( config.N , config.P )
+        config.boundaries.spatialBoundaries = grid.SpatialBoundaries( config.N , config.P )
     elif config.dynamics == 2 or config.dynamics == 3:
-        config.boundaries.spatialBoundaries = SpatialBoundaries( config.N , config.P )
+        config.boundaries.spatialBoundaries = grid.SpatialBoundaries( config.N , config.P )
         config.boundaries.placeReservoir()
 
 
