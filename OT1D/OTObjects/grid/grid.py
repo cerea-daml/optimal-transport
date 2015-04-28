@@ -597,6 +597,11 @@ class TemporalBoundaries( oto.OTObject ):
     def LInftyNorm(self):
         return np.max( [ abs(self.bt0).max() , abs(self.bt1).max() ] )
 
+    def swap(self):
+        btswap = self.bt1.copy() 
+        self.bt1 = self.bt0.copy()
+        self.bt0 = btswap
+        
     def __add__(self, other):
         if isinstance(other,TemporalBoundaries):
             return TemporalBoundaries( self.N , self.P ,
@@ -894,6 +899,33 @@ class Boundaries( oto.OTObject ):
 
     def LInftyNorm(self):
         return np.max( [ self.temporalBoundaries.LInftyNorm() , self.spatialBoundaries.LInftyNorm() ] )
+
+    def placeReservoir(self):
+        self.spatialBoundaries = SpatialBoundaries(self.N,self.P)
+
+        self.temporalBoundaries.bt0[0]      = 0.
+        self.temporalBoundaries.bt0[self.N] = 0.
+
+        self.temporalBoundaries.bt1[0]      = 0.
+        self.temporalBoundaries.bt1[self.N] = 0.
+
+        if self.massDefault() < 0:
+            self.temporalBoundaries.swap()
+
+    def normalize(self, normType):
+        mInit = ( P * self.temporalBoundaries.bt0.sum() +
+                  N * ( self.spatialBoundaries.bx0.sum() - self.spatialBoundaries.bx1.sum() ) )
+
+        mFinal = P * self.temporalBoundaries.bt1.sum()
+
+        if normType == 0:
+            # correct mass default by rescaling f1
+            self.temporalBoundaries.bt1 *= ( mInit / mFinal )
+
+        elif normType == 1:
+            # mass exits leftward and rightward
+            self.bx0 += 0.5 * ( m_final - m_init ) / ( self.N * ( self.P + 1 ) )
+            self.bx1 -= 0.5 * ( m_final - m_init ) / ( self.N * ( self.P + 1 ) )
 
     def __add__(self, other):
         if isinstance(other,Boundaries):
