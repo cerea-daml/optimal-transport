@@ -7,6 +7,7 @@
 
 import numpy as np
 from .. import OTObject as oto
+from ...utils import cardan
 
 #__________________________________________________
 
@@ -300,6 +301,16 @@ class CenteredField( Field ):
     def functionalJ(self):
         return ( ( self.m * self.m ) *
                  ( self.f > 0 ) / self.f ).sum()
+
+    def proximalJ(self, gamma):
+        unity = np.ones(shape=self.f.shape)
+        fstar = cardan.maxRoot( unity,
+                                2*gamma-self.f,
+                                gamma**2-2*gamma*self.f,
+                                -(gamma**2*self.f+0.5*gamma*(self.m*self.m)) )
+        denom = (fstar+gamma)*(fstar>0) + (1.-(fstar>0))
+        m = ((fstar*self.m)/(denom))*(fstar>0)+0.
+        return CenteredField(self.N, self.P, m, fstar)
 
     def Tinterpolation(self):
         m = np.zeros(shape=(self.N+2,self.P+1))
