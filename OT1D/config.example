@@ -1,0 +1,55 @@
+#__________________________________________________
+# Example of configuration file
+#__________________________________________________
+
+#__________________________________________________
+# Tolerance value for testings 
+EPSILON = 1.e-8
+
+#__________________________________________________
+# Output directory
+outputDir = ./
+
+#__________________________________________________
+# Dynamics / Boundaries parameters
+
+# N and P are only required if you choose a default configuration
+N = 32
+P = 32
+
+# dynamics type
+# 0 -> normal dynamics (requires spatial boundary conditions)
+# 1 -> no spatial boundary conditions
+# 2 -> normal dynamics with a reservoir (for adr)
+# 3 -> normal dynamics with a reservoir (for adr3)
+dynamics = 0
+
+# boundary type
+# 0 -> from file (requires existing files)
+# 1 to 6 -> default configuration (see init/ for more information)
+boundaryType = 1
+
+# normalization
+# -1 -> no normalization
+#  0 -> correct mass default by rescaling f1
+#  1 -> correct mass default by making mass exiting leftward and rightward
+normType = 0
+
+#__________________________________________________
+# Files for boundaryType = 0
+filef0 = f0.bin
+filef1 = f1.bin
+filem0 = m0.bin
+filem1 = m1.bin
+
+#__________________________________________________
+# Algorithm parameters
+
+algoName = adr
+iterTarget = 10000
+nModPrint = 500
+nModWrite = 500
+
+# for adr algorithm
+gamma = 0.013333333
+alpha = 1.998

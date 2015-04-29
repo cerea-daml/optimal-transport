@@ -48,7 +48,7 @@ class Configuration:
                 print('file for m1 :'+str(self.filem1))
 
         print('algoName :'+str(self.algoName))
-        print('iterTarge :'+str(self.iterTarget))
+        print('iterTarget :'+str(self.iterTarget))
         print('nModPrint :'+str(self.nModPrint))
         print('nModWrite :'+str(self.nModWrite))
 
