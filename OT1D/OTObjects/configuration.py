@@ -6,7 +6,10 @@
 #
 
 import pickle as pck
-from boundaries/defineBoundaries import boundariesForConfig
+
+from boundaries.defineBoundaries import boundariesForConfig
+
+from adr.adrAlgorithm import AdrAlgorithm
 
 class Configuration:
     '''
@@ -16,7 +19,47 @@ class Configuration:
     def __init__(self, configFile=None):
 
         self.fromfile(configFile)
+        self.default()
+        self.iterCount = 0
+        boundariesForConfig(self)
 
+    def algorithm(self):
+        if self.algoName == 'adr':
+            return AdrAlgorithm(config)
+
+        else:
+            return
+
+    def printConfig(self):
+        print('EPSILON :'+str(self.EPSILON))
+        print('outputDir :'+self.outputDir)
+        print('N :'+str(self.N))
+        print('P :'+str(self.P))
+        print('dynamics :'+str(self.dynamics))
+        print('boundaryType :'+str(self.boundaryType))
+        print('normType :'+str(self.normType))
+
+        if self.boundaryType == 0:
+            print('file for f0 :'+str(self.filef0))
+            print('file for f1 :'+str(self.filef1))
+
+            if self.dynamics == 0:
+                print('file for m0 :'+str(self.filem0))
+                print('file for m1 :'+str(self.filem1))
+
+        print('algoName :'+str(self.algoName))
+        print('iterTarge :'+str(self.iterTarget))
+        print('nModPrint :'+str(self.nModPrint))
+        print('nModWrite :'+str(self.nModWrite))
+
+        if self.algoName == 'adr':
+            print('gamma :'+str(self.gamma))
+            print('alpha :'+str(self.alpha))
+
+        else:
+            pass
+
+    def default(self):
         try:
             self.EPSILON
         except:
@@ -139,8 +182,6 @@ class Configuration:
 
         else:
             self.gamma = 1./75.
-
-        self.iterCount = 0
 
     def fromfile(self, fileName):
         if ('config.bin' in fileName):
