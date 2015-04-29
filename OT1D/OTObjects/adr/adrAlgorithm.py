@@ -7,9 +7,6 @@
 # config must define :
 #   * N
 #   * P
-#   * proxCdiv
-#   * proxJ
-#   * prosCsc
 #   * alpha
 #   * outputDir
 #
@@ -22,6 +19,7 @@ import time as tm
 from .. import OTObject as oto
 from ..grid import grid
 from ..init.initialFields import initialStaggeredCenteredField
+from ..proximals.defineProximals import proximalForConfig
 
 from adrState import AdrState
 from adrStep import AdrStep
@@ -35,8 +33,10 @@ class AdrAlgorithm( oto.OTObject ):
     def __init__(self, config):
         self.config = config
         oto.OTObject.__init__(self, config.N , config.P)
-        prox1 = Prox1Adr( config.N, config.P, config.proxCdiv, config.proxJ)
-        self.stepFunction = AdrStep(prox1, config.prosCsc, config.alpha)
+        
+        proxCdiv,proxCsc,proxJ,proxCb = proximalForConfig(self.config)
+        prox1 = Prox1Adr( config.N, config.P, proxCdiv, proxJ)
+        self.stepFunction = AdrStep(prox1, prosCsc, config.alpha)
         self.initialize()
         
     def __repr__(self):
