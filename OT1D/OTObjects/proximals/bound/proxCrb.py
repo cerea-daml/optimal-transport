@@ -60,7 +60,7 @@ class ProxCrb( proj.Projector ):
         diff.temporalBoundaries.bt0[self.N] = 0.
         diff.temporalBoundaries.bt1[self.N] = 0.
         
-        return ( diff.LInftyNorm() + abs( field.boundaries.massDefault() - self.massDefault ) )
+        return ( diff.LInftyNorm() + abs( field.boundaries().massDefault() - self.massDefault ) )
 
     def timing(self,nTiming,overwrite=True):
         t = 0.

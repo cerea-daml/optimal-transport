@@ -84,4 +84,42 @@ def proximalForConfig(config):
 
     return proxCdiv,proxCsc,proxJ,proxCb
 
+def testProximals(N, P, nTest):
 
+    print('Testing proximal operators...')
+    print('N     = '+str(N))
+    print('P     = '+str(P))
+    print('nTest = '+str(nTest))
+
+    print('__________________________________________________')
+    print('Testing ProxCb...')
+    kernel = grid.Boundaries.random(N,P)
+    prox   = ProxCb(N,P,kernel)
+    e = 0.
+    for i in xrange(nTest):
+        e += prox.test()
+    t = prox.timing(nTest,overwrite=False)
+    print('mean error = '+str(e/nTest))
+    print('timing     : '+str(t))
+
+    print('__________________________________________________')
+    print('Testing ProxCtb...')
+    kernel = grid.TemporalBoundaries.random(N,P)
+    prox   = ProxCtb(N,P,kernel)
+    e = 0.
+    for i in xrange(nTest):
+        e += prox.test()
+    t = prox.timing(nTest,overwrite=False)
+    print('mean error = '+str(e/nTest))
+    print('timing     : '+str(t))
+
+    print('__________________________________________________')
+    print('Testing ProxCrb...')
+    kernel = grid.Boundaries.random(N,P)
+    prox   = ProxCrb(N,P,kernel)
+    e = 0.
+    for i in xrange(nTest):
+        e += prox.test()
+    t = prox.timing(nTest,overwrite=False)
+    print('mean error = '+str(e/nTest))
+    print('timing     : '+str(t))
