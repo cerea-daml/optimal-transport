@@ -9,6 +9,7 @@
 #     * dynamics
 #     * boundaryType
 #     * normType
+#     * EPSILON
 #
 # Function boundariesFromFile returns boundary conditions from files
 #
@@ -21,6 +22,67 @@ from gaussianSplit import defaultBoundaryGaussianSplit1
 from gaussianSplit import defaultBoundaryGaussianSplit2
 from gaussianSine import defaultBoundaryGaussianSine
 from gaussianSine import defaultBoundaryGaussianCosine
+
+def boundariesForConfig(config):
+    # default configurations
+    if config.boundaryType == 1:
+        config.boundaries = defaultBoundaryGaussian( config.N , config.P )
+    elif config.boundaryType == 2:
+        config.boundaries = defaultBoundaryGaussian2( config.N , config.P )
+    elif config.boundaryType == 3:
+        config.boundaries = defaultBoundaryGaussianSplit1( config.N , config.P )
+    elif config.boundaryType == 4:
+        config.boundaries = defaultBoundaryGaussianSplit2( config.N , config.P )
+    elif config.boundaryType == 5:
+        config.boundaries = defaultBoundaryGaussianSine( config.N , config.P )
+    elif config.boundaryType == 6:
+        config.boundaries = defaultBoundaryGaussianCosine( config.N , config.P )
+
+    # from file
+    elif config.boundaryType == 0:
+        files = [ config.filef0 , config.filef1 ]
+        if config.dynamics == 0:
+            files.append( config.filem0 )
+            files.append( config.filem1 )
+        boundaries = boundariesFromFile(files)
+        config.boundaries = boundaries
+        config.N = config.boundaries.N
+        config.P = config.boundaries.P
+
+    # normalize boundaries
+    config.boundaries.normalize(config.normType)
+
+    # adapt boundaries to dynamics
+    if config.dynamics == 0:
+        delta = config.boundaries.massDefault()
+        if delta > config.EPSILON:
+            print ('Changing dynamics because mass default is not compatible with dynamics=0.')
+
+            if config.algoName == 'pd':
+                config.dynamics = 1
+            else:
+                N = config.N
+                bt0 = np.zeros(N+1+2)
+                bt1 = np.zeros(N+1+2)
+                bt0[1:N+2] = config.boundaries.temporalBoundaries.bt0[:]
+                bt1[1:N+2] = config.boundaries.temporalBoundaries.bt1[:]
+                temporalBoundaries = TemporalBoundaries( N+2, config.P, bt0, bt1 )
+                spatialBoundaries  = config.boundaries.spatialBoundaries.copy()
+                spatialBoundaries.N = N+2
+
+                config.boundaries = Boundaries( N+2 , config.P , temporalBoundaries , spatialBoundaries )
+                config.N = N+2
+                
+                if config.algoName == 'adr':
+                    config.dynamics = 2
+                elif config.algoName == 'adr3':
+                    config.dynamics = 3
+
+    if config.dynamics == 1:
+        config.boundaries.spatialBoundaries = grid.SpatialBoundaries( config.N , config.P )
+    elif config.dynamics == 2 or config.dynamics == 3:
+        config.boundaries.spatialBoundaries = grid.SpatialBoundaries( config.N , config.P )
+        config.boundaries.placeReservoir()
 
 def extensionOfFile(fileName):
     if not '.' in fileName:
@@ -79,28 +141,3 @@ def boundariesFromFile(fileNames):
                                   temporalBoundaries, spatialBoundaries )
 
     return boundaries
-
-def boundariesForConfig(config):
-    if config.boundaryType == 1:
-        config.boundaries = defaultBoundaryGaussian( config.N , config.P )
-    elif config.boundaryType == 2:
-        config.boundaries = defaultBoundaryGaussian2( config.N , config.P )
-    elif config.boundaryType == 3:
-        config.boundaries = defaultBoundaryGaussianSplit1( config.N , config.P )
-    elif config.boundaryType == 4:
-        config.boundaries = defaultBoundaryGaussianSplit2( config.N , config.P )
-    elif config.boundaryType == 5:
-        config.boundaries = defaultBoundaryGaussianSine( config.N , config.P )
-    elif config.boundaryType == 6:
-        config.boundaries = defaultBoundaryGaussianCosine( config.N , config.P )
-
-    config.boundaries.normalize(config.normType)
-
-    if config.dynamics == 1:
-        config.boundaries.spatialBoundaries = grid.SpatialBoundaries( config.N , config.P )
-    elif config.dynamics == 2 or config.dynamics == 3:
-        config.boundaries.spatialBoundaries = grid.SpatialBoundaries( config.N , config.P )
-        config.boundaries.placeReservoir()
-
-
-

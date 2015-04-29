@@ -50,18 +50,12 @@ class AdrAlgorithm( oto.OTObject ):
 
     def saveState(self):
         fileConfig   = self.config.outputDir + 'config.bin'
-        fileBoundary = self.config.outputDir + 'boundary.init'
         fileState    = self.config.outputDir + 'finalState.bin'
         fileRunCount = self.config.outputDir + 'runCount.bin'
 
         f = open(fileConfig, 'ab')
         p = pck.Pickler(f)
         p.dump(self.config)
-        f.close()
-
-        f = open(fileBoundary, 'wb')
-        p = pck.Pickler(f)
-        p.dump(self.boundary)
         f.close()
 
         f = open(fileState, 'wb')
