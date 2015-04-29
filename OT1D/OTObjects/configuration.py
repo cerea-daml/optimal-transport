@@ -209,52 +209,52 @@ class Configuration:
         for line in filteredLines:
             if ('outputDir:' in line):
                 try:
-                    self.outputDir = line.split(':')[1]
+                    self.outputDir = line.split('=')[1]
             elif ('EPSILON:' in line):
                 try:
-                    self.EPSILON = float(line.split(':')[1])
+                    self.EPSILON = float(line.split('=')[1])
             elif ('N:' in line):
                 try:
-                    self.N = int(line.split(':')[1])
+                    self.N = int(line.split('=')[1])
             elif ('P:' in line):
                 try:
-                    self.P = int(line.split(':')[1])
+                    self.P = int(line.split('=')[1])
             elif ('dynamics:' in line):
                 try:
-                    self.dynamics = int(line.split(':')[1])
+                    self.dynamics = int(line.split('=')[1])
             elif ('boundaryType:' in line):
                 try:
-                    self.boundaryType = int(line.split(':')[1])
+                    self.boundaryType = int(line.split('=')[1])
             elif ('normType:' in line):
                 try:
-                    self.normType = int(line.split(':')[1])
+                    self.normType = int(line.split('=')[1])
             elif ('filef0:' in line):
                 try:
-                    self.filef0 = line.split(':')[1]
+                    self.filef0 = line.split('=')[1]
             elif ('filef1:' in line):
                 try:
-                    self.filef1 = line.split(':')[1]
+                    self.filef1 = line.split('=')[1]
             elif ('filem0:' in line):
                 try:
-                    self.filem0 = line.split(':')[1]
+                    self.filem0 = line.split('=')[1]
             elif ('filem1:' in line):
                 try:
-                    self.filem1 = line.split(':')[1]
+                    self.filem1 = line.split('=')[1]
             elif ('algoName:' in line):
                 try:
-                    self.algoName = line.split(':')[1]
+                    self.algoName = line.split('=')[1]
             elif ('iterTarget:' in line):
                 try:
-                    self.iterTarget = int(line.split(':')[1])
+                    self.iterTarget = int(line.split('=')[1])
             elif ('nModPrint:' in line):
                 try:
-                    self.nModPrint = int(line.split(':')[1])
+                    self.nModPrint = int(line.split('=')[1])
             elif ('nModWrite:' in line):
                 try:
-                    self.nModWrite = int(line.split(':')[1])
+                    self.nModWrite = int(line.split('=')[1])
             elif ('gamma:' in line):
                 try:
-                    self.gamma = float(line.split(':')[1])
+                    self.gamma = float(line.split('=')[1])
             elif ('alpha:' in line):
                 try:
-                    self.alpha = float(line.split(':')[1])
+                    self.alpha = float(line.split('=')[1])
