@@ -86,6 +86,9 @@ def proximalForConfig(config):
 
 def testProximals(N, P, nTest):
 
+    maxError = 0.
+
+    print('__________________________________________________')
     print('Testing proximal operators...')
     print('N     = '+str(N))
     print('P     = '+str(P))
@@ -95,31 +98,120 @@ def testProximals(N, P, nTest):
     print('Testing ProxCb...')
     kernel = grid.Boundaries.random(N,P)
     prox   = ProxCb(N,P,kernel)
-    e = 0.
-    for i in xrange(nTest):
-        e += prox.test()
-    t = prox.timing(nTest,overwrite=False)
-    print('mean error = '+str(e/nTest))
-    print('timing     : '+str(t))
+    e = prox.test(nTest,overwrite=False)
+    print('mean error = '+str(e))
+    print('timing     : '+str(prox.timing(nTest,overwrite=False)))
+
+    maxError = max( maxError , e )
 
     print('__________________________________________________')
     print('Testing ProxCtb...')
     kernel = grid.TemporalBoundaries.random(N,P)
     prox   = ProxCtb(N,P,kernel)
-    e = 0.
-    for i in xrange(nTest):
-        e += prox.test()
-    t = prox.timing(nTest,overwrite=False)
-    print('mean error = '+str(e/nTest))
-    print('timing     : '+str(t))
+    e = prox.test(nTest,overwrite=False)
+    print('mean error = '+str(e))
+    print('timing     : '+str(prox.timing(nTest,overwrite=False)))
+
+    maxError = max( maxError , e )
 
     print('__________________________________________________')
     print('Testing ProxCrb...')
     kernel = grid.Boundaries.random(N,P)
     prox   = ProxCrb(N,P,kernel)
-    e = 0.
-    for i in xrange(nTest):
-        e += prox.test()
-    t = prox.timing(nTest,overwrite=False)
-    print('mean error = '+str(e/nTest))
-    print('timing     : '+str(t))
+    e = prox.test(nTest,overwrite=False)
+    print('mean error = '+str(e))
+    print('timing     : '+str(prox.timing(nTest,overwrite=False)))
+
+    maxError = max( maxError , e )
+
+    print('__________________________________________________')
+    print('Testing ProxCdiv...')
+    kernel = grid.Divergence.random(N,P)
+    prox   = ProxCdiv(N,P,kernel)
+    e1 = prox.testInverse(nTest)
+    e2 = prox.test(nTest)
+    print('mean error (inverse) = '+str(e1))
+    print('mean error (kernel)  = '+str(e2))
+    print('timing               : '+str(prox.timing(nTest)))
+
+    maxError = max( max( maxError , e1 ) , e2 )
+
+    print('__________________________________________________')
+    print('Testing ProxCdivb...')
+    kernel = grid.DivergenceBoundaries.random(N,P)
+    kernel.correctMassDefault(1.e-8)
+    prox   = ProxCdivb(N,P,kernel)
+    e1 = prox.testInverse(nTest)
+    e2 = prox.test(nTest)
+    print('mean error (inverse) = '+str(e1))
+    print('mean error (kernel)  = '+str(e2))
+    print('timing               : '+str(prox.timing(nTest)))
+
+    maxError = max( max( maxError , e1 ) , e2 )
+
+    print('__________________________________________________')
+    print('Testing ProxCdivtb...')
+    kernel = grid.DivergenceTemporalBoundaries.random(N,P)
+    prox   = ProxCdivtb(N,P,kernel)
+    e1 = prox.testInverse(nTest)
+    e2 = prox.test(nTest)
+    print('mean error (inverse) = '+str(e1))
+    print('mean error (kernel)  = '+str(e2))
+    print('timing               : '+str(prox.timing(nTest)))
+
+    maxError = max( max( maxError , e1 ) , e2 )
+
+    print('__________________________________________________')
+    print('Testing ProxCsc...')
+    kernel = grid.CenteredField.random(N,P)
+    prox   = ProxCsc(N,P,kernel)
+    e1 = prox.testInverse(nTest)
+    e2 = prox.test(nTest)
+    print('mean error (inverse) = '+str(e1))
+    print('mean error (kernel)  = '+str(e2))
+    print('timing               : '+str(prox.timing(nTest)))
+
+    maxError = max( max( maxError , e1 ) , e2 )
+
+    print('__________________________________________________')
+    print('Testing ProxCscb...')
+    kernel = grid.CenteredFieldBoundaries.random(N,P)
+    prox   = ProxCscb(N,P,kernel)
+    e1 = prox.testInverse(nTest)
+    e2 = prox.test(nTest)
+    print('mean error (inverse) = '+str(e1))
+    print('mean error (kernel)  = '+str(e2))
+    print('timing               : '+str(prox.timing(nTest)))
+
+    maxError = max( max( maxError , e1 ) , e2 )
+
+    print('__________________________________________________')
+    print('Testing ProxCsctb...')
+    kernel = grid.CenteredFieldTemporalBoundaries.random(N,P)
+    prox   = ProxCsctb(N,P,kernel)
+    e1 = prox.testInverse(nTest)
+    e2 = prox.test(nTest)
+    print('mean error (inverse) = '+str(e1))
+    print('mean error (kernel)  = '+str(e2))
+    print('timing               : '+str(prox.timing(nTest)))
+
+    maxError = max( max( maxError , e1 ) , e2 )
+
+    print('__________________________________________________')
+    print('Testing ProxCscrb...')
+    kernel = grid.CenteredFieldBoundaries.random(N,P)
+    kernel.boundaries.temporalBoundaries.bt1[0] = 0.
+    kernel.boundaries.temporalBoundaries.bt1[N] = 0.
+    prox   = ProxCscrb(N,P,kernel)
+    e1 = prox.testInverse(nTest)
+    e2 = prox.test(nTest)
+    print('mean error (inverse) = '+str(e1))
+    print('mean error (kernel)  = '+str(e2))
+    print('timing               : '+str(prox.timing(nTest)))
+
+    maxError = max( max( maxError , e1 ) , e2 )
+
+    print('__________________________________________________')
+    print('Finished testing proximal operators')
+    print('max error : '+str(maxError))
+    print('__________________________________________________')

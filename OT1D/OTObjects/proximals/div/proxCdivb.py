@@ -62,27 +62,50 @@ class ProxCdivb( proj.Projector ):
 
         return divBound
 
-    def test(self):
+    def testInverse(self,nTest):
         EPS = 1e-8
-
-        divB1 = grid.DivergenceBoundaries.random( self.N , self.P )
-        divB1.correctMassDefault(EPS)
         e = 0.
 
-        divB2 = divB1.copy()
-        divB2 = self.inverseATA(divB2)
-        divB2 = self.ATA(divB2)
-        e += ( divB1 - divB2 ).LInftyNorm()
+        for i in xrange(nTest):
+            divB1 = grid.DivergenceBoundaries.random( self.N , self.P )
+            divB1.correctMassDefault(EPS)
 
-        divB2 = divB1.copy()
-        divB2 = self.ATA(divB2)
-        divB2 = self.inverseATA(divB2)
+            divB2 = divB1.copy()
+            divB2 = self.inverseATA(divB2)
+            divB2 = self.ATA(divB2)
+            e += ( divB1 - divB2 ).LInftyNorm()
 
-        diff = divB2.divergence.div[0,0] - divB1.divergence.div[0,0]
+            divB2 = divB1.copy()
+            divB2 = self.ATA(divB2)
+            divB2 = self.inverseATA(divB2)
 
-        divB3 = grid.DivergenceBoundaries.ones(self.N,self.P)
-        e += ( divB1 - divB2 + diff*divB3 ).LInftyNorm()
-        return e
+            diff = divB2.divergence.div[0,0] - divB1.divergence.div[0,0]
+
+            divB3 = grid.DivergenceBoundaries.ones(self.N,self.P)
+            e += ( divB1 - divB2 + diff*divB3 ).LInftyNorm()
+        return e/nTest
+
+    def test(self,nTest):
+        e = 0.
+        for i in xrange(nTest):
+            field = grid.StaggeredField.random(self.N, self.P)
+
+            db = field.divergenceBoundaries()
+            #db -= self.kernel
+            db2 = self.inverseATA(db)
+            f2 = db2.TdivergenceBoundaries()
+            fp = field - f2
+            e += (fp.divergenceBoundaries()).LInftyNorm()
+
+            #Avector  = self.A( vector )
+            #Avector -= self.kernel
+            #Avector  = self.inverseATA( Avector )
+            #Avector  = self.TA( Avector )
+            #return ( vector - Avector )
+
+            #field = self(field)
+            #e += ( self.A(field) - self.kernel ).LInftyNorm()
+        return e/nTest
 
     def timing(self,nTiming):
         t = 0.

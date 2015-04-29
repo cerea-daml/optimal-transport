@@ -50,17 +50,20 @@ class ProxCrb( proj.Projector ):
         else:
             return self(field.copy(), True)
 
-    def test(self):
-        field = grid.StaggeredField.random(self.N, self.P)
-        field = self(field)
+    def test(self,nTest,overwrite=True):
+        e = 0.
+        for i in xrange(nTest):
+            field = grid.StaggeredField.random(self.N, self.P)
+            field = self(field,overwrite)
 
-        diff = field.boundaries() - self.kernel
-        diff.temporalBoundaries.bt0[0] = 0.
-        diff.temporalBoundaries.bt1[0] = 0.
-        diff.temporalBoundaries.bt0[self.N] = 0.
-        diff.temporalBoundaries.bt1[self.N] = 0.
+            diff = field.boundaries() - self.kernel
+            diff.temporalBoundaries.bt0[0] = 0.
+            diff.temporalBoundaries.bt1[0] = 0.
+            diff.temporalBoundaries.bt0[self.N] = 0.
+            diff.temporalBoundaries.bt1[self.N] = 0.
         
-        return ( diff.LInftyNorm() + abs( field.boundaries().massDefault() - self.massDefault ) )
+            e += ( diff.LInftyNorm() + abs( field.boundaries().massDefault() - self.massDefault ) )
+        return e/nTest
 
     def timing(self,nTiming,overwrite=True):
         t = 0.

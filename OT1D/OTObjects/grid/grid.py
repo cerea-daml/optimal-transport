@@ -180,7 +180,7 @@ class StaggeredField( Field ):
 
     def temporalBoundaries(self):
         return TemporalBoundaries( self.N, self.P,
-                                   self.f[:,0], self.f[:,self.P+1] )
+                                   self.f[:,0].copy(), self.f[:,self.P+1].copy() )
 
     def temporalReservoirBoundaries(self):
         trb = self.temporalBoundaries()
@@ -190,7 +190,7 @@ class StaggeredField( Field ):
 
     def spatialBoundaries(self):
         return SpatialBoundaries( self.N, self.P,
-                                  self.m[0,:], self.m[self.N+1,:] )
+                                  self.m[0,:].copy(), self.m[self.N+1,:].copy() )
 
     def boundaries(self):
         return Boundaries( self.N, self.P,

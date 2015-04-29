@@ -37,10 +37,13 @@ class ProxCb( proj.Projector ):
         else:
             return self(field.copy(), True)
 
-    def test(self):
-        field = grid.StaggeredField.random(self.N, self.P)
-        field = self(field)
-        return ( field.boundaries() - self.kernel ).LInftyNorm() 
+    def test(self,nTest,overwrite=True):
+        e = 0.
+        for i in xrange(nTest):
+            field = grid.StaggeredField.random(self.N, self.P)
+            field = self(field,overwrite)
+            e += ( field.boundaries() - self.kernel ).LInftyNorm() 
+        return e/nTest
 
     def timing(self,nTiming,overwrite=True):
         t = 0.

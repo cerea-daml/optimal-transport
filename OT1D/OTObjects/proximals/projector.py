@@ -45,5 +45,5 @@ class Projector( oto.OTObject ):
         Avector -= self.kernel
         Avector  = self.inverseATA( Avector )
         Avector  = self.TA( Avector )
-        return ( vector - vector )
+        return ( vector - Avector )
 
