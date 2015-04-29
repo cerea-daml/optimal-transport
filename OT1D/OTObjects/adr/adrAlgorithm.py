@@ -78,11 +78,8 @@ class AdrAlgorithm( oto.OTObject ):
         self.stateN = newState
         self.stateNP1 = self.stateN.copy()
 
-    def initialize(self, outputDir=None):
-        if outputDir is None:
-            outputDir = self.config.outputDir
-
-        fileRunCount = outputDir + 'runCount.bin'
+    def initialize(self):
+        fileRunCount = self.config.outputDir + 'runCount.bin'
         try:
             runCount = np.fromfile(fileRunCount)
             runCount = int(no.floor(runCount[0]))
@@ -90,14 +87,31 @@ class AdrAlgorithm( oto.OTObject ):
             runCount = 0
         
         if runCount > 0:
-            fileState = outputDir + 'finalState.bin'
+            fileState = self.config.outputDir + 'finalState.bin'
             f = open(fileState, 'rb')
             p = pck.Unpickler(f)
             self.setState( p.load() )
             f.close()
 
         else:
-            self.setState( initialStaggeredCenteredField(self.config) )
+            if self.config.initial == 1:
+                fileRunCount = self.config.initialInputDir + 'runCount.bin'
+                try:
+                    runCount = np.fromfile(fileRunCount)
+                    runCount = int(no.floor(runCount[0]))
+                except:
+                    runCount = 0
+            else:
+                runCount = 0
+
+            if runCount > 0:
+                fileState = self.config.initialInputDir + 'finalState.bin'
+                f = open(fileState, 'rb')
+                p = pck.Unpickler(f)
+                self.setState( p.load() )
+                f.close()
+            else:
+                self.setState( initialStaggeredCenteredField(self.config) )
 
         self.config.iterCount = 0
 

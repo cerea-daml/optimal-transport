@@ -59,6 +59,9 @@ class Configuration:
         else:
             pass
 
+        print('initial :'+str(self.initial))
+        print('initialInputDir :'+str(self.initialInputDir))
+
     def default(self):
         try:
             self.EPSILON
@@ -183,6 +186,20 @@ class Configuration:
         else:
             self.gamma = 1./75.
 
+        try:
+            self.initial
+        except:
+            self.initial = 0
+            print('No value for initial')
+            print('Default value :'+str(self.initial))
+
+        try:
+            self.initialInputDir
+        except:
+            self.initialInputDir = './outputOT/'
+            print('No value for initialInputDir')
+            print('Default value :'+self.initialInputDir)
+
     def fromfile(self, fileName):
         if ('config.bin' in fileName):
             try:
@@ -258,3 +275,9 @@ class Configuration:
             elif ('alpha:' in line):
                 try:
                     self.alpha = float(line.split('=')[1])
+            elif ('initial:' in line):
+                try:
+                    self.initial = int(line.split('=')[1])
+            elif ('initialInputDir:' in line):
+                try:
+                    self.initialInputDir = line.split('=')[1]
