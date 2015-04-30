@@ -10,6 +10,7 @@ import pickle as pck
 from boundaries.defineBoundaries import boundariesForConfig
 
 from adr.adrAlgorithm import AdrAlgorithm
+from pd.pdAlgorithm import PdAlgorithm
 
 class Configuration:
     '''
@@ -29,7 +30,8 @@ class Configuration:
     def algorithm(self):
         if self.algoName == 'adr':
             return AdrAlgorithm(self)
-
+        elif self.algoName == 'pd':
+            return PdAlgorithm(self)
         else:
             return
 
@@ -59,6 +61,10 @@ class Configuration:
             print('gamma           : '+str(self.gamma))
             print('alpha           : '+str(self.alpha))
 
+        elif self.algoName == 'pd':
+            print('sigma           : '+str(self.sigma))
+            print('tau             : '+str(self.tau))
+            print('theta           : '+str(self.theta))
         else:
             pass
 
@@ -186,8 +192,27 @@ class Configuration:
                 print('No value for alpha')
                 print('Default value :'+str(self.alpha))
 
+        elif self.algoName == 'pd':
+            try:
+                self.sigma
+            except:
+                self.sigma = 85
+                print('No value for sigma')
+                print('Default value :'+str(self.sigma))
+            try:
+                self.tau
+            except:
+                self.tau = 0.99 / self.sigma
+                print('No value for tau')
+                print('Default value :'+str(self.tau))
+            try:
+                self.theta
+            except:
+                self.theta = 1.
+                print('No value for theta')
+                print('Default value :'+str(self.theta))
         else:
-            self.gamma = 1./75.
+            pass
 
         try:
             self.initial
@@ -280,6 +305,18 @@ class Configuration:
             self.initialInputDir = other.initialInputDir
         except:
             pass
+        try:
+            self.theta = other.theta
+        except:
+            pass
+        try:
+            self.sigma = other.sigma
+        except:
+            pass
+        try:
+            self.tau = other.tau
+        except:
+            pass
 
     def fromfile(self, fileName):
         if ('config.bin' in fileName):
@@ -291,7 +328,6 @@ class Configuration:
             except:
                 pass
             self = config
-            #self.copy(config)
             return 
 
         try:
@@ -401,5 +437,20 @@ class Configuration:
             elif ('initialInputDir=' in line):
                 try:
                     self.initialInputDir = line.split('=')[1]
+                except:
+                    pass
+            elif ('tau=' in line):
+                try:
+                    self.tau = line.split('=')[1]
+                except:
+                    pass
+            elif ('sigma=' in line):
+                try:
+                    self.sigma = line.split('=')[1]
+                except:
+                    pass
+            elif ('theta=' in line):
+                try:
+                    self.theta = line.split('=')[1]
                 except:
                     pass

@@ -1,22 +1,8 @@
 ####################
-# Class AdrAlgorithm
+# Class PdAlgorithm
 ####################
 #
-# defines an ADR algorithm from configuration
-#
-# config must define :
-#   * N
-#   * P
-#   * alpha
-#   * outputDir
-#
-#   * iterCount
-#   * iterTarget
-#
-#   * printConfig()
-#
-#   * nModPrint
-#   * nModWrite
+# defines a PD algorithm from configuration
 #
 
 import pickle as pck
@@ -25,16 +11,18 @@ import numpy as np
 
 from .. import OTObject as oto
 from ..grid import grid
-from ..init.initialFields import initialStaggeredCenteredField
+from ..init.initialFields import initialStaggeredField
+from ..init.initialFields import initialCenteredField
 from ..proximals.defineProximals import proximalForConfig
 
-from adrState import AdrState
-from adrStep import AdrStep
-from prox1Adr import Prox1Adr
+from pdState import PdState
+from PdStep import PdStep
+from proxPd import Prox1Pd
+from proxPd import Prox2Pd
 
-class AdrAlgorithm( oto.OTObject ):
+class PdAlgorithm( oto.OTObject ):
     '''
-    class to handle an ADR Algorithm
+    class to handle a PD Algorithm
     '''
 
     def __init__(self, config):
@@ -42,13 +30,14 @@ class AdrAlgorithm( oto.OTObject ):
         oto.OTObject.__init__(self, config.N , config.P)
         
         proxCdiv,proxCsc,proxJ,proxCb = proximalForConfig(config)
-        prox1 = Prox1Adr(config, proxCdiv, proxJ)
-        self.stepFunction = AdrStep(config, prox1, proxCsc)
+        prox1 = Prox1Pd(config, proxJ)
+        prox2 = Prox2Pd(proxCdiv)
+        self.stepFunction = PdStep(config, prox1, prox2)
         self.stateN = None
         self.stateNP1 = None
         
     def __repr__(self):
-        return ( 'ADR algorithm' )
+        return ( 'PD algorithm' )
 
     def saveState(self):
         fileConfig   = self.config.outputDir + 'config.bin'
@@ -139,10 +128,11 @@ class AdrAlgorithm( oto.OTObject ):
                     self.stateN = None
 
         if self.stateN is None:
-            z = initialStaggeredCenteredField(self.config)
-            w = z.copy()
+            u = initialStaggeredField(self.config)
+            y = u.copy()
+            v = u.interpolation()
             self.setState( AdrState( self.N , self.P ,
-                                         z , w ) )
+                                     u , y , v ) )
 
         self.config.iterCount = 0
 
@@ -151,7 +141,7 @@ class AdrAlgorithm( oto.OTObject ):
             return self.stateN.functionalJ()
 
         print('__________________________________________________')
-        print('Initialising Adr algorithm...')
+        print('Initialising Pd algorithm...')
         print('__________________________________________________')
         self.initialize()
 
@@ -161,7 +151,7 @@ class AdrAlgorithm( oto.OTObject ):
         p = pck.Pickler(f)
 
         print('__________________________________________________')
-        print('Starting Adr algorithm...')
+        print('Starting Pd algorithm...')
         print('__________________________________________________')
         self.config.printConfig()
         print('__________________________________________________')
@@ -190,7 +180,7 @@ class AdrAlgorithm( oto.OTObject ):
         finalJ = self.stateN.functionalJ()
 
         print('__________________________________________________')
-        print('Adr algorithm finished')
+        print('Pd algorithm finished')
         print('Number of iterations run : '+str(self.config.iterTarget))
         print('Final J = '+str(finalJ))
         print('Time taken : '+str(timeAlgo))
