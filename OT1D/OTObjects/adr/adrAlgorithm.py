@@ -134,7 +134,8 @@ class AdrAlgorithm( oto.OTObject ):
         self.config.printConfig()
         print('__________________________________________________')
         timeStart = tm.time()
-        
+        timeCheck = timeStart
+
         while self.config.iterCount < self.config.iterTarget:
             self.stepFunction(self.stateN,self.stateNP1)
             self.stepFunction(self.stateNP1,self.stateN)
@@ -147,6 +148,9 @@ class AdrAlgorithm( oto.OTObject ):
 
             if np.mod(self.config.iterCount, self.config.nModWrite) == 0:
                 p.dump(self.stateN)
+                p.dump(tm.time()-timeCheck)
+                timeCheck = tm.time()
+
             self.config.iterCount += 2
 
         timeAlgo = tm.time() - timeStart
