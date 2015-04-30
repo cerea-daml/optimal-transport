@@ -308,8 +308,9 @@ class CenteredField( Field ):
                                 2*gamma-self.f,
                                 gamma**2-2*gamma*self.f,
                                 -(gamma**2*self.f+0.5*gamma*(self.m*self.m)) )
-        denom = (fstar+gamma)*(fstar>0) + (1.-(fstar>0))
-        m = ((fstar*self.m)/(denom))*(fstar>0)+0.
+        
+        fstar = np.maximum( fstar, 0. )
+        m = ( fstar * self.m ) / ( fstar + gamma )
         return CenteredField(self.N, self.P, m, fstar)
 
     def Tinterpolation(self):
@@ -913,10 +914,10 @@ class Boundaries( oto.OTObject ):
             self.temporalBoundaries.swap()
 
     def normalize(self, normType):
-        mInit = ( P * self.temporalBoundaries.bt0.sum() +
-                  N * ( self.spatialBoundaries.bx0.sum() - self.spatialBoundaries.bx1.sum() ) )
+        mInit = ( self.P * self.temporalBoundaries.bt0.sum() +
+                  self.N * ( self.spatialBoundaries.bx0.sum() - self.spatialBoundaries.bx1.sum() ) )
 
-        mFinal = P * self.temporalBoundaries.bt1.sum()
+        mFinal = self.P * self.temporalBoundaries.bt1.sum()
 
         if normType == 0:
             # correct mass default by rescaling f1
