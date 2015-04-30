@@ -36,7 +36,7 @@ def boundaryGaussian(N,P,
 
 def boundaryGaussian2(N,P,
                       A00,A01,alphaX00,alphaX01,x00,x01,
-                      A10,A11,alphaX10,alphaX11,x10,x11)
+                      A10,A11,alphaX10,alphaX11,x10,x11):
     #
     # f0(x) = A00exp(-alphaX00(x-x00)^2) + A01exp(-alphaX01(x-x01)^2)
     # f1(x) = A10exp(-alphaX10(x-x10)^2) + A11exp(-alphaX11(x-x11)^2)

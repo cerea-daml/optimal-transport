@@ -21,6 +21,7 @@
 
 import pickle as pck
 import time as tm
+import numpy as np
 
 from .. import OTObject as oto
 from ..grid import grid
@@ -42,7 +43,7 @@ class AdrAlgorithm( oto.OTObject ):
         
         proxCdiv,proxCsc,proxJ,proxCb = proximalForConfig(self.config)
         prox1 = Prox1Adr( config.N, config.P, proxCdiv, proxJ)
-        self.stepFunction = AdrStep(prox1, prosCsc, config.alpha)
+        self.stepFunction = AdrStep(prox1, proxCsc, config.alpha)
         self.initialize()
         
     def __repr__(self):
@@ -111,11 +112,17 @@ class AdrAlgorithm( oto.OTObject ):
                 self.setState( p.load() )
                 f.close()
             else:
-                self.setState( initialStaggeredCenteredField(self.config) )
+                z = initialStaggeredCenteredField(self.config)
+                w = z.copy()
+                self.setState( AdrState( self.N , self.P ,
+                                         z , w ) )
 
         self.config.iterCount = 0
 
     def run(self):
+        if self.config.iterTarget == 0:
+            return self.stateN.functionalJ()
+
         fileCurrentState = self.config.outputDir + 'states.bin'
     
         f = open(fileCurrentState, 'ab')
@@ -130,13 +137,13 @@ class AdrAlgorithm( oto.OTObject ):
         
         while self.config.iterCount < self.config.iterTarget:
             self.stepFunction(self.stateN,self.stateNP1)
-            self.stepFunction(self.stateNP1,self.stateNP)
+            self.stepFunction(self.stateNP1,self.stateN)
 
             if np.mod(self.config.iterCount, self.config.nModPrint) == 0:
                 print('___________________________________')
                 print('iteration   : '+str(self.config.iterCount)+'/'+str(self.config.iterTarget))
                 print('elpsed time : '+str(tm.time()-timeStart))
-                print('J = ',str(self.stateN.functionalJ()))
+                print('J = '+str(self.stateN.functionalJ()))
 
             if np.mod(self.config.iterCount, self.config.nModWrite) == 0:
                 p.dump(self.stateN)
@@ -151,7 +158,7 @@ class AdrAlgorithm( oto.OTObject ):
         print('Number of iterations run : '+str(self.config.iterTarget))
         print('Final J = '+str(finalJ))
         print('Time taken : '+str(timeAlgo))
-        print('Mean time per iteration : '+str(timeAlgo/iterTarget))
+        print('Mean time per iteration : '+str(timeAlgo/self.config.iterTarget))
         print('__________________________________________________')
 
         self.saveState()

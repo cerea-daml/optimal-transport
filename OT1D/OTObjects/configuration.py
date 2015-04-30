@@ -23,44 +23,47 @@ class Configuration:
         self.iterCount = 0
         boundariesForConfig(self)
 
+    def __repr__(self):
+        return 'Configuration for a 1D OT algoritm'
+
     def algorithm(self):
         if self.algoName == 'adr':
-            return AdrAlgorithm(config)
+            return AdrAlgorithm(self)
 
         else:
             return
 
     def printConfig(self):
-        print('EPSILON :'+str(self.EPSILON))
-        print('outputDir :'+self.outputDir)
-        print('N :'+str(self.N))
-        print('P :'+str(self.P))
-        print('dynamics :'+str(self.dynamics))
-        print('boundaryType :'+str(self.boundaryType))
-        print('normType :'+str(self.normType))
+        print('EPSILON         : '+str(self.EPSILON))
+        print('outputDir       : '+self.outputDir)
+        print('N               : '+str(self.N))
+        print('P               : '+str(self.P))
+        print('dynamics        : '+str(self.dynamics))
+        print('boundaryType    : '+str(self.boundaryType))
+        print('normType        : '+str(self.normType))
 
         if self.boundaryType == 0:
-            print('file for f0 :'+str(self.filef0))
-            print('file for f1 :'+str(self.filef1))
+            print('file for f0    : '+str(self.filef0))
+            print('file for f1    : '+str(self.filef1))
 
             if self.dynamics == 0:
-                print('file for m0 :'+str(self.filem0))
-                print('file for m1 :'+str(self.filem1))
+                print('file for m0    : '+str(self.filem0))
+                print('file for m1    : '+str(self.filem1))
 
-        print('algoName :'+str(self.algoName))
-        print('iterTarget :'+str(self.iterTarget))
-        print('nModPrint :'+str(self.nModPrint))
-        print('nModWrite :'+str(self.nModWrite))
+        print('algoName        : '+str(self.algoName))
+        print('iterTarget      : '+str(self.iterTarget))
+        print('nModPrint       : '+str(self.nModPrint))
+        print('nModWrite       : '+str(self.nModWrite))
 
         if self.algoName == 'adr':
-            print('gamma :'+str(self.gamma))
-            print('alpha :'+str(self.alpha))
+            print('gamma           : '+str(self.gamma))
+            print('alpha           : '+str(self.alpha))
 
         else:
             pass
 
-        print('initial :'+str(self.initial))
-        print('initialInputDir :'+str(self.initialInputDir))
+        print('initial         : '+str(self.initial))
+        print('initialInputDir : '+str(self.initialInputDir))
 
     def default(self):
         try:
@@ -68,7 +71,7 @@ class Configuration:
         except:
             self.EPSILON = 1.e-8
             print('No value for EPSILON')
-            print('Default value :'+self.EPSILON)
+            print('Default value :'+str(self.EPSILON))
 
         try:
             self.outputDir
@@ -200,6 +203,84 @@ class Configuration:
             print('No value for initialInputDir')
             print('Default value :'+self.initialInputDir)
 
+    def copy(self, other):
+        try:
+            self.EPSILON = other.EPSILON
+        except:
+            pass
+        try:
+            self.outputDir = other.outputDir
+        except:
+            pass
+        try:
+            self.N = other.N
+        except:
+            pass
+        try:
+            self.P = other.P
+        except:
+            pass
+        try:
+            self.dynamics = other.dynamics
+        except:
+            pass
+        try:
+            self.boundaryType = other.boundaryType
+        except:
+            pass
+        try:
+            self.normType = other.normType
+        except:
+            pass
+        try:
+            self.filef0 = other.filef0
+        except:
+            pass
+        try:
+            self.filef1 = other.filef1
+        except:
+            pass
+        try:
+            self.filem0 = other.filem0
+        except:
+            pass
+        try:
+            self.filem1 = other.filem1
+        except:
+            pass
+        try:
+            self.algoName = other.algoName
+        except:
+            pass
+        try:
+            self.iterTarget = other.terTarget
+        except:
+            pass
+        try:
+            self.nModPrint = other.nModPrint
+        except:
+            pass
+        try:
+            self.nModWrite = other.nModWrite
+        except:
+            pass
+        try:
+            self.gamma = other.gamma
+        except:
+            pass
+        try:
+            self.alpha = other.alpha
+        except:
+            pass
+        try:
+            self.initial = other.initial
+        except:
+            pass
+        try:
+            self.initialInputDir = other.initialInputDir
+        except:
+            pass
+
     def fromfile(self, fileName):
         if ('config.bin' in fileName):
             try:
@@ -207,7 +288,10 @@ class Configuration:
                 p = Unpickler(f)
                 while True:
                     config = p.load()
+            except:
+                pass
             self = config
+            #self.copy(config)
             return 
 
         try:
@@ -224,60 +308,98 @@ class Configuration:
                 filteredLines.append(l)
 
         for line in filteredLines:
-            if ('outputDir:' in line):
+            if ('outputDir=' in line):
                 try:
                     self.outputDir = line.split('=')[1]
-            elif ('EPSILON:' in line):
+                except:
+                    pass
+            elif ('EPSILON=' in line):
                 try:
                     self.EPSILON = float(line.split('=')[1])
-            elif ('N:' in line):
+                except:
+                    pass
+            elif ('N=' in line):
                 try:
                     self.N = int(line.split('=')[1])
-            elif ('P:' in line):
+                except:
+                    pass
+            elif ('P=' in line):
                 try:
                     self.P = int(line.split('=')[1])
-            elif ('dynamics:' in line):
+                except:
+                    pass
+            elif ('dynamics=' in line):
                 try:
                     self.dynamics = int(line.split('=')[1])
-            elif ('boundaryType:' in line):
+                except:
+                    pass
+            elif ('boundaryType=' in line):
                 try:
                     self.boundaryType = int(line.split('=')[1])
-            elif ('normType:' in line):
+                except:
+                    pass
+            elif ('normType=' in line):
                 try:
                     self.normType = int(line.split('=')[1])
-            elif ('filef0:' in line):
+                except:
+                    pass
+            elif ('filef0=' in line):
                 try:
                     self.filef0 = line.split('=')[1]
-            elif ('filef1:' in line):
+                except:
+                    pass
+            elif ('filef1=' in line):
                 try:
                     self.filef1 = line.split('=')[1]
-            elif ('filem0:' in line):
+                except:
+                    pass
+            elif ('filem0=' in line):
                 try:
                     self.filem0 = line.split('=')[1]
-            elif ('filem1:' in line):
+                except:
+                    pass
+            elif ('filem1=' in line):
                 try:
                     self.filem1 = line.split('=')[1]
-            elif ('algoName:' in line):
+                except:
+                    pass
+            elif ('algoName=' in line):
                 try:
                     self.algoName = line.split('=')[1]
-            elif ('iterTarget:' in line):
+                except:
+                    pass
+            elif ('iterTarget=' in line):
                 try:
                     self.iterTarget = int(line.split('=')[1])
-            elif ('nModPrint:' in line):
+                except:
+                    pass
+            elif ('nModPrint=' in line):
                 try:
                     self.nModPrint = int(line.split('=')[1])
-            elif ('nModWrite:' in line):
+                except:
+                    pass
+            elif ('nModWrite=' in line):
                 try:
                     self.nModWrite = int(line.split('=')[1])
-            elif ('gamma:' in line):
+                except:
+                    pass
+            elif ('gamma=' in line):
                 try:
                     self.gamma = float(line.split('=')[1])
-            elif ('alpha:' in line):
+                except:
+                    pass
+            elif ('alpha=' in line):
                 try:
                     self.alpha = float(line.split('=')[1])
-            elif ('initial:' in line):
+                except:
+                    pass
+            elif ('initial=' in line):
                 try:
                     self.initial = int(line.split('=')[1])
-            elif ('initialInputDir:' in line):
+                except:
+                    pass
+            elif ('initialInputDir=' in line):
                 try:
                     self.initialInputDir = line.split('=')[1]
+                except:
+                    pass

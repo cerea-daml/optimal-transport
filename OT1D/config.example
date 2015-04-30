@@ -1,5 +1,8 @@
 #__________________________________________________
 # Example of configuration file
+#   do not name this file *gonfig.bin
+#   or else the program will try to unpickle it
+#   and it will fail 
 #__________________________________________________
 
 #__________________________________________________
@@ -58,4 +61,6 @@ alpha = 1.998
 # 0 -> default
 # 1 -> from the result of an other simulation
 initial = 0
+
+# for initial = 1
 initialInputDir = ./
