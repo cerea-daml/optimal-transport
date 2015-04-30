@@ -9,7 +9,7 @@ from boundaries.defineBoundaries import boundariesForConfig
 from algorithms.adr.adrAlgorithm import AdrAlgorithm
 #from algorithms.pd.pdAlgorithm import PdAlgorithm
 
-class Configuration:
+class Configuration(object):
     '''
     Stores the configuraion for an OT algorithm
     '''
@@ -44,22 +44,22 @@ class Configuration:
                 attr += ' '
             attributes.append(attr + ': ')
 
-        for (attr,val,subattr,type) in zip(attributes,self.defaultValues,self.isSubAttribute,self.attributeType):
+        for (attrToPrint,attr,subattr) in zip(attributes,self.attributes,self.isSubAttribute):
             if subattr is None:
-                print ( attr + val )
+                print ( attrToPrint + str( self.__getattribute__(attr) ) )
             else:
                 (parentattr,parentval) = subattr
-                if self.__getattr__( parentattr ) == parentval:
-                    print ( attr + val )
+                if self.__getattribute__( parentattr ) == parentval:
+                    print ( attrToPrint + str( self.__getattribute__(attr) ) )
 
     def ckeckAttributes(self):
         for (attr,val,subattr,type) in zip(self.attributes,self.defaultValues,self.isSubAttribute,self.attributeType):
             if subattr is None:
                 if self.__dict__.has_key(attr):
                     try:
-                        self.__setattr__( attr , type( self.__getattr__( attr ) ) )
+                        self.__setattr__( attr , type( self.__getattribute__( attr ) ) )
                     except:
-                        print ( 'Value ' + str( self.__getattr__( attr ) ) + 
+                        print ( 'Value ' + str( self.__getattribute__( attr ) ) + 
                                 ' is not valid for parameter ' + str ( attr ) )
                         print ( 'Replacing by default value : ' + str ( val ) )
                         self.__setattr__( attr , val )
@@ -71,12 +71,12 @@ class Configuration:
         for (attr,val,subattr,type) in zip(self.attributes,self.defaultValues,self.isSubAttribute,self.attributeType):
             if not subattr is None:
                 (parentattr,parentval) = subattr
-                if self.__getattr__( parentattr ) == parentval:
+                if self.__getattribute__( parentattr ) == parentval:
                     if self.__dict__.has_key(attr):
                         try:
-                            self.__setattr__( attr , type( self.__getattr__( attr ) ) )
+                            self.__setattr__( attr , type( self.__getattribute__( attr ) ) )
                         except:
-                            print ( 'Value ' + str( self.__getattr__( attr ) ) +
+                            print ( 'Value ' + str( self.__getattribute__( attr ) ) +
                                     ' is not valid for parameter ' + str ( attr ) )
                             print ( 'Replacing by default value : ' + str ( val ) )
                             self.__setattr__( attr , val )
