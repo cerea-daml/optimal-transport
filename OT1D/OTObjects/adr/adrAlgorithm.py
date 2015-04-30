@@ -44,7 +44,8 @@ class AdrAlgorithm( oto.OTObject ):
         proxCdiv,proxCsc,proxJ,proxCb = proximalForConfig(config)
         prox1 = Prox1Adr(config, proxCdiv, proxJ)
         self.stepFunction = AdrStep(config, prox1, proxCsc)
-        self.initialize()
+        self.stateN = None
+        self.stateNP1 = None
         
     def __repr__(self):
             return ( 'ADR algorithm' )
@@ -54,67 +55,93 @@ class AdrAlgorithm( oto.OTObject ):
         fileState    = self.config.outputDir + 'finalState.bin'
         fileRunCount = self.config.outputDir + 'runCount.bin'
 
-        f = open(fileConfig, 'ab')
-        p = pck.Pickler(f)
-        p.dump(self.config)
-        f.close()
-
-        f = open(fileState, 'wb')
-        p = pck.Pickler(f)
-        p.dump(self.stateN)
-        f.close()
-
         try:
-            runCount = np.fromfile(fileRunCount)
-            runCount += 1.
-            runCount.tofile(fileRunCount)
-        except:
-            runCount = np.ones(1)
-            runCount.tofile(fileRunCount)
+            f = open(fileConfig, 'ab')
+            p = pck.Pickler(f)
+            p.dump(self.config)
+            f.close()
 
-        self.config.iterCount = 0
-        self.config.iterTarget = 0
+            f = open(fileState, 'wb')
+            p = pck.Pickler(f)
+            p.dump(self.stateN)
+            f.close()
+
+            try:
+                runCount = np.fromfile(fileRunCount)
+                runCount += 1.
+                runCount.tofile(fileRunCount)
+            except:
+                runCount = np.ones(1)
+                runCount.tofile(fileRunCount)
+
+            self.config.iterCount = 0
+            self.config.iterTarget = 0
+
+            print('__________________________________________________')
+            print('Files written...')
+            print(fileConfig)
+            print(fileState)
+            print(fileRunCount)
+            print(self.config.outputDir+'states.bin')
+            print('__________________________________________________')
+
+        except:
+            print('__________________________________________________')
+            print('WARNING : could not write output')
+            print('__________________________________________________')
 
     def setState(self, newState):
         self.stateN = newState
         self.stateNP1 = self.stateN.copy()
 
     def initialize(self):
+        self.stateN = None
+
+        print('Searching previous runs in '+self.config.outputDir+'...')
         fileRunCount = self.config.outputDir + 'runCount.bin'
         try:
             runCount = np.fromfile(fileRunCount)
-            runCount = int(no.floor(runCount[0]))
+            runCount = int(np.floor(runCount[0]))
         except:
             runCount = 0
         
         if runCount > 0:
+            print('Found '+str(runCount)+' previous run[s].')
             fileState = self.config.outputDir + 'finalState.bin'
-            f = open(fileState, 'rb')
-            p = pck.Unpickler(f)
-            self.setState( p.load() )
-            f.close()
-
+            try:
+                f = open(fileState, 'rb')
+                p = pck.Unpickler(f)
+                self.setState( p.load() )
+                f.close()
+            except:
+                self.stateN = None
         else:
             if self.config.initial == 1:
+                print('Searching previous runs in '+self.config.initialInputDir+'...')
                 fileRunCount = self.config.initialInputDir + 'runCount.bin'
                 try:
                     runCount = np.fromfile(fileRunCount)
-                    runCount = int(no.floor(runCount[0]))
+                    runCount = int(np.floor(runCount[0]))
                 except:
                     runCount = 0
             else:
                 runCount = 0
 
             if runCount > 0:
+                print('Found '+str(runCount)+' previous run[s].')
                 fileState = self.config.initialInputDir + 'finalState.bin'
-                f = open(fileState, 'rb')
-                p = pck.Unpickler(f)
-                self.setState( p.load() )
-                f.close()
-            else:
-                z = initialStaggeredCenteredField(self.config)
-                w = z.copy()
-                self.setState( AdrState( self.N , self.P ,
+                try:
+                    f = open(fileState, 'rb')
+                    p = pck.Unpickler(f)
+                    self.setState( p.load() )
+                    f.close()
+                except:
+                    self.stateN = None
+
+        if self.stateN is None:
+            z = initialStaggeredCenteredField(self.config)
+            w = z.copy()
+            self.setState( AdrState( self.N , self.P ,
                                          z , w ) )
 
         self.config.iterCount = 0
@@ -122,6 +149,11 @@ class AdrAlgorithm( oto.OTObject ):
     def run(self):
         if self.config.iterTarget == 0:
             return self.stateN.functionalJ()
+
+        print('__________________________________________________')
+        print('Initialising Adr algorithm...')
+        print('__________________________________________________')
+        self.initialize()
 
         fileCurrentState = self.config.outputDir + 'states.bin'
     
@@ -167,3 +199,7 @@ class AdrAlgorithm( oto.OTObject ):
 
         self.saveState()
         return finalJ
+
+    def rerun(self, newIterTarget):
+        self.config.iterTarget = newIterTarget
+        self.run()
