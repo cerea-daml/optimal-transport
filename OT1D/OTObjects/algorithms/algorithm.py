@@ -89,6 +89,7 @@ class Algorithm( OTObject ):
                 p = pck.Unpickler(f)
                 self.setState( p.load() )
                 f.close()
+                print ( 'State loaded from '+fileState )
             except:
                 self.stateN = None
         else:
@@ -111,6 +112,7 @@ class Algorithm( OTObject ):
                     p = pck.Unpickler(f)
                     self.setState( p.load() )
                     f.close()
+                    print ( 'State loaded from '+fileState )
                 except:
                     self.stateN = None
 

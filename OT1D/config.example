@@ -1,6 +1,6 @@
 #__________________________________________________
 # Example of configuration file
-#   do not name this file *gonfig.bin
+#   do not name this file *config.bin
 #   or else the program will try to unpickle it
 #   and it will fail 
 #__________________________________________________
