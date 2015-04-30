@@ -5,10 +5,10 @@
 # First proximal operator for an ADR Algorithm
 #
 
-from .. import OTObject as oto
-from ..grid import grid
+from ...OTObject import OTObject
+from ...grid import grid
 
-class Prox1Adr( oto.OTObject ):
+class Prox1Adr( OTObject ):
     '''
     First proximal operator for an ADR algorithm
     '''
@@ -16,8 +16,8 @@ class Prox1Adr( oto.OTObject ):
     def __init__(self,
                  config , 
                  proxCdiv, proxJ):
-        oto.OTObject.__init__( self ,
-                               config.N , config.P )
+        OTObject.__init__( self ,
+                           config.N , config.P )
         self.proxCdiv = proxCdiv
         self.proxJ    = proxJ
 

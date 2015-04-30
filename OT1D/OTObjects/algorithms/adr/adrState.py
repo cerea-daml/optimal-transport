@@ -5,10 +5,10 @@
 # defines the state for ADR algorithm
 #
 
-from .. import OTObject as oto
-from ..grid import grid
+from ...OTObject import OTObject
+from ...grid import grid
 
-class AdrState( oto.OTObject ):
+class AdrState( OTObject ):
     '''
     class to handle the state for an ADR algorithm
     '''
@@ -16,8 +16,8 @@ class AdrState( oto.OTObject ):
     def __init__( self ,
                   N , P ,
                   z=None , w=None ):
-        oto.OTObject.__init__( self ,
-                               N , P )
+        OTObject.__init__( self ,
+                           N , P )
         if z is None:
             self.z = grid.StaggeredCenteredField(N,P)
         else:
@@ -30,6 +30,9 @@ class AdrState( oto.OTObject ):
     def LInftyNorm(self):
         return max( self.z.LInftyNorm() ,
                     self.w.LInftyNorm() )
+
+    def convergingStaggeredField(self):
+        return self.z.staggeredField
 
     def functionalJ(self):
         return self.z.centeredField.functionalJ()

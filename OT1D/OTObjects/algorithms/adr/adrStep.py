@@ -5,8 +5,7 @@
 # Step function for an ADR Algorithm
 #
 
-from .. import OTObject as oto
-from ..grid import grid
+from ...grid import grid
 
 class AdrStep:
     '''

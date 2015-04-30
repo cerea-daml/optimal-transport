@@ -1,8 +1,13 @@
-####################
+#################
 # Class Algorithm
-####################
+#################
 #
 # defines the default class for an algorithm
+#
+# a real algorithm must also define :
+#   * stepFunction [attribute]
+#   * setState     [method]
+#   * initialize   [method]
 #
 
 import pickle as pck
@@ -64,11 +69,6 @@ class Algorithm( OTObject ):
             print('__________________________________________________')
             print('WARNING : could not write output files')
             print('__________________________________________________')
-
-    def setState(self, newState):
-        # a modifier pour inclure les resultats des autres algos...
-        self.stateN = newState
-        self.stateNP1 = self.stateN.copy()
 
     def initialize(self):
         self.stateN = None
