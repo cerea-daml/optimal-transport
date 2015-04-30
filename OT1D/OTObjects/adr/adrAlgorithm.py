@@ -41,9 +41,9 @@ class AdrAlgorithm( oto.OTObject ):
         self.config = config
         oto.OTObject.__init__(self, config.N , config.P)
         
-        proxCdiv,proxCsc,proxJ,proxCb = proximalForConfig(self.config)
-        prox1 = Prox1Adr( config.N, config.P, proxCdiv, proxJ)
-        self.stepFunction = AdrStep(prox1, proxCsc, config.alpha)
+        proxCdiv,proxCsc,proxJ,proxCb = proximalForConfig(config)
+        prox1 = Prox1Adr(config, proxCdiv, proxJ)
+        self.stepFunction = AdrStep(config, prox1, proxCsc)
         self.initialize()
         
     def __repr__(self):

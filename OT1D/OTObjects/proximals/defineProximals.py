@@ -9,7 +9,6 @@
 #   * P
 #   * dynamics
 #   * boundaries
-#   * gamma (for ProxJ)
 #
 
 from ..grid import grid
@@ -39,7 +38,7 @@ def proximalForConfig(config):
         proxCsc  = ProxCscb( config.N , config.P ,
                              grid.CenteredFieldBoundaries( config.N , config.P , boundaries=config.boundaries) )
 
-        proxJ    = ProxJ( config.N , config.P , config.gamma )
+        proxJ    = ProxJ( config.N , config.P )
 
         proxCb   = ProxCb( config.N, config.P, config.boundaries )
 
@@ -51,7 +50,7 @@ def proximalForConfig(config):
         proxCsc  = ProxCsctb( config.N , config.P ,
                               grid.CenteredFieldTemporalBoundaries( config.N , config.P , temporalBoundaries=config.boundaries.temporalBoundaries ) )
 
-        proxJ    = ProxJ( config.N , config.P , config.gamma )
+        proxJ    = ProxJ( config.N , config.P )
 
         proxCb   = ProxCtb( config.N , config.P ,
                             config.boundaries.temporalBoundaries )
@@ -64,7 +63,7 @@ def proximalForConfig(config):
         proxCsc  = ProxCscrb( config.N , config.P ,
                               grid.CenteredFieldBoundaries( config.N ,config.P , boundaries=config.boundaries ) )
 
-        proxJ    = ProxJ( config.N , config.P , config.gamma )
+        proxJ    = ProxJ( config.N , config.P )
 
         proxCb   = ProxCrb( config.N , config.P ,
                             config.boundaries )
@@ -77,7 +76,7 @@ def proximalForConfig(config):
 
         proxCsc  = ProxCsc( config.N, config.P )
 
-        proxJ    = ProxJ( config.N , config.P , config.gamma )
+        proxJ    = ProxJ( config.N , config.P )
 
         proxCb   = ProxCrb( config.N , config.P ,
                             config.boundaries )

@@ -14,18 +14,18 @@ class Prox1Adr( oto.OTObject ):
     '''
 
     def __init__(self,
-                 N, P, 
+                 config , 
                  proxCdiv, proxJ):
         oto.OTObject.__init__( self ,
-                               N , P )
+                               config.N , config.P )
         self.proxCdiv = proxCdiv
         self.proxJ    = proxJ
 
     def __repr__(self):
         return ( 'First proximal operator for an ADR algorithm' ) 
 
-    def __call__(self, stagCentField):
+    def __call__(self, stagCentField, gamma):
         stagField = self.proxCdiv(stagCentField.staggeredField)
-        centField = self.proxJ(stagCentField.centeredField)
+        centField = self.proxJ(stagCentField.centeredField, gamma)
         return grid.StaggeredCenteredField( self.N, self.P, 
                                             stagField, centField)
