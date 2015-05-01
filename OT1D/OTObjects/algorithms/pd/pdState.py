@@ -5,10 +5,10 @@
 # defines the state for a PD algorithm
 #
 
-from .. import OTObject as oto
-from ..grid import grid
+from ...OTObject import OTObject
+from ...grid import grid
 
-class PdState( oto.OTObject ):
+class PdState( OTObject ):
     '''
     class to handle the state for a PD algorithm
     '''
@@ -16,8 +16,8 @@ class PdState( oto.OTObject ):
     def __init__( self ,
                   N , P ,
                   u=None , y=None , v=None ):
-        oto.OTObject.__init__( self ,
-                               N , P )
+        OTObject.__init__( self ,
+                           N , P )
         if u is None:
             self.u = grid.StaggeredField(N,P)
         else:
@@ -35,6 +35,9 @@ class PdState( oto.OTObject ):
         return np.max( [ self.u.LInftyNorm() ,
                          self.y.LInftyNorm() ,
                          self.v.LinftyNorm() ] )
+
+    def convergingStaggeredField(self):
+        return self.u
 
     def functionalJ(self):
         return self.u.interpolation().functionalJ()
