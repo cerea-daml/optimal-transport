@@ -5,10 +5,9 @@
 # Defines the correct proximal operators for a PD algorithm
 #
 
-from .. import OTObject as oto
-from ..grid import grid
+from ...OTObject import OTObject
 
-class Prox1Pd( oto.OTObject ):
+class Prox1Pd( OTObject ):
     '''
     First proximal operator for an ADR algorithm
     '''
@@ -16,8 +15,8 @@ class Prox1Pd( oto.OTObject ):
     def __init__(self,
                  config, 
                  proxJ):
-        oto.OTObject.__init__( self ,
-                               config.N , config.P )
+        OTObject.__init__( self ,
+                           config.N , config.P )
         self.proxJ = proxJ
         self.gamma = 1. / config.sigma
         self.sigma = config.sigma
