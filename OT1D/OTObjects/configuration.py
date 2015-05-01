@@ -8,6 +8,7 @@
 from boundaries.defineBoundaries import boundariesForConfig
 from algorithms.adr.adrAlgorithm import AdrAlgorithm
 from algorithms.pd.pdAlgorithm import PdAlgorithm
+from algorithms.adr3.adr3Algorithm import Adr3Algorithm
 
 class Configuration(object):
     '''
@@ -29,6 +30,8 @@ class Configuration(object):
             return AdrAlgorithm(self)
         elif self.algoName == 'pd':
             return PdAlgorithm(self)
+        elif self.algoName == 'adr3':
+            return Adr3Algorithù(self)
         else:
             return
 
@@ -110,6 +113,44 @@ class Configuration(object):
                 self.tau = defaultValueFor(self,'tau')
                 print ( 'Replacing by default values : ' + str(self.sigma) + ' and ' +str(self.tau) ) 
 
+        elif self.algoName == 'adr3':
+            if not self.gamma3 > self.EPSILON:
+                print ( 'Value ' + self.gamma3 +
+                        ' is not valid for parameter gamma3 ' )
+                self.gamma3 = defaultValueFor(self,'gamma3')
+                print ( 'Replacing by default value : ' + str ( self.gamma3 ) )
+            if not ( self.alpha3 > self.EPSILON and self.alpha3 < 2. - self.EPSILON ):
+                print ( 'Value ' + self.alpha3 +
+                        ' is not valid for parameter alpha3 ' )
+                self.alpha3 = defaultValueFor(self,'alpha3')
+                print ( 'Replacing by default value : ' + str ( self.alpha3 ) )
+
+            if not ( self.omega1 > self.EPSILON and self.omega1 <= 1. ):
+                print ( 'Value ' + self.omega1 +
+                        ' is not valid for parameter omega1 ' )
+                self.omega1 = defaultValueFor(self,'omega1')
+                print ( 'Replacing by default value : ' + str ( self.omega1 ) )
+
+            if not ( self.omega2 > self.EPSILON and self.omega2 <= 1. ):
+                print ( 'Value ' + self.omega2 +
+                        ' is not valid for parameter omega2 ' )
+                self.omega2 = defaultValueFor(self,'omega2')
+                print ( 'Replacing by default value : ' + str ( self.omega2 ) )
+
+            if not ( self.omega3 > self.EPSILON and self.omega3 <= 1. ):
+                print ( 'Value ' + self.omega3 +
+                        ' is not valid for parameter omega3 ' )
+                self.omega3 = defaultValueFor(self,'omega3')
+                print ( 'Replacing by default value : ' + str ( self.omega3 ) )
+
+            if ( not ( self.omega1 + self.omega2 + self.omega3 > 1. - self.EPSILON ) or
+                 not ( self.omega1 + self.omega2 + self.omega3 < 1. + self.EPSILON ) ):
+                print ( 'Values ' + str(self.omega1) + ', ' + str(self.omega2) + ' and ' + str(self.omega3) +
+                        'are not valid for parameters omega1, omega2 and omega3 ')
+                self.omega1 = defaultValueFor(self,'omega1')
+                self.omega2 = defaultValueFor(self,'omega2')
+                self.omega3 = defaultValueFor(self,'omega3')
+                print ( 'Replacing by default values : ' + str(self.omega1) + ', ' + str(self.omega2) + ' and ' +str(self.omega3) )
 
     def fromfile(self, fileName):
         if ('config.bin' in fileName):
@@ -265,6 +306,31 @@ class Configuration(object):
         self.attributes.append('theta')
         self.defaultValues.append(1.0)
         self.isSubAttribute.append(('algoName','pd'))
+        self.attributeType.append(float)
+
+        self.attributes.append('gamma3')
+        self.defaultValues.append(1./75.)
+        self.isSubAttribute.append(('algoName','adr3'))
+        self.attributeType.append(float)
+
+        self.attributes.append('alpha3')
+        self.defaultValues.append(1.998)
+        self.isSubAttribute.append(('algoName','adr3'))
+        self.attributeType.append(float)
+
+        self.attributes.append('omega1')
+        self.defaultValues.append(0.33)
+        self.isSubAttribute.append(('algoName','adr3'))
+        self.attributeType.append(float)
+
+        self.attributes.append('omega2')
+        self.defaultValues.append(0.33)
+        self.isSubAttribute.append(('algoName','adr3'))
+        self.attributeType.append(float)
+
+        self.attributes.append('omega3')
+        self.defaultValues.append(0.34)
+        self.isSubAttribute.append(('algoName','adr3'))
         self.attributeType.append(float)
 
     def defaultValueFor(self,attrName):
