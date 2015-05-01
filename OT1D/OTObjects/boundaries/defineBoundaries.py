@@ -11,8 +11,6 @@
 #     * normType
 #     * EPSILON
 #
-# Function boundariesFromFile returns boundary conditions from files
-#
 
 from ..grid import grid
 
@@ -22,6 +20,9 @@ from gaussianSplit import defaultBoundaryGaussianSplit1
 from gaussianSplit import defaultBoundaryGaussianSplit2
 from gaussianSine import defaultBoundaryGaussianSine
 from gaussianSine import defaultBoundaryGaussianCosine
+
+import numpy as np
+from scipy.interpolate import interp1d
 
 def boundariesForConfig(config):
     # default configurations
@@ -40,14 +41,7 @@ def boundariesForConfig(config):
 
     # from file
     elif config.boundaryType == 0:
-        files = [ config.filef0 , config.filef1 ]
-        if config.dynamics == 0:
-            files.append( config.filem0 )
-            files.append( config.filem1 )
-        boundaries = boundariesFromFile(files)
-        config.boundaries = boundaries
-        config.N = config.boundaries.N
-        config.P = config.boundaries.P
+        config.boundaries = boundariesFromFile( config )
 
     # normalize boundaries
     config.boundaries.normalize(config.normType)
@@ -94,50 +88,80 @@ def extensionOfFile(fileName):
 def arrayFromFile(fileName):
     if fileName is None or fileName == '':
         return None
-    else:
-        ext = extensionOfFile(fileName)
 
+    ext = extensionOfFile(fileName)
+
+    try:
         if ext == 'npy':
             return np.load(fileName)
         else:
             return np.fromfile(fileName)
+    except:
+        return None
 
-def boundariesFromFile(fileNames):
-    while( len(fileNames) < 4 ):
-        fileNames.append(None)
+def boundariesFromFile(config):
+    bt0 = arrayFromFile( config.filef0 )
+    bt1 = arrayFromFile( config.filef1 )
 
-    bt0 = arrayFromFile( fileNames[0] )
-    bt1 = arrayFromFile( fileNames[1] )
-    bx0 = arrayFromFile( fileNames[2] )
-    bx1 = arrayFromFile( fileNames[3] )
+    if bt0 is None or bt1 is None:
+        raise IOError('Could not load temporal boundaries')
 
-    if bt0 is None:
-        bt0 = np.zeros(2)
-    if bt1 is None:
-        bt1 = np.zeros(2)
-    if bx0 is None:
-        bx0 = np.zeros(2)
-    if bx1 is None:
-        bx1 = np.zeros(2)
+    try:
+        bt0 = np.array(bt0)
+        bt1 = np.array(bt1)
+    except:
+        raise IOError('Could not cast temporal boundaries into arrays')
 
-    N = max( bt0.size , bt1.size ) - 1
-    P = max( bx0.size , bx1.size ) - 1
+    if ( not len(bt0.shape) == 1 or
+         not len(bt1.shape) == 1 ):
+        raise IOError('Temporal boundaries must be 1-dimensional arrays')
 
-    f0 = np.zeros(N+1)
-    f1 = np.zeros(N+1)
-    m0 = np.zeros(P+1)
-    m1 = np.zeros(P+1)
+    if not bt0.size == config.N + 1:
+        print( 'Interpolating bt0 into OT resolution ...')
+        bt0temp = bt0.copy()
+        interpBt0 = interp1d( np.linspace( 0.0 , 1.0 , bt0.size ) , bt0temp )
+        bt0 = interpBt0( np.linspace( 0.0 , 1.0 , config.N + 1 ) )
+
+    if not bt1.size == config.N + 1:
+        print( 'Interpolating bt1 into OT resolution ...')
+        bt1temp = bt1.copy()
+        interpBt1 = interp1d( np.linspace( 0.0 , 1.0 , bt1.size ) , bt1temp )
+        bt1 = interpBt1( np.linspace( 0.0 , 1.0 , config.N + 1 ) )
+
+    temporalBoundaries = grid.TemporalBoundaries( config.N , config.P , bt0 , bt1 )
+
+    if not config.dynamics == 0:
+        spatialBoundaries = grid.SpatialBoundaries( config.N , config.P )
+        return grid.Boundaries( config.N , config.P , temporalBoundaries , spatialBoundaries )
+
+    bx0 = arrayFromFile( config.filem0 )
+    bx1 = arrayFromFile( config.filem1 )
+
+    if bx0 is None or bx1 is None:
+        raise IOError('Could not load spatial boundaries')
+
+    try:
+        bx0 = np.array(bx0)
+        bx1 = np.array(bx1)
+    except:
+        raise IOError('Could not cast spatial boundaries into arrays')
+
+    if ( not len(bx0.shape) == 1 or
+         not len(bx1.shape) == 1 ):
+        raise IOError('Spatial boundaries must be 1-dimensional arrays')
+
+    if not bx0.size == config.P + 1:
+        print( 'Interpolating bx0 into OT resolution ...')
+        bx0temp = bx0.copy()
+        interpBx0 = interp1d( np.linspace( 0.0 , 1.0 , bx0.size ) , bx0temp )
+        bx0 = interpBx0( np.linspace( 0.0 , 1.0 , config.P + 1 ) )
+
+    if not bx1.size == config.P + 1:
+        print( 'Interpolating bx1 into OT resolution ...')
+        bx1temp = bx1.copy()
+        interpBx1 = interp1d( np.linspace( 0.0 , 1.0 , bx1.size ) , bx1temp )
+        bx1 = interpBx1( np.linspace( 0.0 , 1.0 , config.P + 1 ) )
+
+    spatialBoundaries = grid.SpatialBoundaries( config.N , config.P , bx0 , bx1 )
     
-    f0[0:bt0.size] = bt0[:]
-    f1[0:bt1.size] = bt1[:]
-    m0[0:bx0.size] = bx0[:]
-    m1[0:bx1.size] = bx1[:]
-
-    temporalBoundaries = grid.TemporalBoundaries( N , P ,
-                                                  f0 , f1 )
-    spatialBoundaries = grid.SpatialBoundaries( N , P ,
-                                                m0 , m1 )
-    boundaries = grid.Boundaries( N , P ,
-                                  temporalBoundaries, spatialBoundaries )
-
-    return boundaries
+    return grid.Boundaries( config.N , config.P , temporalBoundaries , spatialBoundaries )
