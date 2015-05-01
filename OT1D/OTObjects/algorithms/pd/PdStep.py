@@ -5,8 +5,7 @@
 # Step function for a PD Algorithm
 #
 
-from .. import OTObject as oto
-from ..grid import grid
+from ...grid import grid
 
 class PdStep:
     '''
