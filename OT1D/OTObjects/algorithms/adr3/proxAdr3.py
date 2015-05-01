@@ -42,11 +42,11 @@ class Prox2Adr3( OTObject ):
                            config.N , config.P )
         self.proxCsc = proxCsc
 
-        def __repr__(self):
-            return ( 'Second proximal operator for an ADR3 algorithm' )
+    def __repr__(self):
+        return ( 'Second proximal operator for an ADR3 algorithm' )
 
-        def __call__(self, stagCentField):
-            return self.proxCsc(stagCentField)
+    def __call__(self, stagCentField):
+        return self.proxCsc(stagCentField)
 
 class Prox3Adr3( OTObject ):
     '''

@@ -31,7 +31,7 @@ class Configuration(object):
         elif self.algoName == 'pd':
             return PdAlgorithm(self)
         elif self.algoName == 'adr3':
-            return Adr3Algorithù(self)
+            return Adr3Algorithm(self)
         else:
             return
 

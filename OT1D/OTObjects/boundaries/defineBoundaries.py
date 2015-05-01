@@ -41,7 +41,7 @@ def boundariesForConfig(config):
 
     # from file
     elif config.boundaryType == 0:
-        config.boundaries = boundariesFromFile( config )
+        config.boundaries = boundariesFromFile( config )
 
     # normalize boundaries
     config.boundaries.normalize(config.normType)
