@@ -16,7 +16,7 @@ outputDir = ./
 #__________________________________________________
 # Dynamics / Boundaries parameters
 
-# N and P are only required if you choose a default configuration
+# Space / Time disretization
 N = 32
 P = 32
 
@@ -57,9 +57,16 @@ gamma = 0.013333333
 alpha = 1.998
 
 # for pd algorithm
-theta = 1.
-sigma = 85.
-tau   = 0.0116470588235294
+#theta = 1.
+#sigma = 85.
+#tau   = 0.0116470588235294
+
+# for adr3 algorithm
+#gamma  = 0.013333333
+#alpha  = 1.998
+#omega1 = 0.33
+#omega2 = 0.33
+#omega3 = 0.34
 
 #__________________________________________________
 # Initial condition
