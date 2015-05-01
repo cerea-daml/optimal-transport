@@ -16,21 +16,17 @@ def boundaryGaussianSplit1(N,P,
     # f1(x) = A1exp(-alphaX1(x-x1)^2)
     #
 
-    # Normalize parameters
-    x1n = np.mod(x1,1.)*N
-    x00n = np.mod(x00,1.)*N
-    x01n = np.mod(x01,1.)*N
-    alphaX1n = alphaX1/(N*N)
-    alphaX00n = alphaX00/(N*N)
-    alphaX01n = alphaX01/(N*N)
+    x1  = np.mod(x1,1.)
+    x00 = np.mod(x00,1.)
+    x01 = np.mod(x01,1.)
 
     # Defines f0 and f1
-    X  = np.arange(N+1)
+    X  = np.linspace( 0.0 , 1.0 , N + 1 )
     
-    f0 = ( A00 * np.exp( -alphaX00n * np.power( X - x00n , 2 ) ) +
-           A01 * np.exp( -alphaX01n * np.power( X - x01n , 2 ) ) )
+    f0 = ( A00 * np.exp( -alphaX00 * np.power( X - x00 , 2 ) ) +
+           A01 * np.exp( -alphaX01 * np.power( X - x01 , 2 ) ) )
 
-    f1 = ( A1  * np.exp( -alphaX1n  * np.power( X - x1n  , 2 ) ) )
+    f1 = ( A1  * np.exp( -alphaX1  * np.power( X - x1  , 2 ) ) )
 
     temporalBoundaries = grid.TemporalBoundaries( N , P , f0 , f1 )
     spatialBoundaries  = grid.SpatialBoundaries( N , P )
@@ -46,19 +42,16 @@ def boundaryGaussianSplit2(N,P,
     # f1(x) = A10exp(-alphaX10(x-x10)^2) + A11exp(-alphaX11(x-x11)^2)
     #
 
-    # Normalize parameters
-    x0n = np.mod(x0,1.)*N
-    x10n = np.mod(x10,1.)*N
-    x11n = np.mod(x11,1.)*N
-    alphaX0n = alphaX0/(N*N)
-    alphaX10n = alphaX10/(N*N)
-    alphaX11n = alphaX11/(N*N)
+    x0  = np.mod(x0,1.)
+    x10 = np.mod(x10,1.)
+    x11 = np.mod(x11,1.)
 
     # Defines f0 and f1
-    X  = np.arange(N+1)
-    f0 = ( A0  * np.exp( -alphaX0n  * np.power( X - x0n  , 2 ) ) )
-    f1 = ( A10 * np.exp( -alphaX10n * np.power( X - x10n , 2 ) ) +
-           A11 * np.exp( -alphaX11n * np.power( X - x11n , 2 ) ) )
+    X  = np.linspace( 0.0 , 1.0 , N + 1 )
+
+    f0 = ( A0  * np.exp( -alphaX0  * np.power( X - x0  , 2 ) ) )
+    f1 = ( A10 * np.exp( -alphaX10 * np.power( X - x10 , 2 ) ) +
+           A11 * np.exp( -alphaX11 * np.power( X - x11 , 2 ) ) )
 
     temporalBoundaries = grid.TemporalBoundaries( N , P , f0 , f1 )
     spatialBoundaries  = grid.SpatialBoundaries( N , P )
@@ -67,32 +60,32 @@ def boundaryGaussianSplit2(N,P,
                             temporalBoundaries, spatialBoundaries )
 
 def defaultBoundaryGaussianSplit1(N, P):
-    A00 = 1.
-    A01 = 1.
-    alphaX00 = N*N*0.1
-    alphaX01 = N*N*0.1
-    x00 = 0.25
-    x01 = 0.75
+    A00      = 1.
+    A01      = 1.
+    alphaX00 = 0.1
+    alphaX01 = 0.1
+    x00      = 0.25
+    x01      = 0.75
         
-    A1 = 1.
-    alphaX1 = N*N*0.05
-    x1 = 0.5
+    A1       = 1.
+    alphaX1  = 0.05
+    x1       = 0.5
     
     return boundaryGaussianSplit1(N, P,
                                   A00,A01,alphaX00,alphaX01,x00,x01,
                                   A1,alphaX1,x1)
 
 def defaultBoundaryGaussianSplit2(N, P):
-    A0 = 1.
-    alphaX0 = N*N*0.05
-    x0 = 0.5
+    A0       = 1.
+    alphaX0  = 0.05
+    x0       = 0.5
 
-    A10 = 1.
-    A11 = 1.
-    alphaX10 = N*N*0.1
-    alphaX11 = N*N*0.1
-    x10 = 0.25
-    x11 = 0.75
+    A10      = 1.
+    A11      = 1.
+    alphaX10 = 0.1
+    alphaX11 = 0.1
+    x10      = 0.25
+    x11      = 0.75
         
     return boundaryGaussianSplit2(N, P,
                                   A0,alphaX0,x0,
