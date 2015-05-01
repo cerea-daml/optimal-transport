@@ -7,7 +7,7 @@
 
 from boundaries.defineBoundaries import boundariesForConfig
 from algorithms.adr.adrAlgorithm import AdrAlgorithm
-#from algorithms.pd.pdAlgorithm import PdAlgorithm
+from algorithms.pd.pdAlgorithm import PdAlgorithm
 
 class Configuration(object):
     '''

@@ -11,7 +11,7 @@ from ...init.initialFields import initialStaggeredField
 from ...proximals.defineProximals import proximalForConfig
 
 from pdState import PdState
-from PdStep import PdStep
+from pdStep import PdStep
 from proxPd import Prox1Pd
 from proxPd import Prox2Pd
 
