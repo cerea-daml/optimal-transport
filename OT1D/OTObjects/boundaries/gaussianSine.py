@@ -66,13 +66,13 @@ def boundaryGaussianCosine(N,P,
 
 def defaultBoundaryGaussianSine(N, P):
     A0      = 1.
-    alphaX0 = 0.05
+    alphaX0 = 60.
     betaX0  = 16*np.pi
     x00     = 0.25
     x01     = 0.
             
     A1      = 1.
-    alphaX1 = 0.05
+    alphaX1 = 60.
     betaX1  = 16*np.pi
     x10     = 0.75
     x11     = 0.
@@ -83,13 +83,13 @@ def defaultBoundaryGaussianSine(N, P):
 
 def defaultBoundaryGaussianCosine(N, P):
     A0      = 1.
-    alphaX0 = 0.05
+    alphaX0 = 60.
     betaX0  = 16*np.pi
     x00     = 0.25
     x01     = 0.
             
     A1      = 1.
-    alphaX1 = 0.05
+    alphaX1 = 60.
     betaX1  = 16*np.pi
     x10     = 0.75
     x11     = 0.

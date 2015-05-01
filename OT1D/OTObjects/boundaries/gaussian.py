@@ -61,7 +61,7 @@ def boundaryGaussian2(N,P,
 
 def defaultBoundaryGaussian(N, P):
     A0      = 1.
-    alphaX0 = 0.05
+    alphaX0 = 60.
     x0      = 0.375
         
     A1      = 1.
@@ -74,15 +74,15 @@ def defaultBoundaryGaussian(N, P):
 def defaultBoundaryGaussian2(N, P):
     A00      = 1.
     A01      = 1.
-    alphaX00 = 0.25
-    alphaX01 = 0.25
+    alphaX00 = 260.
+    alphaX01 = 260.
     x00      = 0.25
     x01      = 0.5
     
     A10      = 1.
     A11      = 1.
-    alphaX10 = 0.25
-    alphaX11 = 0.25
+    alphaX10 = 260.
+    alphaX11 = 260.
     x10      = 0.5
     x11      = 0.75
     

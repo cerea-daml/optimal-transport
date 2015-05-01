@@ -62,8 +62,8 @@ def boundaryGaussianSplit2(N,P,
 def defaultBoundaryGaussianSplit1(N, P):
     A00      = 1.
     A01      = 1.
-    alphaX00 = 0.1
-    alphaX01 = 0.1
+    alphaX00 = 110.
+    alphaX01 = 110.
     x00      = 0.25
     x01      = 0.75
         
@@ -82,8 +82,8 @@ def defaultBoundaryGaussianSplit2(N, P):
 
     A10      = 1.
     A11      = 1.
-    alphaX10 = 0.1
-    alphaX11 = 0.1
+    alphaX10 = 110.
+    alphaX11 = 110.
     x10      = 0.25
     x11      = 0.75
         
