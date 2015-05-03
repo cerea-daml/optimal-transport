@@ -59,5 +59,6 @@ def plotAnalyseFromDir(directory):
     '''
     Plots the analyse result stored in the given directory.
     '''
-    plotAnalyseDefaultSubplots(directory,directory)
+    plotAnalyseDefaultSubplots(directory,directory,'analyseIter')
+    plotAnalyseDefaultSubplots(directory,directory,'analyseTime','time')
 
