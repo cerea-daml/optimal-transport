@@ -9,8 +9,11 @@ from OTObjects.configuration import Configuration
 from OTObjects.analyse.computeOperators import applyAllOperators
 from OTObjects.plotting.plotAnalyse import plotAnalyseDefaultSubplots
 from OTObjects.plotting.plotAnalyseMultiSim import plotAnalysesDefaultSubplots
+
 from OTObjects.plotting.plotFinalStep import plotFinalState
 from OTObjects.plotting.plotFinalStep import animFinalState
+from OTObjects.plotting.plotFinalStepMultiSim import plotFinalStateMultiSim
+from OTObjects.plotting.plotFinalStepMultiSim import animFinalStateMultiSim
 
 import pickle as pck
 
@@ -82,3 +85,8 @@ def animFinalStateFromDir(directory):
     '''
     animFinalState(directory, directory, figName='finalState.mp4', writer='ffmpeg', interval=100., transpFun=None, options=None)
 
+def plotMultiFinalStateFromDir(directoryList,figDir):
+    plotFinalStateMultiSim(directoryList, figDir, prefixFigName='finalState', transpFun=None, labelsList=None, options=None)
+
+def animMultiFinalStateFromDir(directoryList,figDir):
+    animFinalStateMultiSim(directoryList, figDir, figName='finalState.mp4', writer='ffmpeg', interval=100., transpFun=None, options=None)

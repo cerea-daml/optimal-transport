@@ -146,8 +146,8 @@ def animFinalState(outputDir, figDir, figName='finalState.mp4', writer='ffmpeg',
         timeText = plt.text(xTxt, yTxt, suffixFor(i,finalState.P+1)+' / '+str(finalState.P+1))
         ret.append(timeText)
 
-        lineBkgPbar, = plt.plot([float((0.+i)/(finalState.P+1.)),1.],[yPbar,yPbar], 'k-', linewidth=5)
-        linePbar, = plt.plot([0.,float((0.+i)/(finalState.P+1.))],[yPbar,yPbar], 'g-', linewidth=5)
+        lineBkgPbar, = plt.plot([float((0.+i)/(finalState.P+1.))*0.6+0.2,0.8],[yPbar,yPbar], 'k-', linewidth=5)
+        linePbar, = plt.plot([0.2,float((0.+i)/(finalState.P+1.))*0.6+0.2],[yPbar,yPbar], 'g-', linewidth=5)
         ret.append(lineBkgPbar)
         ret.append(linePbar)
 
