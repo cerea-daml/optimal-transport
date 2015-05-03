@@ -9,6 +9,7 @@ from OTObjects.configuration import Configuration
 from OTObjects.analyse.computeOperators import applyAllOperators
 from OTObjects.plotting.plotAnalyse import plotAnalyseDefaultSubplots
 from OTObjects.plotting.plotFinalStep import plotFinalState
+from OTObjects.plotting.plotFinalStep import animFinalState
 
 import pickle as pck
 
@@ -69,3 +70,10 @@ def plotFinalStateFromDir(directory):
     Plots the result of a simulation stored in the given directory.
     '''
     plotFinalState(directory, directory, 'finalState', transpFun=None, options=None)
+
+def animFinalStateFromDir(directory):
+    '''
+    Animates the result of a simulation stored in the given directory.
+    '''
+    animFinalState(directory, directory, figName='finalState.mp4', writer='ffmpeg', interval=100., transpFun=None, options=None)
+
