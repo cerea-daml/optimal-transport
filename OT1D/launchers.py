@@ -8,6 +8,7 @@
 from OTObjects.configuration import Configuration
 from OTObjects.analyse.computeOperators import applyAllOperators
 from OTObjects.plotting.plotAnalyse import plotAnalyseDefaultSubplots
+from OTObjects.plotting.plotAnalyseMultiSim import plotAnalysesDefaultSubplots
 from OTObjects.plotting.plotFinalStep import plotFinalState
 from OTObjects.plotting.plotFinalStep import animFinalState
 
@@ -64,6 +65,10 @@ def plotAnalyseFromDir(directory):
     '''
     plotAnalyseDefaultSubplots(directory,directory,'analyseIter')
     plotAnalyseDefaultSubplots(directory,directory,'analyseTime','time')
+
+def plotMultiAnalysesFromDir(directoryList,figDir):
+    plotAnalysesDefaultSubplots(directoryList,figDir,'analyseIter')
+    plotAnalysesDefaultSubplots(directoryList,figDir,'analyseTime','time')
 
 def plotFinalStateFromDir(directory):
     '''
