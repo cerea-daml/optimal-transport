@@ -8,6 +8,8 @@
 from OTObjects.configuration import Configuration
 from OTObjects.analyse.computeOperators import applyAllOperators
 from OTObjects.plotting.plotAnalyse import plotAnalyseDefaultSubplots
+from OTObjects.plotting.plotFinalStep import plotFinalState
+
 import pickle as pck
 
 def launchFromConfigFile(configFile):
@@ -62,3 +64,8 @@ def plotAnalyseFromDir(directory):
     plotAnalyseDefaultSubplots(directory,directory,'analyseIter')
     plotAnalyseDefaultSubplots(directory,directory,'analyseTime','time')
 
+def plotFinalStateFromDir(directory):
+    '''
+    Plots the result of a simulation stored in the given directory.
+    '''
+    plotFinalState(directory, directory, 'finalState', transpFun=None, options=None)

@@ -65,7 +65,7 @@ def defaultBoundaryGaussian(N, P):
     x0      = 0.375
         
     A1      = 1.
-    alphaX1 = 0.05
+    alphaX1 = 60.
     x1      = 0.625
 
     return boundaryGaussian(N,P,
