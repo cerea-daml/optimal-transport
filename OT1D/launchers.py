@@ -6,6 +6,7 @@
 #
 
 from OTObjects.configuration import Configuration
+from OTObjects.analyse.computeOperators import applyAllOperators
 import pickle as pck
 
 def launchFromConfigFile(configFile):
@@ -25,7 +26,7 @@ def continueFromDir(directory, newIterTarget=None):
     Runs newIterTarget (if given or previous config.iterTarget) iterations from the last final state. 
     '''
     configsFile = directory + 'config.bin'
-    f = open(confisFile, 'rb')
+    f = open(configsFile, 'rb')
     p = pck.Unpickler(f)
     try:
         while True:
@@ -38,3 +39,17 @@ def continueFromDir(directory, newIterTarget=None):
 
     algorithm = config.algorithm()
     return algorithm.run()
+
+def analyseFromConfigFile(configFile):
+    '''
+    Applies analyse operators to the state for the analyse corresponding to the given configuration file.
+    '''
+    
+    config = Configuration(configFile)
+    return applyAllOperators(config.outputDir)
+
+def analyseFromDir(directory):
+    '''
+    Does the same for the result of the analyse stored in the given directory.
+    '''
+    return applyAllOperators(directory)

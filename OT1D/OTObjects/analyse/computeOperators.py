@@ -8,6 +8,9 @@
 import numpy as np
 import pickle as pck
 
+from operators1 import listOfOperators1 as defineListOfOperators1
+from operators2 import listOfOperators2 as defineListOfOperators2
+
 def extractIterations(outputDir):
     '''
     Extracts the iteration numbers from config file for a simulation
@@ -58,6 +61,7 @@ def applyOperators(listOfOperators1, listOfOperators2, outputDir):
     f = open(fileFinalState, 'rb')
     p = pck.Unpickler(f)
     finalState = p.load()
+    f.close()
 
     fileStates = outputDir + 'states.bin'
     f = open(fileStates,'rb')
@@ -67,11 +71,25 @@ def applyOperators(listOfOperators1, listOfOperators2, outputDir):
         state = p.load()
         iterationTimes[i] = p.load()
         for j in xrange(len(listOfOperators1)):
-            values[i,j] = listOfOperators1[j](state)
+            values[i,j] = listOfOperators1[j][1](state)
         for j in xrange(len(listOfOperators2)):
-            values[i,len(listOfOperators1)+j] = listOfOperators2[j](state,finalState)
+            values[i,len(listOfOperators1)+j] = listOfOperators2[j][1](state,finalState)
         i += 1
+    f.close()
+
+    fileAnalyse = outputDir + 'analyse.bin'
+    f = open(fileAnalyse, 'wb')
+    p = pck.Pickler(f)
+    p.dump(iterationNumbers)
+    p.dump(iterationTimes)
+    p.dump(listOfOperators1[:][0])
+    p.dump(listOfOperators2[:][0])
+    p.dump(values)
+    f.close()
 
     return ( iterationNumbers, iterationTimes, values )
     
-        
+def applyAllOperators(outputDir):
+    listOfOperators1 = defineListOfOperators1()
+    listOfOperators2 = defineListOfOperators2()
+    return applyOperators(listOfOperators1, listOfOperators2, outputDir)
