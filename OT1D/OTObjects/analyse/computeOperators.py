@@ -85,6 +85,8 @@ def applyOperators(listOfOperators1, listOfOperators2, outputDir):
     for op in listOfOperators2:
         operatorNames.append(op[1])
 
+    iterationTimes = np.cumsum(iterationTimes)
+
     fileAnalyse = outputDir + 'analyse.bin'
     f = open(fileAnalyse, 'wb')
     p = pck.Pickler(f)
