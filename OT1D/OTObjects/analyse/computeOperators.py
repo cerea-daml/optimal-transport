@@ -38,7 +38,7 @@ def extractIterations(outputDir):
 
     iterationNumbers = np.zeros(size)
     i = 0
-    for run in in runs:
+    for run in runs:
         iterationNumbers[i:i+run.size] = run[:]
         i += run.size
 
@@ -49,11 +49,13 @@ def applyOperators(listOfOperators1, listOfOperators2, outputDir):
     Apply operators to all states of a simulation
     '''
 
+    print('Starting analyse in '+outputDir+' ...')
+
     iterationNumbers = extractIterations(outputDir)
     size = iterationNumbers.size
 
     iterationTimes = np.zeros(size)
-    values = np.zeros(shape=(size,len(listOfOperators)+len(listOfOperators2)))
+    values = np.zeros(shape=(size,len(listOfOperators1)+len(listOfOperators2)))
 
     i = 0
 
@@ -71,22 +73,28 @@ def applyOperators(listOfOperators1, listOfOperators2, outputDir):
         state = p.load()
         iterationTimes[i] = p.load()
         for j in xrange(len(listOfOperators1)):
-            values[i,j] = listOfOperators1[j][1](state)
+            values[i,j] = listOfOperators1[j][0](state)
         for j in xrange(len(listOfOperators2)):
-            values[i,len(listOfOperators1)+j] = listOfOperators2[j][1](state,finalState)
+            values[i,len(listOfOperators1)+j] = listOfOperators2[j][0](state,finalState)
         i += 1
     f.close()
+
+    operatorNames = []
+    for op in listOfOperators1:
+        operatorNames.append(op[1])
+    for op in listOfOperators2:
+        operatorNames.append(op[1])
 
     fileAnalyse = outputDir + 'analyse.bin'
     f = open(fileAnalyse, 'wb')
     p = pck.Pickler(f)
     p.dump(iterationNumbers)
     p.dump(iterationTimes)
-    p.dump(listOfOperators1[:][0])
-    p.dump(listOfOperators2[:][0])
+    p.dump(operatorNames)
     p.dump(values)
     f.close()
 
+    print ('Results written in '+fileAnalyse+' ...')
     return ( iterationNumbers, iterationTimes, values )
     
 def applyAllOperators(outputDir):

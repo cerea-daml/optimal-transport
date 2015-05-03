@@ -6,6 +6,8 @@
 # to be used to analyse the results of a simulation
 #
 
+import numpy as np
+
 def listOfOperators1():
     l = []
     l.append( ( maxDiv , '$max(div(m_n,f_n))$' ) )
@@ -16,22 +18,22 @@ def listOfOperators1():
     
     for e in eps:
         funcJeps = make_functionalJeps(e)
-        l.append( ( funcJeps , '$J_{'+e+'}(m_n,f_n)$' ) )
+        l.append( ( funcJeps , '$J_{'+str(e)+'}(m_n,f_n)$' ) )
     return l
 
 def maxDiv(state):
-    return state.convergingStaggeredField.divergence().LInftyNorm()
+    return state.convergingStaggeredField().divergence().LInftyNorm()
 
 def absMin(state):
-    return abs( state.convergingStaggeredField.f.min() )
+    return abs( state.convergingStaggeredField().f.min() )
 
 def functionalJ(state):
     return ( state.functionalJ() / ( state.N * state.P ) )
 
 def make_functionalJeps(eps):
     def funcJeps(state):
-        centField = state.convergingStaggeredField.interpolation()
-        return ( np.power( centField.m , 2. ) / np.maximum( f , eps ) ).sum() / ( state.N * state.P ) 
+        centField = state.convergingStaggeredField().interpolation()
+        return ( np.power( centField.m , 2. ) / np.maximum( centField.f , eps ) ).sum() / ( state.N * state.P ) 
     return funcJeps
  
 

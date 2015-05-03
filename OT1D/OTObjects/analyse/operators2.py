@@ -12,7 +12,7 @@ def listOfOperators2():
     return l
 
 def convergence(state, finalState):
-    return ( state.convergingStaggeredField - finalState.convergingStaggeredField ).LInftyNorm()
+    return ( state.convergingStaggeredField() - finalState.convergingStaggeredField() ).LInftyNorm()
 
 
  

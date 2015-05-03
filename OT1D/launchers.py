@@ -7,6 +7,7 @@
 
 from OTObjects.configuration import Configuration
 from OTObjects.analyse.computeOperators import applyAllOperators
+from OTObjects.plotting.plotAnalyse import plotAnalyseDefaultSubplots
 import pickle as pck
 
 def launchFromConfigFile(configFile):
@@ -53,3 +54,10 @@ def analyseFromDir(directory):
     Does the same for the result of the analyse stored in the given directory.
     '''
     return applyAllOperators(directory)
+
+def plotAnalyseFromDir(directory):
+    '''
+    Plots the analyse result stored in the given directory.
+    '''
+    plotAnalyseDefaultSubplots(directory,directory)
+
