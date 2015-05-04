@@ -925,8 +925,8 @@ class Boundaries( oto.OTObject ):
 
         elif normType == 1:
             # mass exits leftward and rightward
-            self.bx0 += 0.5 * ( m_final - m_init ) / ( self.N * ( self.P + 1 ) )
-            self.bx1 -= 0.5 * ( m_final - m_init ) / ( self.N * ( self.P + 1 ) )
+            self.spatialBoundaries.bx0 += 0.5 * ( m_final - m_init ) / ( self.N * ( self.P + 1 ) )
+            self.spatialBoundaries.bx1 -= 0.5 * ( m_final - m_init ) / ( self.N * ( self.P + 1 ) )
 
     def __add__(self, other):
         if isinstance(other,Boundaries):
