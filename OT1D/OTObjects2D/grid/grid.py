@@ -178,12 +178,12 @@ class StaggeredField( Field ):
 
     def interpolation(self):
         mx = np.zeros(shape=(self.M+1,self.N+1,self.P+1))
-        mx[:,:,:]           = 0.5*self.m[0:self.M+1,:,:]
-        mx[0:self.M+1,:,:] += 0.5*self.m[1:self.M+2,:,:]
+        mx[:,:,:]           = 0.5*self.mx[0:self.M+1,:,:]
+        mx[0:self.M+1,:,:] += 0.5*self.mx[1:self.M+2,:,:]
 
         my = np.zeros(shape=(self.M+1,self.N+1,self.P+1))
-        my[:,:,:]           = 0.5*self.m[:,0:self.N+1,:]
-        my[:,0:self.N+1,:] += 0.5*self.m[:,1:self.N+2,:]
+        my[:,:,:]           = 0.5*self.my[:,0:self.N+1,:]
+        my[:,0:self.N+1,:] += 0.5*self.my[:,1:self.N+2,:]
 
         f  = np.zeros(shape=(self.M+1,self.N+1,self.P+1))
         f[:,:,:]            = 0.5*self.f[:,:,0:self.P+1]
@@ -351,7 +351,7 @@ class CenteredField( Field ):
 
     def __init__( self ,
                   M , N , P ,
-                  mx , my , f ):
+                  mx=None , my=None , f=None ):
         OTObject.__init__( self ,
                            M , N , P )
         
@@ -858,7 +858,7 @@ class SpatialBoundaries( OTObject ):
 
     def __init__( self ,
                   M , N , P ,
-                  bx0 , bx1 , by0 , by1 ):
+                  bx0=None , bx1=None , by0=None , by1=None ):
         OTObject.__init__( self ,
                            M , N , P )
 
@@ -883,13 +883,13 @@ class SpatialBoundaries( OTObject ):
     def __repr__(self):
         return 'Object representing the spatial boundaries of a field'
 
-    def random( N , P ):
+    def random( M , N , P ):
         bx0 = np.random.rand(N+1,P+1)
         bx1 = np.random.rand(N+1,P+1)
         
         by0 = np.random.rand(M+1,P+1)
         by1 = np.random.rand(M+1,P+1)
-        return SpatialBoundaries( N , P ,
+        return SpatialBoundaries( M , N , P ,
                                   bx0 , bx1 , by0 , by1 )
     random = staticmethod(random)
 
@@ -911,9 +911,9 @@ class SpatialBoundaries( OTObject ):
         return ( self.M * ( self.bx0.sum() - self.bx1.sum() ) +
                  self.N * ( self.by0.sum() - self.by1.sum() ) )
 
-   def LInftyNorm(self):
-       return np.max( [ abs(self.bx0).max() , abs(self.bx1).max() ,
-                        abs(self.by0).max() , abs(self.by1).max() ] )
+    def LInftyNorm(self):
+        return np.max( [ abs(self.bx0).max() , abs(self.bx1).max() ,
+                         abs(self.by0).max() , abs(self.by1).max() ] )
 
     def __add__(self, other):
         if isinstance(other,SpatialBoundaries):
@@ -1043,7 +1043,7 @@ class Boundaries( OTObject ):
 
     def __init__( self ,
                   M , N , P ,
-                  temporalBoundaries , spatialBoundaries ):
+                  temporalBoundaries=None , spatialBoundaries=None ):
         OTObject.__init__( self ,
                            M , N , P )
         if temporalBoundaries is None:
@@ -1229,7 +1229,7 @@ class DivergenceBoundaries( OTObject ):
 
     def __init__( self ,
                   M , N , P ,
-                  divergence , boundaries ):
+                  divergence=None , boundaries=None ):
         OTObject.__init__( self ,
                            M , N , P )
 
@@ -1295,7 +1295,7 @@ class DivergenceBoundaries( OTObject ):
                                      Divergence.random(M,N,P) , Boundaries.random(M,N,P) )
     random = staticmethod(random)
 
-    def ones( N , P ):
+    def ones( M , N , P ):
         div =  np.ones(shape=(M+1,N+1,P+1))
         bx0 =  M*np.ones(shape=(N+1,P+1))
         bx1 = -M*np.ones(shape=(N+1,P+1))
@@ -1428,7 +1428,7 @@ class DivergenceTemporalBoundaries( OTObject ):
 
     def __init__( self ,
                   M , N , P ,
-                  divergence , temporalBoundaries ):
+                  divergence=None , temporalBoundaries=None ):
         OTObject.__init__( self ,
                            M , N , P )
         if divergence is None:
@@ -1576,7 +1576,7 @@ class StaggeredCenteredField( OTObject ):
 
     def __init__( self ,
                   M , N , P ,
-                  staggeredField , centeredField ):
+                  staggeredField=None , centeredField=None ):
         OTObject.__init__( self ,
                            M , N , P )
         if staggeredField is None:
@@ -1733,7 +1733,7 @@ class CenteredFieldBoundaries( OTObject ):
 
     def __init__( self ,
                   M , N , P ,
-                  centeredField , boundaries ):
+                  centeredField=None , boundaries=None ):
         OTObject.__init__( self ,
                            M , N , P )
 
@@ -1882,7 +1882,7 @@ class CenteredFieldTemporalBoundaries( OTObject ):
 
     def __init__( self ,
                   M , N , P ,
-                  centeredField , temporalBoundaries ):
+                  centeredField=None , temporalBoundaries=None ):
         OTObject.__init__( self ,
                            M , N , P )
         if centeredField is None:
