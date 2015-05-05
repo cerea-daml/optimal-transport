@@ -10,7 +10,7 @@ from ..grid import grid
 
 def boundaryGaussianSine(M,N,P,
                          A0,alphaX0,betaX0,alphaY0,betaY0,x00,x01,y00,y01,
-                         A1,alphaX1,betaX1,alphaY1,betaY1,x10,x11,y10,y11)
+                         A1,alphaX1,betaX1,alphaY1,betaY1,x10,x11,y10,y11):
     #
     # f0 = A0exp(-alphaX0(x-x00)^2)exp(-alphaY0(y-y00)^2)sin^2(betaX0(x-x01))sin^2(betaY0(y-y01))
     # f1 = A1exp(-alphaX1(x-x10)^2)exp(-alphaY1(y-y10)^2)sin^2(betaX1(x-x11))sin^2(betaY1(y-y11))
@@ -49,7 +49,7 @@ def boundaryGaussianSine(M,N,P,
 
 def boundaryGaussianCosine(M,N,P,
                            A0,alphaX0,betaX0,alphaY0,betaY0,x00,x01,y00,y01,
-                           A1,alphaX1,betaX1,alphaY1,betaY1,x10,x11,y10,y11)
+                           A1,alphaX1,betaX1,alphaY1,betaY1,x10,x11,y10,y11):
     #
     # f0 = A0exp(-alphaX0(x-x00)^2)exp(-alphaY0(y-y00)^2)cos^2(betaX0(x-x01))cos^2(betaY0(y-y01))
     # f1 = A1exp(-alphaX1(x-x10)^2)exp(-alphaY1(y-y10)^2)cos^2(betaX1(x-x11))cos^2(betaY1(y-y11))

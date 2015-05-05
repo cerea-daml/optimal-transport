@@ -9,7 +9,7 @@ import numpy as np
 from ..grid import grid
 
 def boundaryGaussian(M,N,P,
-                     A0,alphaX0,aplhaY0,x0,y0,
+                     A0,alphaX0,alphaY0,x0,y0,
                      A1,alphaX1,alphaY1,x1,y1):
     #
     # f0(x) = A0exp(-alphaX0(x-x0)^2)exp(-alphaY0(y-y0)^2)

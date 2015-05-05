@@ -23,7 +23,7 @@ class Configuration(object):
         boundariesForConfig(self)
 
     def __repr__(self):
-        return 'Configuration for a 1D OT algoritm'
+        return 'Configuration for a 2D OT algoritm'
 
     def algorithm(self):
         if self.algoName == 'adr':

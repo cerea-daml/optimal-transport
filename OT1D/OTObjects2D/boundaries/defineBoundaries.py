@@ -161,7 +161,7 @@ def boundariesFromFile(config):
     except:
         raise IOError('Could not cast spatial X boundaries into arrays')
 
-   if len(bx0.shape == 1):
+    if len(bx0.shape == 1):
         bx0 = bx0.reshape((config.N+1,config.P+1))
 
     if len(bx1.shape == 1):
@@ -210,7 +210,7 @@ def boundariesFromFile(config):
     except:
         raise IOError('Could not cast spatial Y boundaries into arrays')
 
-   if len(by0.shape == 1):
+    if len(by0.shape == 1):
         by0 = by0.reshape((config.M+1,config.P+1))
 
     if len(by1.shape == 1):

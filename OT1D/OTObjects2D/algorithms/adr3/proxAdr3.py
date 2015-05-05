@@ -54,7 +54,7 @@ class Prox3Adr3( OTObject ):
                  config,
                  proxCb):
         OTObject.__init__( self ,
-                           conrig.M , config.N , config.P )
+                           config.M , config.N , config.P )
         self.proxCb = proxCb
 
     def __repr__(self):

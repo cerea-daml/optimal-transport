@@ -26,7 +26,7 @@ def initialStaggeredField(config):
 
         for i in xrange(config.P+1):
             for j in xrange(config.N+1):
-                f[:,j,i+1] += massIncoming[j,i] / ( config.M + 1. )
+                f[:,j,i+1] += massIncomingX[j,i] / ( config.M + 1. )
 
         massIncomingY = ( ( float(config.N) / float(config.P) ) * 
                           np.cumsum( config.boundaries.spatialBoundaries.by0 - 
@@ -34,7 +34,7 @@ def initialStaggeredField(config):
 
         for i in xrange(config.P+1):
             for j in xrange(config.M+1):
-                f[j,:,i+1] += massIncoming[j,i] / ( config.N + 1. )
+                f[j,:,i+1] += massIncomingY[j,i] / ( config.N + 1. )
 
     else:
     
