@@ -56,7 +56,7 @@ def boundariesForConfig(config):
                 bt1[1:M+2,1:N+2] = config.boundaries.temporalBoundaries.bt1[:,:]
                 temporalBoundaries = TemporalBoundaries( M+2, N+2, config.P, bt0, bt1 )
 
-                config.boundaries = Boundaries( M+2, N+2 , config.P , temporalBoundaries)
+                config.boundaries = Boundaries( M+2, N+2 , config.P , temporalBoundaries )
                 config.M = M+2
                 config.N = N+2
                 

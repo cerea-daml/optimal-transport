@@ -61,10 +61,8 @@ def boundariesForConfig(config):
                 bt0[1:N+2] = config.boundaries.temporalBoundaries.bt0[:]
                 bt1[1:N+2] = config.boundaries.temporalBoundaries.bt1[:]
                 temporalBoundaries = TemporalBoundaries( N+2, config.P, bt0, bt1 )
-                spatialBoundaries  = config.boundaries.spatialBoundaries.copy()
-                spatialBoundaries.N = N+2
 
-                config.boundaries = Boundaries( N+2 , config.P , temporalBoundaries , spatialBoundaries )
+                config.boundaries = Boundaries( N+2 , config.P , temporalBoundaries )
                 config.N = N+2
                 
                 if config.algoName == 'adr':
