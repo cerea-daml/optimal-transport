@@ -2,10 +2,10 @@ import sys
 import os
 import pickle
 
-from OT1D.OTObjects.configuration import Configuration
-from OT1D.OTObjects.analyse.computeOperators import applyAllOperators
-from OT1D.OTObjects.plotting.plotAnalyse import plotAnalyseDefaultSubplots
-from OT1D.OTObjects.plotting.plotFinalStep import animFinalState
+from OT1D.OTObjects1D.configuration import Configuration
+from OT1D.OTObjects1D.analyse.computeOperators import applyAllOperators
+from OT1D.OTObjects1D.plotting.plotAnalyse import plotAnalyseDefaultSubplots
+from OT1D.OTObjects1D.plotting.plotFinalStep import animFinalState
 
 def myrun(command):
     status = os.system(command)
