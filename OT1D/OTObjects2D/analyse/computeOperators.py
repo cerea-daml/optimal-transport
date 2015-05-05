@@ -44,13 +44,15 @@ def extractIterations(outputDir):
 
     return iterationNumbers
 
-def applyOperators(listOfOperators1, listOfOperators2, outputDir):
+def applyOperators(listOfOperators1, listOfOperators2, outputDir, printDetails=False):
     '''
     Apply operators to all states of a simulation
     '''
 
     print('Starting analyse in '+outputDir+' ...')
 
+    if printDetails:
+        print('Extracting number of iterations ...')
     iterationNumbers = extractIterations(outputDir)
     size = iterationNumbers.size
 
@@ -59,6 +61,8 @@ def applyOperators(listOfOperators1, listOfOperators2, outputDir):
 
     i = 0
 
+    if printDetails:
+        print('Catching final state ...')
     fileFinalState = outputDir + 'finalState.bin'
     f = open(fileFinalState, 'rb')
     p = pck.Unpickler(f)
@@ -70,6 +74,8 @@ def applyOperators(listOfOperators1, listOfOperators2, outputDir):
     p = pck.Unpickler(f)
 
     while i < size :
+        if printDetails:
+            print('Catching state '+str(i+1)+' / '+str(size)+' ...')
         state = p.load()
         iterationTimes[i] = p.load()
         for j in xrange(len(listOfOperators1)):
@@ -79,6 +85,8 @@ def applyOperators(listOfOperators1, listOfOperators2, outputDir):
         i += 1
     f.close()
 
+    if printDetails:
+        print('Preparing results ...')
     operatorNames = []
     for op in listOfOperators1:
         operatorNames.append(op[1])
@@ -99,7 +107,7 @@ def applyOperators(listOfOperators1, listOfOperators2, outputDir):
     print ('Results written in '+fileAnalyse+' ...')
     return ( iterationNumbers, iterationTimes, values )
     
-def applyAllOperators(outputDir):
+def applyAllOperators(outputDir, printDetails=False):
     listOfOperators1 = defineListOfOperators1()
     listOfOperators2 = defineListOfOperators2()
-    return applyOperators(listOfOperators1, listOfOperators2, outputDir)
+    return applyOperators(listOfOperators1, listOfOperators2, outputDir, printDetails)
