@@ -17,6 +17,7 @@ outputDir = ./
 # Dynamics / Boundaries parameters
 
 # Space / Time disretization
+M = 32
 N = 32
 P = 32
 
