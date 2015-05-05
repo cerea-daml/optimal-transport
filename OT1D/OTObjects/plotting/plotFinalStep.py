@@ -173,5 +173,5 @@ def animFinalState(outputDir, figDir, figName='finalState.mp4', writer='ffmpeg',
     print('Making animation ...')
     ani = anim.FuncAnimation(figure, animate, frames, init_func=init, interval=interval, blit=True)
     print('Writing '+figDir+figName+' ...')
-    ani.save(figDir+figName,'ffmpeg')
+    ani.save(figDir+figName,writer)
 
