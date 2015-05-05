@@ -10,7 +10,7 @@
 #   * initialize   [method]
 #
 
-import pickle as pck
+import cPickle as pck
 import time as tm
 import numpy as np
 
@@ -151,8 +151,8 @@ class Algorithm( OTObject ):
                 print('J           = '+str(self.stateN.functionalJ()))
 
             if np.mod(self.config.iterCount, self.config.nModWrite) == 0:
-                #p.dump(self.stateN)
-                p.dump(self.stateN.copy())
+                p.clear_memo()
+                p.dump(self.stateN)#.convergingStaggeredField)
                 p.dump(tm.time()-timeCheck)
                 timeCheck = tm.time()
 
