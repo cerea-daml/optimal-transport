@@ -22,17 +22,17 @@ def listOfOperators1():
     return l
 
 def maxDiv(state):
-    return state.convergingStaggeredField().divergence().LInftyNorm()
+    return state.divergence().LInftyNorm()
 
 def absMin(state):
-    return abs( state.convergingStaggeredField().f.min() )
+    return abs( state.f.min() )
 
 def functionalJ(state):
-    return ( state.functionalJ() / ( state.N * state.P ) )
+    return ( state.interpolation().functionalJ() / ( state.N * state.P ) )
 
 def make_functionalJeps(eps):
     def funcJeps(state):
-        centField = state.convergingStaggeredField().interpolation()
+        centField = state.interpolation()
         return ( np.power( centField.m , 2. ) / np.maximum( centField.f , eps ) ).sum() / ( state.N * state.P ) 
     return funcJeps
  

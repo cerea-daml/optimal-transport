@@ -30,7 +30,7 @@ class AdrAlgorithm( Algorithm ):
         return ( 'ADR algorithm' )
 
     def setState(self, newState):
-        stagField = newState.convergingStaggeredField()
+        stagField = newState
         centField = stagField.interpolation()
         z = grid.StaggeredCenteredField( self.config.N , self.config.P ,
                                          stagField, centField )

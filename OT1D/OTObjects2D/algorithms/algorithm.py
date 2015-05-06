@@ -47,12 +47,18 @@ class Algorithm( OTObject ):
             f.close()
 
             try:
-                runCount = np.fromfile(fileRunCount)
-                runCount += 1.
-                runCount.tofile(fileRunCount)
+                f = open(fileRunCount, 'rb')
+                p = pck.Unpickler(f)
+                runCount = p.load()
+                runCount += 1
+                f.close()
             except:
-                runCount = np.ones(1)
-                runCount.tofile(fileRunCount)
+                runCount = 1
+
+            f = open(fileRunCount, 'wb')
+            p = pck.Pickler(f,protocol=-1)
+            p.dump(runCount)
+            f.close()
 
             self.config.iterCount = 0
             self.config.iterTarget = 0
@@ -76,8 +82,10 @@ class Algorithm( OTObject ):
         print('Searching for previous runs in '+self.config.outputDir+'...')
         fileRunCount = self.config.outputDir + 'runCount.bin'
         try:
-            runCount = np.fromfile(fileRunCount)
-            runCount = int(np.floor(runCount[0]))
+            f = open(fileRunCount, 'rb')
+            p = pck.Unpickler(f)
+            runCount = p.load()
+            f.close()
         except:
             runCount = 0
         
@@ -97,8 +105,10 @@ class Algorithm( OTObject ):
                 print('Searching for previous runs in '+self.config.initialInputDir+'...')
                 fileRunCount = self.config.initialInputDir + 'runCount.bin'
                 try:
-                    runCount = np.fromfile(fileRunCount)
-                    runCount = int(np.floor(runCount[0]))
+                    f = open(fileRunCount, 'rb')
+                    p = pck.Unpickler(f)
+                    runCount = p.load()
+                    f.close()
                 except:
                     runCount = 0
             else:

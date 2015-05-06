@@ -40,7 +40,7 @@ def plotFinalState(outputDir, figDir, prefixFigName='finalState', transpFun=None
     fileFinalState = outputDir + 'finalState.bin'
     f = open(fileFinalState,'rb')
     p = pck.Unpickler(f)
-    finalState = p.load().convergingStaggeredField()
+    finalState = p.load()
     f.close()
 
     fileConfig = outputDir + 'config.bin'
@@ -93,7 +93,7 @@ def animFinalState(outputDir, figDir, figName='finalState.mp4', writer='ffmpeg',
     fileFinalState = outputDir + 'finalState.bin'
     f = open(fileFinalState,'rb')
     p = pck.Unpickler(f)
-    finalState = p.load().convergingStaggeredField()
+    finalState = p.load()
     f.close()
 
     fileConfig = outputDir + 'config.bin'

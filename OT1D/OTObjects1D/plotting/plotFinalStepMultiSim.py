@@ -53,7 +53,7 @@ def plotFinalStateMultiSim(outputDirList, figDir, prefixFigName='finalState', tr
         fileFinalState = outputDir + 'finalState.bin'
         f = open(fileFinalState,'rb')
         p = pck.Unpickler(f)
-        fstate = p.load().convergingStaggeredField()
+        fstate = p.load()
         finalStates.append( fstate )
         minis.append( fstate.f.min() )
         maxis.append( fstate.f.max() )
@@ -145,7 +145,7 @@ def animFinalStateMultiSim(outputDirList, figDir, figName='finalState.mp4', writ
         fileFinalState = outputDir + 'finalState.bin'
         f = open(fileFinalState,'rb')
         p = pck.Unpickler(f)
-        fstate = p.load().convergingStaggeredField()
+        fstate = p.load()
         finalStates.append( fstate )
         minis.append( fstate.f.min() )
         maxis.append( fstate.f.max() )

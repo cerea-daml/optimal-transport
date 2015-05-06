@@ -89,7 +89,7 @@ def applyOperators(listOfOperators1, listOfOperators2, outputDir):
 
     fileAnalyse = outputDir + 'analyse.bin'
     f = open(fileAnalyse, 'wb')
-    p = pck.Pickler(f)
+    p = pck.Pickler(f,protocol=-1)
     p.dump(iterationNumbers)
     p.dump(iterationTimes)
     p.dump(operatorNames)

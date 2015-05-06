@@ -32,7 +32,7 @@ class PdAlgorithm( Algorithm ):
         return ( 'PD algorithm' )
 
     def setState(self, newState):
-        stagField = newState.convergingStaggeredField()
+        stagField = newState
         centField = stagField.interpolation()
 
         self.stateN = PdState( self.N , self.P , stagField , stagField.copy() , centField )
