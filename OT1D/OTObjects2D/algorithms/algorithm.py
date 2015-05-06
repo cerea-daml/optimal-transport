@@ -37,13 +37,13 @@ class Algorithm( OTObject ):
 
         try:
             f = open(fileConfig, 'ab')
-            p = pck.Pickler(f)
+            p = pck.Pickler(f,protocol=-1)
             p.dump(self.config)
             f.close()
 
             f = open(fileState, 'wb')
-            p = pck.Pickler(f)
-            p.dump(self.stateN)
+            p = pck.Pickler(f,protocol=-1)
+            p.dump(self.stateN.convergingStaggeredField())
             f.close()
 
             try:
@@ -130,7 +130,7 @@ class Algorithm( OTObject ):
         fileCurrentState = self.config.outputDir + 'states.bin'
     
         f = open(fileCurrentState, 'ab')
-        p = pck.Pickler(f)
+        p = pck.Pickler(f,protocol=-1)
 
         print('__________________________________________________')
         print('Starting algorithm...')
@@ -152,7 +152,7 @@ class Algorithm( OTObject ):
 
             if np.mod(self.config.iterCount, self.config.nModWrite) == 0:
                 p.clear_memo()
-                p.dump(self.stateN)#.convergingStaggeredField())
+                p.dump(self.stateN.convergingStaggeredField())
                 p.dump(tm.time()-timeCheck)
                 timeCheck = tm.time()
 
