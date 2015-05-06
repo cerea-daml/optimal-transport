@@ -25,7 +25,7 @@ def extractIterations(outputDir):
             config = p.load()
             data.append( ( config.iterTarget , config.nModWrite ) )
     except:
-        pass
+        f.close()
     
     runs = []
     iStart = 0

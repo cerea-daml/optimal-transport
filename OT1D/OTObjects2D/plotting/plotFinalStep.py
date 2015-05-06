@@ -57,7 +57,7 @@ def plotFinalState(outputDir, figDir, prefixFigName='finalState', transpFun=None
         while True:
             config = p.load()
     except:
-        pass
+        f.close()
 
     if swapInitFinal:
         finit  = config.boundaries.temporalBoundaries.bt1
@@ -171,7 +171,7 @@ def animFinalState(outputDir, figDir, figName='finalState.mp4', writer='ffmpeg',
         while True:
             config = p.load()
     except:
-        pass
+        f.close()
 
     if swapInitFinal:
         finit  = config.boundaries.temporalBoundaries.bt1

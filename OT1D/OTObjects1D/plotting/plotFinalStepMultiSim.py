@@ -66,6 +66,7 @@ def plotFinalStateMultiSim(outputDirList, figDir, prefixFigName='finalState', tr
             while True:
                 config = p.load()
         except:
+            f.close()
             finit = config.boundaries.temporalBoundaries.bt0
             ffinal = config.boundaries.temporalBoundaries.bt1
             finits.append( finit )
@@ -158,6 +159,7 @@ def animFinalStateMultiSim(outputDirList, figDir, figName='finalState.mp4', writ
             while True:
                 config = p.load()
         except:
+            f.close()
             finit = config.boundaries.temporalBoundaries.bt0
             ffinal = config.boundaries.temporalBoundaries.bt1
             finits.append( finit )
