@@ -101,8 +101,9 @@ def plotAnalyseDefaultSubplots2(outputDir, figDir, prefixFig='analyse', itOrTime
 
     figSubFig = [ [ ( [0] , itOrTime , 'log' , 'log' , itOrTime , '$div$' , 'Divergence constrain' , True , 'DivConstrain' ) ,
                     ( [1] , itOrTime , 'log' , 'log' , itOrTime , '$abs(min(.))$' , 'Positivity constrain' , True , 'Constrains' ) ] ,
-                  [ ( [2] , itOrTime , 'log' , 'log' , itOrTime , '$J$' , 'Cost function' , True , 'J' )  ,
-                    ( [2,3,4,5,6] , itOrTime , 'log' , 'log' , itOrTime , '$J$' , 'Cost function' , True , 'J' ) ] ,
+                  [ ( [2] , itOrTime , 'log' , 'log' , itOrTime , '$J$' , 'Cost function' , True , 'J' ) ] ,
+                  [ ( [2] , itOrTime , 'log' , 'log' , itOrTime , '$J$' , 'Cost function' , True , 'moreJ' )  ,
+                    ( [2,3,4,5,6] , itOrTime , 'log' , 'log' , itOrTime , '$J$' , 'Cost function' , True , 'moreJ' ) ] ,
                   [ ( [7] , itOrTime , 'log' , 'log' , itOrTime , '' , 'Convergence' , True , 'Convergence' ) ] ]
 
     plotAnalyse(outputDir, figDir, prefixFig, figSubFig)

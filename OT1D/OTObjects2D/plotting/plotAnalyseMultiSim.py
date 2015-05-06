@@ -35,7 +35,7 @@ def plotAnalyseMultiSim(outputDirList, figDir, prefixFig='analyse', labelsList=N
     if labelsList is None:
         labelsList = []
         for i in xrange(len(outputDirList)):
-            labelsList.append('sim '+str(i)+', ')
+            labelsList.append('sim '+str(i))
 
     if figSubFig is None:
         figSubFig = []
@@ -77,7 +77,7 @@ def plotAnalyseMultiSim(outputDirList, figDir, prefixFig='analyse', labelsList=N
                 for column in columns:
                     column = min(N-1, column)
                     Y = value[:,column]
-                    ax.plot(X,Y,options[nOptions],label=label+names[column])
+                    ax.plot(X,Y,options[nOptions],label=label+', '+names[column])
                     nOptions = np.mod(nOptions+1,nModOptions)
 
             from mpl_toolkits.axes_grid1 import make_axes_locatable
@@ -114,7 +114,8 @@ def plotAnalyseMultiSimDefaultSubplots2(outputDirList, figDir, prefixFig='analys
 
     figSubFig = [ [ ( [0] , itOrTime , 'log' , 'log' , itOrTime , '$div$' , 'Divergence constrain' , True , 'DivConstrain' ) ,
                     ( [1] , itOrTime , 'log' , 'log' , itOrTime , '$abs(min(.))$' , 'Positivity constrain' , True , 'PosConstrain' ) ] ,
-                  [ ( [2] , itOrTime , 'log' , 'log' , itOrTime , '$J$' , 'Cost function' , True , 'J' ) ,
+                  [ ( [2] , itOrTime , 'log' , 'log' , itOrTime , '$J$' , 'Cost function' , True , 'J' ) ] ,
+                  [ ( [2] , itOrTime , 'log' , 'log' , itOrTime , '$J$' , 'Cost function' , True , 'moreJ' ) ,
                     ( [2,3,4,5,6] , itOrTime , 'log' , 'log' , itOrTime , '$J$' , 'Cost function' , True , 'moreJ' ) ] ,
                   [ ( [7] , itOrTime , 'log' , 'log' , itOrTime , '' , 'Convergence' , True , 'Convergence' ) ] ]
     
