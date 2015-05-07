@@ -7,6 +7,7 @@
 
 import numpy as np
 import cPickle as pck
+import matplotlib as mpl
 from matplotlib import pyplot as plt
 from matplotlib import animation as anim
 from mpl_toolkits.axes_grid1 import make_axes_locatable
@@ -179,13 +180,7 @@ def plotFinalStateMultiSim(outputDirList, figDir, prefixFigName='finalState', tr
         figure = plt.figure()
         plt.clf()
 
-        widthRatios = []
-        for c in xrange(Nc):
-            widthRatios.append(2.)
-        widthRatios.append(1.)
-
-        gs = gridspec.GridSpec(Nl, Nc)
-        
+        gs = gridspec.GridSpec(Nl, Nc)        
         j = 0
         for (f,finit,ffinal,title) in zip(fs,finits,ffinals,titlesList):
             nc = int(np.mod(j,Nc))
@@ -210,52 +205,85 @@ def plotFinalStateMultiSim(outputDirList, figDir, prefixFigName='finalState', tr
         gs2.update(left=0.87,right=0.93)
  
         cax = plt.subplot(gs2[0,0],frameon=False)
-        plt.colorbar(im,cax=cax)
+        cmap = mpl.cm.jet
+        norm = mpl.colors.Normalize(vmin=mini, vmax=maxi)
+        cb1 = mpl.colorbar.ColorbarBase(cax, cmap=cmap, norm=norm, orientation='vertical')
 
         figName = figDir + prefixFigName + suffixFor(t,Pmax+1) + '.pdf'
         print('Writing '+figName+' ...')
         plt.savefig(figName)
         plt.close()
 
-'''
-def animFinalState(outputDir, figDir, figName='finalState.mp4', writer='ffmpeg', interval=100., transpFun=None, plotter='imshow', swapInitFinal=False,
-                   kwargsCurrent={}, kwargsInit={}, kwargsFinal={}):
+
+def animFinalStateMultiSim(outputDirList, figDir, figName='finalState.mp4', writer='ffmpeg', interval=100., transpFun=None, 
+                           plotter='imshow', swapInitFinal=None,
+                           titlesList=None, kwargsCurrent={}, kwargsInit={}, kwargsFinal={}):
+
+    if swapInitFinal is None:
+        swapInitFinal = []
+        for i in xrange(len(outputDirList)):
+            swapInitFinal.append(False)
+
+    if titlesList is None:
+        titlesList = []
+        for i in xrange(len(outputDirList)):
+            titlesList.append('sim '+str(i))
 
     if transpFun is None:
         transpFun = customTransparency
 
-    fileFinalState = outputDir + 'finalState.bin'
-    f = open(fileFinalState,'rb')
-    p = pck.Unpickler(f)
-    finalState = p.load()
-    f.close()
+    fs      = []
+    finits  = []
+    ffinals = []
+    Plist   = []
 
-    fileConfig = outputDir + 'config.bin'
-    f = open(fileConfig,'rb')
-    p = pck.Unpickler(f)
-    try:
-        while True:
-            config = p.load()
-    except:
-        pass
+    minis   = []
+    maxis   = []
 
-    if swapInitFinal:
-        finit  = config.boundaries.temporalBoundaries.bt1
-        ffinal = config.boundaries.temporalBoundaries.bt0
-        f      = finalState.f.copy()
-        for t in xrange(config.P+2):
-            f[:,:,t] = finalState.f[:,:,config.P+1-t]
-    else:
-        finit  = config.boundaries.temporalBoundaries.bt0
-        ffinal = config.boundaries.temporalBoundaries.bt1
-        f      = finalState.f
+    for (outputDir,swap) in zip(outputDirList,swapInitFinal):
+        fileFinalState = outputDir + 'finalState.bin'
+        f = open(fileFinalState,'rb')
+        p = pck.Unpickler(f)
+        fstate = p.load()
+        f.close()
 
-    mini = np.min( [ finit.min() , ffinal.min() , f.min() ] ) 
-    maxi = np.max( [ finit.max() , ffinal.max() , f.max() ] ) 
+        if swap:
+            f = fstate.f.copy()
+            for t in xrange(fstate.P+2):
+                f[:,:,t] = fstate.f[:,:,fstate.P+1-t]
+        else:
+            f = fstate.f
 
-    xTxt  = 0.01
-    yTxt  = -0.05
-    yPbar = -0.05
+        fs.append( f )
+        minis.append( f.min() )
+        maxis.append( f.max() )
+        fileConfig = outputDir + 'config.bin'
+        f = open(fileConfig,'rb')
+        p = pck.Unpickler(f)
+        try:
+            while True:
+                config = p.load()
+        except:
+            f.close()
+
+            if swap:
+                finit = config.boundaries.temporalBoundaries.bt1
+                ffinal = config.boundaries.temporalBoundaries.bt0
+            else:
+                finit = config.boundaries.temporalBoundaries.bt0
+                ffinal = config.boundaries.temporalBoundaries.bt1
+            finits.append( finit )
+            ffinals.append( ffinal )
+            minis.append( finit.min() )
+            minis.append( ffinal.min() )
+            maxis.append( finit.max() )
+            maxis.append( ffinal.max() )
+            Plist.append( config.P )
+
+    mini  = np.min( minis )
+    maxi  = np.max( maxis )
+
+    Pmax  = np.max( Plist )
 
     if not kwargsCurrent.has_key('origin'):
         kwargsCurrent['origin'] = 'lower'
@@ -298,76 +326,88 @@ def animFinalState(outputDir, figDir, figName='finalState.mp4', writer='ffmpeg',
     if not kwargsFinal.has_key('linewidths'):
         kwargsFinal['linewidths'] = 1.5
 
-    figure = plt.figure()
-    plt.clf()
-    ax = plt.subplot(111)
-    
+    nbrSubFig = len(outputDirList)
+    Nc = int(np.floor(np.sqrt(nbrSubFig)))
+    Nl = Nc
+    while Nc*Nl < nbrSubFig:
+        Nl += 1
+
+    fsCorrected = []
+    for (f,P) in zip(fs,Plist):
+        if P < Pmax:
+            interpF = interp1d( np.linspace( 0.0 , 1.0 , P+2 ) , f , axis = 2 )
+            fsCorrected.append( interpF( np.linspace( 0.0 , 1.0 , Pmax+2 ) ) )
+        else:
+            fsCorrected.append( f )
+
+    fs = fsCorrected
+
     kwargsInit['alpha']  = transpFun(1.)
     kwargsFinal['alpha'] = transpFun(0.)
 
-    lineBkgPbar, = ax.plot([0.,1.], [yPbar,yPbar], 'k-', linewidth=5)
-    linePbar,    = ax.plot([0.,0.], [yPbar,yPbar], 'g-', linewidth=5)
-    timeText     = ax.text(xTxt, yTxt, suffixFor(0.,config.P+1)+' / '+str(config.P+1))
-    imC          = plotMatrix(ax, f[:,:,0], plotter, **kwargsCurrent)
-    imI          = plotMatrix(ax, finit, 'contour', **kwargsInit)
-    imF          = plotMatrix(ax, ffinal, 'contour', **kwargsFinal)
+    figure = plt.figure()
+    plt.clf()
 
-    ax.set_xlabel('$x$')
-    ax.set_ylabel('$y$')
+    gs = gridspec.GridSpec(Nl, Nc)
+    j = 0
+    axes = []
+    for (f,finit,ffinal,title) in zip(fs,finits,ffinals,titlesList):
+        nc = int(np.mod(j,Nc))
+        nl = int((j-nc)/Nc)
 
-    ax.set_xlim(-0.1,1.1)
-    ax.set_ylim(-0.1,1.1)
+        ax = plt.subplot(gs[nl,nc])
+        axes.append(ax)
 
-    divider = make_axes_locatable(ax)
-    cax = divider.append_axes('right', '10%', pad='5%')
-    plt.colorbar(imC, cax=cax)
+        im = plotMatrix(ax, f[:,:,0], plotter, **kwargsCurrent)
+        plotMatrix(ax, finit, 'contour', **kwargsInit)
+        plotMatrix(ax, ffinal, 'contour', **kwargsFinal)
 
-    ax.set_title('Final iteration\nt = ' + suffixFor(0,config.P+1) + ' / '+str(config.P+1))
-    #plt.tight_layout()
-    
+        ax.set_xlim(0.,1.)
+        ax.set_ylim(0.,1.)
+        ax.set_yticks([])
+        ax.set_xticks([])
+
+        ax.set_title(title)
+        j += 1
+
+    gs.tight_layout(figure,rect=[0.,0.,0.85,1.])
+    gs2 = gridspec.GridSpec(1,1)
+    gs2.update(left=0.87,right=0.93)
+
+    cax = plt.subplot(gs2[0,0],frameon=False)
+    cmap = mpl.cm.jet
+    norm = mpl.colors.Normalize(vmin=mini, vmax=maxi)
+    cb1 = mpl.colorbar.ColorbarBase(cax, cmap=cmap, norm=norm, orientation='vertical')
+
     def animate(t):
         ret = []
         kwargsInit['alpha']  = transpFun(1.-float(t)/(config.P+1.))
         kwargsFinal['alpha'] = transpFun(float(t)/(config.P+1.))
 
-        plt.clf()
-        ax = plt.subplot(111)
+        for (f,finit,ffinal,title,ax) in zip(fs,finits,ffinals,titlesList,axes):
+            ax.cla()
 
-        timeText     = ax.text(xTxt, yTxt, suffixFor(t,config.P+1)+' / '+str(config.P+1))
-        lineBkgPbar, = ax.plot([float((0.+t)/(finalState.P+1.))*0.6+0.2,0.8],[yPbar,yPbar], 'k-', linewidth=5)
-        linePbar,    = ax.plot([0.2,float((0.+t)/(finalState.P+1.))*0.6+0.2],[yPbar,yPbar], 'g-', linewidth=5)
+            imC = plotMatrix(ax, f[:,:,t], plotter, **kwargsCurrent)
+            imI = plotMatrix(ax, finit, 'contour', **kwargsInit)
+            imF = plotMatrix(ax, ffinal, 'contour', **kwargsFinal)
 
-        ret.extend([timeText,lineBkgPbar,linePbar])
+            ret.extend([imC,imI,imF])
 
-        imC = plotMatrix(ax, f[:,:,t], plotter, **kwargsCurrent)
-        imI = plotMatrix(ax, finit, 'contour', **kwargsInit)
-        imF = plotMatrix(ax, ffinal, 'contour', **kwargsFinal)
+            ax.set_xlim(0.,1.)
+            ax.set_ylim(0.,1.)
+            ax.set_yticks([])
+            ax.set_xticks([])
 
-        ret.extend([imC,imI,imF])
-
-        ax.set_xlabel('$x$')
-        ax.set_ylabel('$y$')
-
-        ax.set_xlim(-0.1,1.1)
-        ax.set_ylim(-0.1,1.1)
-
-        from mpl_toolkits.axes_grid1 import make_axes_locatable
-        divider = make_axes_locatable(ax)
-        cax = divider.append_axes('right', '10%', pad='5%')
-        plt.colorbar(imC, cax=cax)
-
-        ax.set_title('Final iteration\nt = ' + suffixFor(t,config.P+1) + ' / '+str(config.P+1))
-        #plt.tight_layout()
-
+            ax.set_title(title)
         return tuple(ret)
 
     def init():
         return animate(0)
 
-    frames = np.arange(finalState.P+2)
+    frames = np.arange(Pmax+2)
 
     print('Making animation ...')
-    ani = anim.FuncAnimation(figure, animate, frames, interval=interval, blit=True)
+    ani = anim.FuncAnimation(figure, animate, frames, init_func=init, interval=interval, blit=True)
     print('Writing '+figDir+figName+' ...')
     ani.save(figDir+figName,writer)
-'''
+
