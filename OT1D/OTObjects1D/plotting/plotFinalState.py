@@ -1,8 +1,8 @@
-##################
-# plotFinalStep.py
-##################
+###################
+# plotFinalState.py
+###################
 #
-# util to plot the final step 
+# util to plot the final state 
 #
 
 import numpy as np

@@ -1,8 +1,8 @@
-##################
-# plotFinalStep.py
-##################
+##########################
+# plotFinalStateMuliSim.py
+##########################
 #
-# util to plot the final step 
+# util to plot the final state for multiple simulations 
 #
 
 import numpy as np

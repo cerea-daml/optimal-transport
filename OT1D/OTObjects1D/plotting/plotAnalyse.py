@@ -7,9 +7,9 @@
 
 import numpy as np
 from matplotlib import pyplot as plt
-import pickle as pck
+import cPickle as pck
 
-def plotOneAnalyse(outputDir, figDir, prefixFig='analyse', figSubFig=None):
+def plotAnalyse(outputDir, figDir, prefixFig='analyse', figSubFig=None):
 
     options = ['b-','g-','r-','m-','y-','c-','k-']
     nModOptions = len(options)
@@ -28,23 +28,24 @@ def plotOneAnalyse(outputDir, figDir, prefixFig='analyse', figSubFig=None):
     if figSubFig is None:
         figSubFig = []
         for i in xrange(N):
-            figSubFig.append([ ( [i] , 'iterations' , 'log' , 'log' , 'iterations' , 'operators' , 'title' , True ) ] )
+            figSubFig.append([ ( [i] , 'iterations' , 'log' , 'log' , 'iterations' , 'operators' , 'title' , True , None ) ] )
 
     i = 0
     for fig in figSubFig:
 
         nbrSubFig = len(fig)
-        M = int(np.floor(np.sqrt(nbrSubFig)))
-        P = M
-        while M*P < nbrSubFig:
-            P += 1
+        Nc = int(np.floor(np.sqrt(nbrSubFig)))
+        Nl = Nc
+        while Nc*Nl < nbrSubFig:
+            Nl += 1
 
-        figure = plt.figure()            
+        figure = plt.figure()#figsize=(10*Nl,10*Nc))            
         plt.clf()
 
         j = 1
-        for (columns, xaxis, xscale, yscale, xlabel, ylabel, title, grid) in fig: 
-            ax = plt.subplot(P,M,j)
+        suffix = None
+        for (columns, xaxis, xscale, yscale, xlabel, ylabel, title, grid, suffix) in fig: 
+            ax = plt.subplot(Nl,Nc,j)
             ax.set_xscale(xscale)
             ax.set_yscale(yscale)
 
@@ -65,20 +66,45 @@ def plotOneAnalyse(outputDir, figDir, prefixFig='analyse', figSubFig=None):
                 Y = values[:,column]
                 ax.plot(X,Y,options[nOptions],label=names[column])
                 nOptions = np.mod(nOptions+1,nModOptions)
-            ax.legend(fontsize='xx-small',loc='upper right',bbox_to_anchor=(1.1, 1.),bbox_transform=plt.gca().transAxes)
+                
+            from mpl_toolkits.axes_grid1 import make_axes_locatable
+            divider = make_axes_locatable(ax)
+            lax = divider.append_axes('right', '10%',frameon=False)
+            lax.set_yticks([])
+            lax.set_xticks([])
+
+            try:
+                ax.legend(fontsize='xx-small',loc='center right',bbox_to_anchor=(1.13, 0.5),fancybox=True,framealpha=0.40)
+            except:
+                ax.legend(fontsize='xx-small',loc='center right',bbox_to_anchor=(1.13, 0.5),fancybox=True)
             j += 1
 
-        figName = figDir + prefixFig + str(i) + '.pdf'
+        figure.tight_layout()
+        if suffix is None:
+            suffix = str(i)
+        figName = figDir + prefixFig + suffix + '.pdf'
         print('Saving ' + figName + ' ...')
         plt.savefig(figName)
         i += 1
 
 def plotAnalyseDefaultSubplots(outputDir, figDir, prefixFig='analyse', itOrTime='iterations'):
 
-    figSubFig = [ [ ( [0] , itOrTime , 'log' , 'log' , itOrTime , '$div$' , 'Divergence constrain' , True ) ] ,
-                  [ ( [1] , itOrTime , 'log' , 'log' , itOrTime , '$abs(min(.))$' , 'Positivity constrain' , True ) ] ,
-                  [ ( [2,3,4,5,6] , itOrTime , 'log' , 'log' , itOrTime , '$J$' , 'Cost function' , True ) ] ,
-                  [ ( [7] , itOrTime , 'log' , 'log' , itOrTime , '' , 'Convergence' , True ) ] ]
+    figSubFig = [ [ ( [0] , itOrTime , 'log' , 'log' , itOrTime , '$div$' , 'Divergence constrain' , True , 'DivConstrain' ) ] ,
+                  [ ( [1] , itOrTime , 'log' , 'log' , itOrTime , '$abs(min(.))$' , 'Positivity constrain' , True , 'PosConstrain' ) ] ,
+                  [ ( [2] , itOrTime , 'log' , 'log' , itOrTime , '$J$' , 'Cost function' , True , 'J' ) ] ,
+                  [ ( [2,3,4,5,6] , itOrTime , 'log' , 'log' , itOrTime , '$J$' , 'Cost function' , True , 'moreJ' ) ] ,
+                  [ ( [7] , itOrTime , 'log' , 'log' , itOrTime , '' , 'Convergence' , True , 'Convergence' ) ] ]
 
-    
-    plotOneAnalyse(outputDir, figDir, prefixFig, figSubFig)
+    plotAnalyse(outputDir, figDir, prefixFig, figSubFig)
+
+def plotAnalyseDefaultSubplots2(outputDir, figDir, prefixFig='analyse', itOrTime='iterations'):
+
+    figSubFig = [ [ ( [0] , itOrTime , 'log' , 'log' , itOrTime , '$div$' , 'Divergence constrain' , True , 'DivConstrain' ) ,
+                    ( [1] , itOrTime , 'log' , 'log' , itOrTime , '$abs(min(.))$' , 'Positivity constrain' , True , 'Constrains' ) ] ,
+                  [ ( [2] , itOrTime , 'log' , 'log' , itOrTime , '$J$' , 'Cost function' , True , 'J' ) ] ,
+                  [ ( [2] , itOrTime , 'log' , 'log' , itOrTime , '$J$' , 'Cost function' , True , 'moreJ' )  ,
+                    ( [2,3,4,5,6] , itOrTime , 'log' , 'log' , itOrTime , '$J$' , 'Cost function' , True , 'moreJ' ) ] ,
+                  [ ( [7] , itOrTime , 'log' , 'log' , itOrTime , '' , 'Convergence' , True , 'Convergence' ) ] ]
+
+    plotAnalyse(outputDir, figDir, prefixFig, figSubFig)
+
