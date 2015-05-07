@@ -381,8 +381,8 @@ def animFinalStateMultiSim(outputDirList, figDir, figName='finalState.mp4', writ
 
     def animate(t):
         ret = []
-        kwargsInit['alpha']  = transpFun(1.-float(t)/(config.P+1.))
-        kwargsFinal['alpha'] = transpFun(float(t)/(config.P+1.))
+        kwargsInit['alpha']  = transpFun(1.-float(t)/(Pmax+1.))
+        kwargsFinal['alpha'] = transpFun(float(t)/(Pmax+1.))
 
         for (f,finit,ffinal,title,ax) in zip(fs,finits,ffinals,titlesList,axes):
             ax.cla()

@@ -119,7 +119,7 @@ def plotFinalState(outputDir, figDir, prefixFigName='finalState', transpFun=None
     if not kwargsFinal.has_key('linewidths'):
         kwargsFinal['linewidths'] = 1.5
 
-    for t in xrange(1):#config.P+2):
+    for t in xrange(config.P+2):
         kwargsInit['alpha']  = transpFun(1.-float(t)/(config.P+1.))
         kwargsFinal['alpha'] = transpFun(float(t)/(config.P+1.))
 
