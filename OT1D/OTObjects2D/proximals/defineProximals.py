@@ -30,7 +30,7 @@ from bound.proxCrb import ProxCrb
 
 def proximalForConfig(config):
 
-    if config.dynamics == 0:
+    if config.dynamics == 0 or config.dynamics == 1:
         # normal dynamics
         proxCdiv = ProxCdivb( config.M , config.N , config.P ,
                               grid.DivergenceBoundaries( config.M , config.N , config.P , boundaries=config.boundaries) )
@@ -42,7 +42,7 @@ def proximalForConfig(config):
 
         proxCb   = ProxCb( config.M , config.N, config.P, config.boundaries )
 
-    elif config.dynamics == 1:
+    elif config.dynamics == 2:
         # no contrain for m
         proxCdiv = ProxCdivtb( config.M , config.N , config.P ,
                                grid.DivergenceTemporalBoundaries( config.M , config.N , config.P , 
@@ -57,7 +57,7 @@ def proximalForConfig(config):
         proxCb   = ProxCtb( config.M , config.N , config.P ,
                             config.boundaries.temporalBoundaries )
 
-    elif config.dynamics == 2:
+    elif config.dynamics == 3:
         # reservoir
         # for Adr
         proxCdiv = ProxCdiv( config.M , config.N , config.P )
@@ -70,7 +70,7 @@ def proximalForConfig(config):
         proxCb   = ProxCrb( config.M , config.N , config.P ,
                             config.boundaries )
 
-    elif config.dynamics == 3:
+    elif config.dynamics == 4:
         # reservoir
         # for Adr 3
 

@@ -23,9 +23,10 @@ P = 32
 
 # dynamics type
 # 0 -> normal dynamics (requires spatial boundary conditions)
-# 1 -> no spatial boundary conditions
-# 2 -> normal dynamics with a reservoir (for adr)
-# 3 -> normal dynamics with a reservoir (for adr3)
+# 1 -> normal dynamics with 0 spatial boundary conditions
+# 2 -> no spatial boundary conditions
+# 3 -> normal dynamics with a reservoir (for adr)
+# 4 -> normal dynamics with a reservoir (for adr3)
 dynamics = 0
 
 # boundary type

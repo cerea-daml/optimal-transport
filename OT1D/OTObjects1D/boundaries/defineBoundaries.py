@@ -47,13 +47,16 @@ def boundariesForConfig(config):
     config.boundaries.normalize(config.normType)
 
     # adapt boundaries to dynamics
-    if config.dynamics == 0:
+    if config.dynamics == 1:
+        config.boundaries.spatialBoundaries = grid.SpatialBoundaries( config.N , config.P )
+
+    if config.dynamics == 0 or config.dynamics == 1:
         delta = config.boundaries.massDefault()
         if delta > config.EPSILON:
             print ('Changing dynamics because mass default is not compatible with dynamics=0.')
 
             if config.algoName == 'pd':
-                config.dynamics = 1
+                config.dynamics = 2
             else:
                 N = config.N
                 bt0 = np.zeros(N+1+2)
@@ -66,13 +69,13 @@ def boundariesForConfig(config):
                 config.N = N+2
                 
                 if config.algoName == 'adr':
-                    config.dynamics = 2
-                elif config.algoName == 'adr3':
                     config.dynamics = 3
+                elif config.algoName == 'adr3':
+                    config.dynamics = 4
 
-    if config.dynamics == 1:
+    if config.dynamics == 2:
         config.boundaries.spatialBoundaries = grid.SpatialBoundaries( config.N , config.P )
-    elif config.dynamics == 2 or config.dynamics == 3:
+    elif config.dynamics == 3 or config.dynamics == 4:
         config.boundaries.spatialBoundaries = grid.SpatialBoundaries( config.N , config.P )
         config.boundaries.placeReservoir()
 

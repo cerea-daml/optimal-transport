@@ -13,7 +13,7 @@ def initialStaggeredField(config):
     my = np.zeros(shape=(config.M+1,config.N+2,config.P+1))
     f  = np.zeros(shape=(config.M+1,config.N+1,config.P+2))
 
-    if config.dynamics == 0:
+    if config.dynamics == 0 or config.dynamics == 1:
 
         for i in xrange(config.P+2):
             t = float(i)/(config.P+1.)
