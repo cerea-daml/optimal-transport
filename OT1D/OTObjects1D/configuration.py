@@ -9,6 +9,7 @@ from boundaries.defineBoundaries import boundariesForConfig
 from algorithms.adr.adrAlgorithm import AdrAlgorithm
 from algorithms.pd.pdAlgorithm import PdAlgorithm
 from algorithms.adr3.adr3Algorithm import Adr3Algorithm
+from algorithms.anamorph.anamorphAlgorithm import AnamorphAlgorithm
 
 class Configuration(object):
     '''
@@ -32,6 +33,8 @@ class Configuration(object):
             return PdAlgorithm(self)
         elif self.algoName == 'adr3':
             return Adr3Algorithm(self)
+        elif self.algoName == 'anamorph':
+            return AnamorphAlgorithm(self)
         else:
             return
 
@@ -332,6 +335,11 @@ class Configuration(object):
         self.defaultValues.append(0.34)
         self.isSubAttribute.append(('algoName','adr3'))
         self.attributeType.append(float)
+
+        self.attributes.append('fineResolution')
+        self.defaultValues.append(1000)
+        self.isSubAttribute.append(('algoName','anamorph'))
+        self.attributeType.append(int)
 
     def defaultValueFor(self,attrName):
         for (attr,val) in zip(self.attributes,self.defaultValues):
