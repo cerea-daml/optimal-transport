@@ -98,9 +98,12 @@ class AnamorphAlgorithm( OTObject ):
 
         CDFInit  = np.zeros(N+3)
         CDFFinal = np.zeros(N+3)
-        for i in xrange(N+2):
-            CDFInit[i+1]  = CDFInit[i]  + 0.5 * ( fInitPP[i]  + fInitPP[i+1]  )
-            CDFFinal[i+1] = CDFFinal[i] + 0.5 * ( fFinalPP[i] + fFinalPP[i+1] )
+
+        CDFInit[1:N+3]  = 0.5 * ( fInitPP[0:N+2]  + fInitPP[1:N+3]  )
+        CDFInit         = CDFInit.cumsum()
+
+        CDFFinal[1:N+3] = 0.5 * ( fFinalPP[0:N+2] + fFinalPP[1:N+3] )
+        CDFFinal        = CDFFinal.cumsum()
 
         # This should do nothing, but just to make sure ...
         CDFFinal *= CDFInit[N+2] / CDFFinal[N+2]
@@ -123,14 +126,12 @@ class AnamorphAlgorithm( OTObject ):
         # on a finer grid (to try and avoid infinite derivative)
         # result is stored in partialXTarray
         NN         = self.config.fineResolution
-        Tarray     = np.zeros(NN+3)
         XT         = np.zeros(NN+3)
         XT[1:NN+2] = np.linspace( 0.0 , 1.0 , NN+1 )
         XT[0]      = - XT[2]
         XT[NN+2]   = 1. + XT[2]
 
-        for i in xrange(NN+3):
-            Tarray[i] = Tmap( XT[i] )
+        Tarray     = Tmap(XT)
 
         partialXTarray = NN * ( Tarray[1:] - Tarray[:NN+2] ) 
         Xpartial       = 0.5 * ( XT[1:] + XT[:NN+2] )
