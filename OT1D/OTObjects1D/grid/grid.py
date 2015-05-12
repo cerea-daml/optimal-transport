@@ -9,6 +9,8 @@ import numpy as np
 from .. import OTObject as oto
 from ...utils import cardan
 
+from scipy.interpolate import interp1d
+
 #__________________________________________________
 
 class Field( oto.OTObject ):
@@ -338,6 +340,17 @@ class CenteredField( Field ):
         staggeredField = StaggeredField( self.N , self.P , mu , fu )
 
         return StaggeredCenteredField( self.N , self.P , staggeredField , self )
+
+    def Tmap(self):
+        f      = self.f * ( self.f > 0 ) + 1.0 * ( 1. - self.f > 0 )
+        v      = self.m * ( self.f > 0 ) / f
+        vmap   = interp1d(np.linspace(0.0, 1.0, self.N+1), v, copy=False, bounds_error=False, fill_value=0.0)
+        Tarray = np.linspace(0.0, 1.0, self.N+1)
+
+        for j in xrange(self.P):
+            Tarray += vmap(Tarray) / self.P
+        
+        return (np.linspace(0.0, 1.0, self.N+1), Tarray)
 
     def __add__(self, other):
         if isinstance(other,CenteredField):
