@@ -32,6 +32,7 @@ class AnamorphAlgorithm( OTObject ):
         fileConfig   = self.config.outputDir + 'config.bin'
         fileState    = self.config.outputDir + 'finalState.bin'
         fileRunCount = self.config.outputDir + 'runCount.bin'
+        fileTmap     = self.config.outputDir + 'Tmap.npy'
 
         try:
             f = open(fileConfig, 'ab')
@@ -42,6 +43,12 @@ class AnamorphAlgorithm( OTObject ):
             f = open(fileState, 'wb')
             p = pck.Pickler(f,protocol=-1)
             p.dump(self.state)
+            f.close()
+
+            f   = open(fileTmap, 'wb')
+            X,T = self.state.interpolation().Tmap()
+            np.save(f, X)
+            np.save(f, T)
             f.close()
 
             try:
@@ -66,6 +73,7 @@ class AnamorphAlgorithm( OTObject ):
             print(fileConfig)
             print(fileState)
             print(fileRunCount)
+            print(fileTmap)
             print('__________________________________________________')
 
         except:
