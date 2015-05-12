@@ -65,14 +65,15 @@ def plotFinalState(outputDir, figDir, prefixFigName='finalState', transpFun=None
 
     mini = np.min( [ finit.min() , ffinal.min() , f.min() ] ) 
     maxi = np.max( [ finit.max() , ffinal.max() , f.max() ] ) 
-
     extend = maxi - mini + 1.e-6
-    maxi += 0.05*extend
-    mini -= 0.05*extend
 
     yPbar = mini-0.05*extend
     xTxt  = 0.01
     yTxt  = yPbar
+
+    maxi += 0.1*extend
+    mini -= 0.1*extend
+
 
     X = np.linspace( 0.0 , 1.0 , config.N + 1 )
 
@@ -85,8 +86,10 @@ def plotFinalState(outputDir, figDir, prefixFigName='finalState', transpFun=None
         ax = plt.subplot(111)
 
         timeText     = ax.text(xTxt, yTxt, suffixFor(t,config.P+1)+' / '+str(config.P+1))
-        lineBkgPbar, = ax.plot([float((0.+t)/(finalState.P+1.))*0.6+0.2,0.8],[yPbar,yPbar], 'k-', linewidth=5)
-        linePbar,    = ax.plot([0.2,float((0.+t)/(finalState.P+1.))*0.6+0.2],[yPbar,yPbar], 'g-', linewidth=5)
+        if t < config.P + 1:
+            lineBkgPbar, = ax.plot([float((0.+t)/(finalState.P+1.))*0.6+0.2,0.8],[yPbar,yPbar], 'k-', linewidth=5)
+        if t > 0:
+            linePbar,    = ax.plot([0.2,float((0.+t)/(finalState.P+1.))*0.6+0.2],[yPbar,yPbar], 'g-', linewidth=5)
 
         ax.plot(X,finit,options[0],label='$f_{init}$',alpha=alphaInit)
         ax.plot(X,ffinal,options[1],label='$f_{final}$',alpha=alphaFinal)
@@ -144,14 +147,15 @@ def animFinalState(outputDir, figDir, figName='finalState.mp4', writer='ffmpeg',
 
     mini = np.min( [ finit.min() , ffinal.min() , f.min() ] )
     maxi = np.max( [ finit.max() , ffinal.max() , f.max() ] )
-
     extend = maxi - mini + 1.e-6
-    maxi += 0.05*extend
-    mini -= 0.05*extend
 
     yPbar = mini-0.05*extend
     xTxt  = 0.01
     yTxt  = yPbar
+
+    maxi += 0.1*extend
+    mini -= 0.1*extend
+
 
     X = np.linspace( 0.0 , 1.0 , config.N + 1 )
 
@@ -163,7 +167,7 @@ def animFinalState(outputDir, figDir, figName='finalState.mp4', writer='ffmpeg',
     alphaFinal = transpFun(0.)
 
     lineBkgPbar, = ax.plot([0.2,0.8], [yPbar,yPbar], 'k-', linewidth=5)
-    linePbar,    = ax.plot([0.2,0.2], [yPbar,yPbar], 'g-', linewidth=5)
+    #linePbar,    = ax.plot([0.2,0.2], [yPbar,yPbar], 'g-', linewidth=5)
     timeText     = ax.text(xTxt, yTxt, suffixFor(0.,config.P+1)+' / '+str(config.P+1))
 
     lineInit,    = ax.plot(X,finit,options[0],label='$f_{init}$',alpha=alphaInit)
@@ -181,27 +185,29 @@ def animFinalState(outputDir, figDir, figName='finalState.mp4', writer='ffmpeg',
 
     ax.set_title('Final iteration\nt = ' + suffixFor(0,config.P+1) + ' / '+str(config.P+1))
 
-    def animate(i):
+    def animate(t):
         ret = []
         alphaInit  = transpFun(1.-float(t)/(config.P+1.))
         alphaFinal = transpFun(float(t)/(config.P+1.))
         ax.cla()
 
         timeText     = ax.text(xTxt, yTxt, suffixFor(t,config.P+1)+' / '+str(config.P+1))
-        lineBkgPbar, = ax.plot([float((0.+t)/(finalState.P+1.))*0.6+0.2,0.8],[yPbar,yPbar], 'k-', linewidth=5)
-        linePbar,    = ax.plot([0.2,float((0.+t)/(finalState.P+1.))*0.6+0.2],[yPbar,yPbar], 'g-', linewidth=5)
-
-        ret.extend([timeText,lineBkgPbar,linePbar])
-
+        ret.append(timeText)
+        if t < config.P + 1:
+            lineBkgPbar, = ax.plot([float((0.+t)/(finalState.P+1.))*0.6+0.2,0.8],[yPbar,yPbar], 'k-', linewidth=5)
+            ret.append(lineBkgPbar)
+        if t > 0:
+            linePbar,    = ax.plot([0.2,float((0.+t)/(finalState.P+1.))*0.6+0.2],[yPbar,yPbar], 'g-', linewidth=5)
+            ret.append(linePbar)
 
         lineInit,    = ax.plot(X,finit,options[0],label='$f_{init}$',alpha=alphaInit)
         lineFinal,   = ax.plot(X,ffinal,options[1],label='$f_{final}$',alpha=alphaFinal)
-        lineCurrent, = ax.plot(X,finalState.f[:,i],options[2],label='$f$')
+        lineCurrent, = ax.plot(X,finalState.f[:,t],options[2],label='$f$')
 
         ret.extend([lineInit,lineFinal,lineCurrent])
 
         ax.set_xlabel('$x$')
-        ax.set_ylim(mini-0.15*extend,maxi)
+        ax.set_ylim(mini,maxi)
         ax.set_title('Final iteration\nt = ' + suffixFor(t,config.P+1) + ' / '+str(config.P+1))
         ax.grid()
         try:
