@@ -6,41 +6,14 @@
 #
 
 import cPickle as pck
+import pickle 
+
 import time as tm
 import numpy as np
 from scipy.interpolate import interp1d
 
 from ...OTObject import OTObject
 from ...grid import grid
-
-class InverseInterpolator:
-    '''
-    Class to handle an inverse interpolator.
-    X,array represents a strictly growing function f - i.e. f(X[i]) = array[i].
-    __call__(self,y) returns f^(-1)(y).
-
-    Note that array and X must be ordered.
-    If y < array.min(), this returns X.min().
-    If y > array.max(), this returns X.max().
-    '''
-
-    def __init__(self, X, array):
-        self.array = array.copy()
-        self.X     = X.copy()
-
-    def __call__(self, y):
-        if y <= self.array[0]:
-            return self.X[0]
-        if y > self.array[len(self.array)-1]:
-            return self.array[len(self.array)-1]
-
-        i = 0
-        while y > self.array[i]:
-            i += 1
-
-        return ( ( ( y - self.array[i-1] ) * self.X[i] +
-                   ( self.array[i] - y ) * self.X[i-1] ) /
-                 ( self.array[i] - self.array[i-1] ) )
 
 class AnamorphAlgorithm( OTObject ):
     '''
@@ -129,6 +102,9 @@ class AnamorphAlgorithm( OTObject ):
             CDFInit[i+1]  = CDFInit[i]  + 0.5 * ( fInitPP[i]  + fInitPP[i+1]  )
             CDFFinal[i+1] = CDFFinal[i] + 0.5 * ( fFinalPP[i] + fFinalPP[i+1] )
 
+        # This should do nothing, but just to make sure ...
+        CDFFinal *= CDFInit[N+2] / CDFFinal[N+2]
+
         # Computes maps associated to the CDF arrays by interpolating
         XCDF        = np.zeros(N+3)
         XCDF[1:N+2] = np.linspace( 0.0 , 1.0 , N+1 )
@@ -137,7 +113,7 @@ class AnamorphAlgorithm( OTObject ):
 
         FInitMap    = interp1d( XCDF , fInitPP  )
         CDFFinalMap = interp1d( XCDF , CDFFinal )
-        iCDFInitMap = InverseInterpolator( XCDF , CDFInit )
+        iCDFInitMap = interp1d( CDFInit , XCDF  )
 
         # T = CDFInit^(-1) o CDFFinal
         def Tmap(x):
@@ -162,7 +138,7 @@ class AnamorphAlgorithm( OTObject ):
         # Computes maps associated to the derivative of T by interpolating         
         partialXTmap = interp1d( Xpartial , partialXTarray )
 
-        # Solution of the optimal transport
+        # Approximate solution of the optimal transport
         def func(x,t):
             return ( FInitMap( ( 1. - t ) * x + t * Tmap(x) ) *
                      abs( ( 1. - t ) + t * partialXTmap(x) ) )
