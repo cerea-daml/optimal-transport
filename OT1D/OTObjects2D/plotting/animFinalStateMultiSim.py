@@ -9,6 +9,7 @@ import numpy as np
 import cPickle as pck
 import matplotlib as mpl
 from matplotlib import pyplot as plt
+from matplotlib import animation as anim
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from scipy.interpolate import interp1d
 from matplotlib import gridspec
@@ -40,7 +41,8 @@ def plotMatrix(ax, matrix, plotter='imshow', **kwargs):
     elif plotter == 'contourf':
         return ax.contourf(matrix, **kwargs)
 
-def plotFinalStateMultiSim(outputDirList, figDir, prefixFigName='finalState', transpFun=None, plotter='imshow', swapInitFinal=None,
+def animFinalStateMultiSim(outputDirList, figDir, figName='finalState.mp4', writer='ffmpeg', interval=100., transpFun=None, 
+                           plotter='imshow', swapInitFinal=None,
                            titlesList=None, kwargsCurrent={}, kwargsInit={}, kwargsFinal={}):
 
     if swapInitFinal is None:
@@ -81,8 +83,6 @@ def plotFinalStateMultiSim(outputDirList, figDir, prefixFigName='finalState', tr
         fs.append( f )
         minis.append( f.min() )
         maxis.append( f.max() )
-
-
         fileConfig = outputDir + 'config.bin'
         f = open(fileConfig,'rb')
         p = pck.Unpickler(f)
@@ -108,12 +108,8 @@ def plotFinalStateMultiSim(outputDirList, figDir, prefixFigName='finalState', tr
 
     mini  = np.min( minis )
     maxi  = np.max( maxis )
-    
-    Pmax  = np.max( Plist )
 
-    xTxt  = 0.01
-    yTxt  = -0.05
-    yPbar = -0.05
+    Pmax  = np.max( Plist )
 
     if not kwargsCurrent.has_key('origin'):
         kwargsCurrent['origin'] = 'lower'
@@ -172,24 +168,56 @@ def plotFinalStateMultiSim(outputDirList, figDir, prefixFigName='finalState', tr
 
     fs = fsCorrected
 
-    for t in xrange(Pmax+2):
+    kwargsInit['alpha']  = transpFun(1.)
+    kwargsFinal['alpha'] = transpFun(0.)
+
+    figure = plt.figure()
+    plt.clf()
+
+    gs = gridspec.GridSpec(Nl, Nc)
+    j = 0
+    axes = []
+    for (f,finit,ffinal,title) in zip(fs,finits,ffinals,titlesList):
+        nc = int(np.mod(j,Nc))
+        nl = int((j-nc)/Nc)
+
+        ax = plt.subplot(gs[nl,nc])
+        axes.append(ax)
+
+        im = plotMatrix(ax, f[:,:,0], plotter, **kwargsCurrent)
+        plotMatrix(ax, finit, 'contour', **kwargsInit)
+        plotMatrix(ax, ffinal, 'contour', **kwargsFinal)
+
+        ax.set_xlim(0.,1.)
+        ax.set_ylim(0.,1.)
+        ax.set_yticks([])
+        ax.set_xticks([])
+
+        ax.set_title(title)
+        j += 1
+
+    gs.tight_layout(figure,rect=[0.,0.,0.85,1.])
+    gs2 = gridspec.GridSpec(1,1)
+    gs2.update(left=0.87,right=0.93)
+
+    cax = plt.subplot(gs2[0,0],frameon=False)
+    cmap = mpl.cm.jet
+    norm = mpl.colors.Normalize(vmin=mini, vmax=maxi)
+    cb1 = mpl.colorbar.ColorbarBase(cax, cmap=cmap, norm=norm, orientation='vertical')
+
+    def animate(t):
+        ret = []
         kwargsInit['alpha']  = transpFun(1.-float(t)/(Pmax+1.))
         kwargsFinal['alpha'] = transpFun(float(t)/(Pmax+1.))
-        
-        figure = plt.figure()
-        plt.clf()
 
-        gs = gridspec.GridSpec(Nl, Nc)        
-        j = 0
-        for (f,finit,ffinal,title) in zip(fs,finits,ffinals,titlesList):
-            nc = int(np.mod(j,Nc))
-            nl = int((j-nc)/Nc)
+        for (f,finit,ffinal,title,ax) in zip(fs,finits,ffinals,titlesList,axes):
+            ax.cla()
 
-            ax = plt.subplot(gs[nl,nc])
+            imC = plotMatrix(ax, f[:,:,t], plotter, **kwargsCurrent)
+            imI = plotMatrix(ax, finit, 'contour', **kwargsInit)
+            imF = plotMatrix(ax, ffinal, 'contour', **kwargsFinal)
 
-            im = plotMatrix(ax, f[:,:,t], plotter, **kwargsCurrent)
-            plotMatrix(ax, finit, 'contour', **kwargsInit)
-            plotMatrix(ax, ffinal, 'contour', **kwargsFinal)
+            ret.extend([imC,imI,imF])
 
             ax.set_xlim(0.,1.)
             ax.set_ylim(0.,1.)
@@ -197,18 +225,15 @@ def plotFinalStateMultiSim(outputDirList, figDir, prefixFigName='finalState', tr
             ax.set_xticks([])
 
             ax.set_title(title)
-            j += 1
+        return tuple(ret)
 
-        gs.tight_layout(figure,rect=[0.,0.,0.85,1.])
-        gs2 = gridspec.GridSpec(1,1)
-        gs2.update(left=0.87,right=0.93)
- 
-        cax = plt.subplot(gs2[0,0],frameon=False)
-        cmap = mpl.cm.jet
-        norm = mpl.colors.Normalize(vmin=mini, vmax=maxi)
-        cb1 = mpl.colorbar.ColorbarBase(cax, cmap=cmap, norm=norm, orientation='vertical')
+    def init():
+        return animate(0)
 
-        figName = figDir + prefixFigName + suffixFor(t,Pmax+1) + '.pdf'
-        print('Writing '+figName+' ...')
-        plt.savefig(figName)
-        plt.close()
+    frames = np.arange(Pmax+2)
+
+    print('Making animation ...')
+    ani = anim.FuncAnimation(figure, animate, frames, init_func=init, interval=interval, blit=True)
+    print('Writing '+figDir+figName+' ...')
+    ani.save(figDir+figName,writer)
+

@@ -1,13 +1,14 @@
 ###########################
-# plotFinalStateMultiSim.py
+# animFinalStateMultiSim.py
 ###########################
 #
-# util to plot the final state for multiple simulations 
+# util to animate the final state for multiple simulations 
 #
 
 import numpy as np
 import cPickle as pck
 from matplotlib import pyplot as plt
+from matplotlib import animation as anim
 from scipy.interpolate import interp1d
 
 def suffixFor(i,iMaxP1):
@@ -29,8 +30,8 @@ def fastVanishingTransparency(t):
 def customTransparency(t):
     return max(t,0.25)
 
-def plotFinalStateMultiSim(outputDirList, figDir, prefixFigName='finalState', transpFun=None, swapInitFinal=None,
-                           titlesList=None, options=None):
+def animFinalStateMultiSim(outputDirList, figDir, figName='finalState.mp4', writer='ffmpeg', interval=100., transpFun=None,
+                           swapInitFinal=None, titlesList=None, options=None):
     
     if swapInitFinal is None:
         swapInitFinal = []
@@ -53,8 +54,8 @@ def plotFinalStateMultiSim(outputDirList, figDir, prefixFigName='finalState', tr
     ffinals = []
     Plist   = []
 
-    minis = []
-    maxis = []
+    minis   = []
+    maxis   = []
 
     for (outputDir,swap) in zip(outputDirList,swapInitFinal):
         fileFinalState = outputDir + 'finalState.bin'
@@ -73,8 +74,6 @@ def plotFinalStateMultiSim(outputDirList, figDir, prefixFigName='finalState', tr
         fs.append( f )
         minis.append( f.min() )
         maxis.append( f.max() )
-
-
         fileConfig = outputDir + 'config.bin'
         f = open(fileConfig,'rb')
         p = pck.Unpickler(f)
@@ -98,17 +97,13 @@ def plotFinalStateMultiSim(outputDirList, figDir, prefixFigName='finalState', tr
             maxis.append( ffinal.max() )
             Plist.append( config.P )
 
-    Pmax = np.max( Plist )
-    mini = np.min( minis )
-    maxi = np.max( maxis )
+    mini  = np.min( minis )
+    maxi  = np.max( maxis )
+    Pmax  = np.max( Plist )
 
     extend = maxi - mini + 1.e-6
     maxi += 0.05*extend
     mini -= 0.05*extend
-
-    yPbar = mini-0.05*extend
-    xTxt  = 0.01
-    yTxt  = yPbar
 
     nbrSubFig = len(outputDirList)
     Nc = int(np.floor(np.sqrt(nbrSubFig)))
@@ -126,42 +121,77 @@ def plotFinalStateMultiSim(outputDirList, figDir, prefixFigName='finalState', tr
 
     fs = fsCorrected
 
-    for t in xrange(Pmax+2):
-        alphaInit  = transpFun(1.-float(t)/(Pmax+1))
-        alphaFinal = transpFun(float(t)/(Pmax+1))
+    alphaInit  = transpFun(1.)
+    alphaFinal = transpFun(0.)
 
-        figure = plt.figure()
-        plt.clf()
+    figure = plt.figure()
+    plt.clf()
 
-        gs = gridspec.GridSpec(Nl, Nc)
-        j = 0
+    gs = gridspec.GridSpec(Nl, Nc)
+    j = 0
+    axes = []
 
-        for (f,finit,ffinal,title) in zip(fs,finits,ffinals,titlesList):
-            nc = int(np.mod(j,Nc))
-            nl = int((j-nc)/Nc)
-            ax = plt.subplot(gs[nl,nc])
+    for (f,finit,ffinal,title) in zip(fs,finits,ffinals,titlesList):
+        nc = int(np.mod(j,Nc))
+        nl = int((j-nc)/Nc)
+
+        ax = plt.subplot(gs[nl,nc])
+        axes.append(ax)
+
+        XInit    = np.linspace( 0.0 , 1.0 , finit.size  )
+        XFinal   = np.linspace( 0.0 , 1.0 , ffinal.size )
+        XCurrent = np.linspace( 0.0 , 1.0 , f[:,0].size ) 
+        lineInit,    = ax.plot(XInit,finit,options[0],label='$f_{init}$',alpha=alphaInit)
+        lineFinal,   = ax.plot(XFinal,ffinal,options[1],label='$f_{final}$',alpha=alphaFinal)
+        lineCurrent, = ax.plot(XCurrent,f[:,0],options[2],label='$f$')
+
+        try:
+            ax.legend(fontsize='xx-small',loc='center right',bbox_to_anchor=(1.13, 0.5),fancybox=True,framealpha=0.40)
+        except:
+            ax.legend(fontsize='xx-small',loc='center right',bbox_to_anchor=(1.13, 0.5),fancybox=True)
+        ax.set_ylim(mini-0.15*extend,maxi)
+        ax.grid()
+
+        ax.set_title(title)
+        j += 1
+
+    gs.tight_layout(figure)
+
+    def animate(t):
+        ret = []
+        alphaInit  = transpFun(1.-float(t)/(Pmax+1.))
+        alphaFinal = transpFun(float(t)/(Pmax+1.))
+
+        for (f,finit,ffinal,title,ax) in zip(fs,finits,ffinals,titlesList,axes):
+            ax.cla()
 
             XInit    = np.linspace( 0.0 , 1.0 , finit.size  )
             XFinal   = np.linspace( 0.0 , 1.0 , ffinal.size )
             XCurrent = np.linspace( 0.0 , 1.0 , f[:,t].size )
 
-            ax.plot( XInit,    finit,  options[0], label=lbl+'$f_{init}$',  alpha=alphaInit  )
-            ax.plot( XFinal,   ffinal, options[1], label=lbl+'$f_{final}$', alpha=alphaFinal )
-            ax.plot( XCurrent, f[:,t], options[2], label=lbl+'$f$' )
-            ax.set_ylim(mini,maxi)
-            
+            lineInit,    = ax.plot(XInit,finit,options[0],label='$f_{init}$',alpha=alphaInit)
+            lineFinal,   = ax.plot(XFinal,ffinal,options[1],label='$f_{final}$',alpha=alphaFinal)
+            lineCurrent, = ax.plot(XCurrent,f[:,t],options[2],label='$f$')
+
+            ret.extend([lineInit,lineFinal,lineCurrent])
+
+            ax.set_ylim(mini-0.15*extend,maxi)
+            ax.set_title(title)
+            ax.grid()
             try:
                 ax.legend(fontsize='xx-small',loc='center right',bbox_to_anchor=(1.13, 0.5),fancybox=True,framealpha=0.40)
             except:
                 ax.legend(fontsize='xx-small',loc='center right',bbox_to_anchor=(1.13, 0.5),fancybox=True)
 
-            ax.grid()
-            ax.set_title(title)
-            j += 1        
+        return tuple(ret)
 
-        gs.tight_layout(figure)
-        figName = figDir + prefixFigName + suffixFor(t,Tmax) + '.pdf'
-        print('Writing '+figName+' ...')
-        plt.savefig(figName)
-        plt.close()
+    def init():
+        return animate(0)
+
+    frames = np.arange(Pmax+2)
+    
+    print('Making animation ...')
+    ani = anim.FuncAnimation(figure, animate, frames, init_func=init, interval=interval, blit=True)
+    print('Writing '+figDir+figName+' ...')
+    ani.save(figDir+figName,writer)
 
