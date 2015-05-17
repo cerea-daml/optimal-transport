@@ -28,7 +28,7 @@ def fastVanishingTransparency(t):
 def customTransparency(t):
     return max(t,0.25)
 
-def plotFinalState(outputDir, figDir, prefixFigName='finalState', transpFun=None, options=None, swapInitFinal=False,):
+def plotFinalState(outputDir, figDir, prefixFigName='finalState', transpFun=None, options=None, swapInitFinal=False):
 
     if options is None:
         options = ['b-','r-','g-']
