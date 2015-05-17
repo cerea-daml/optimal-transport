@@ -1,0 +1,18 @@
+#!/usr/bin/env python 
+
+from OT1D.OTObjects1D.analyse.computeOperators import applyAllOperators
+
+sys.argv.pop(0)
+arguments = dict()
+for arg in sys.argv:
+    members               = arg.split('=')
+    arguments[members[0]] = members[1]
+
+try:
+    configFile = arguments['CONFIG_FILE']
+    config     = Configuration(configFile)
+    outputDir  = config.outputDir
+except:
+    outputDir  = arguments['OUTPUT_DIR']
+
+applyAllOperators(outputDir)
