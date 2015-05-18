@@ -1,5 +1,5 @@
 #!/usr/bin/env python 
-
+import sys
 from OT1D.OTObjects1D.analyse.computeOperators import applyAllOperators
 
 sys.argv.pop(0)

@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import sys
 
 from OT1D.utils.run                           import runCommand
 from OT1D.OTObjects1D.plotting.plotAnalyse    import plotAnalyseDefaultSubplots
