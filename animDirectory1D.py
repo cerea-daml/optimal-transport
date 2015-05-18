@@ -49,7 +49,7 @@ except:
 try:
     interval = arguments['INTERVAL']
 except:
-    interval = 'ffmpeg'
+    interval = 100.
 
 try:
     transpFunName = arguments['TRANSP_FUN_NAME']
