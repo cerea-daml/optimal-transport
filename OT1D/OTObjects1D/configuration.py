@@ -5,10 +5,10 @@
 # Defines everything necessary for running an OT algorithm from a config file
 #
 
-from boundaries.defineBoundaries import boundariesForConfig
-from algorithms.adr.adrAlgorithm import AdrAlgorithm
-from algorithms.pd.pdAlgorithm import PdAlgorithm
-from algorithms.adr3.adr3Algorithm import Adr3Algorithm
+from boundaries.defineBoundaries           import boundariesForConfig
+from algorithms.adr.adrAlgorithm           import AdrAlgorithm
+from algorithms.pd.pdAlgorithm             import PdAlgorithm
+from algorithms.adr3.adr3Algorithm         import Adr3Algorithm
 from algorithms.anamorph.anamorphAlgorithm import AnamorphAlgorithm
 
 class Configuration(object):
@@ -17,6 +17,7 @@ class Configuration(object):
     '''
 
     def __init__(self, configFile=None):
+        self.swapedInitFinal = False
         self.defaultAttributes()
         self.fromfile(configFile)
         self.ckeckAttributes()
