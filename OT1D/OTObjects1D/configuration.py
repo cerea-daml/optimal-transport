@@ -17,7 +17,7 @@ class Configuration(object):
     '''
 
     def __init__(self, configFile=None):
-        self.swapedInitFinal = False
+        self.swappedInitFinal = False
         self.defaultAttributes()
         self.fromfile(configFile)
         self.ckeckAttributes()

@@ -7,7 +7,7 @@
 
 import numpy as np
 from ..OTObject import OTObject
-from ...utils import cardan
+from ...utils   import cardan
 
 #__________________________________________________
 
@@ -1081,7 +1081,7 @@ class Boundaries( OTObject ):
     def LInftyNorm(self):
         return np.max( [ self.temporalBoundaries.LInftyNorm() , self.spatialBoundaries.LInftyNorm() ] )
 
-    def placeReservoir(self):
+    def placeReservoir(self, config=None):
         self.spatialBoundaries = SpatialBoundaries(self.M,self.N,self.P)
 
         self.temporalBoundaries.bt0[0,:]      = 0.
@@ -1098,6 +1098,8 @@ class Boundaries( OTObject ):
 
         if self.massDefault() < 0:
             self.temporalBoundaries.swap()
+            if not config is None:
+                config.swappedInitFinal = True
 
     def normalize(self, normType):
         mInit = ( self.P * self.temporalBoundaries.bt0.sum() +

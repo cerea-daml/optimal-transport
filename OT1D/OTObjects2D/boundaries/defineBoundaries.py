@@ -72,7 +72,7 @@ def boundariesForConfig(config):
         config.boundaries.spatialBoundaries = grid.SpatialBoundaries( config.M , config.N , config.P )
     elif config.dynamics == 3 or config.dynamics == 4:
         config.boundaries.spatialBoundaries = grid.SpatialBoundaries( config.M , config.N , config.P )
-        config.boundaries.placeReservoir()
+        config.boundaries.placeReservoir(config)
 
 def extensionOfFile(fileName):
     if not '.' in fileName:

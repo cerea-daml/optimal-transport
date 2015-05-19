@@ -929,7 +929,7 @@ class Boundaries( oto.OTObject ):
         if self.massDefault() < 0:
             self.temporalBoundaries.swap()
             if not config is None:
-                config.swapedInitFinal = True
+                config.swappedInitFinal = True
 
     def normalize(self, normType):
         mInit = ( self.P * self.temporalBoundaries.bt0.sum() +
