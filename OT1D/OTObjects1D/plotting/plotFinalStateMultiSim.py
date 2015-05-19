@@ -9,6 +9,7 @@ import numpy as np
 import cPickle as pck
 from matplotlib import pyplot as plt
 from scipy.interpolate import interp1d
+from matplotlib import gridspec
 
 def suffixFor(i,iMaxP1):
     nDigit = np.ceil(np.log10(iMaxP1))
