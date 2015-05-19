@@ -341,16 +341,19 @@ class CenteredField( Field ):
 
         return StaggeredCenteredField( self.N , self.P , staggeredField , self )
 
-    def Tmap(self):
-        f      = self.f * ( self.f > 0 ) + 1.0 * ( 1. - self.f > 0 )
+    def Tmap(self, fineResolution=None):
+        if fineResolution is None:
+            fineResolution = self.N + 1
+
+        f      = self.f * ( self.f > 0 ) + 1.0 * ( self.f <= 0 )
         v      = self.m * ( self.f > 0 ) / f
-        Tarray = np.linspace(0.0, 1.0, self.N+1)
+        Tarray = np.linspace(0.0, 1.0, fineResolution)
 
         for j in xrange(self.P):
-            vmap   = interp1d(np.linspace(0.0, 1.0, self.N+1), v[:,j], copy=False, bounds_error=False, fill_value=0.0)
+            vmap    = interp1d(np.linspace(0.0, 1.0, self.N+1), v[:,j], copy=False, bounds_error=False, fill_value=0.0)
             Tarray += vmap(Tarray) / self.P
         
-        return (np.linspace(0.0, 1.0, self.N+1), Tarray)
+        return (np.linspace(0.0, 1.0, fineResolution), Tarray)
 
     def __add__(self, other):
         if isinstance(other,CenteredField):
