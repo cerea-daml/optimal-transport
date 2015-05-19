@@ -9,7 +9,6 @@ import numpy as np
 import cPickle as pck
 import matplotlib as mpl
 from matplotlib import pyplot as plt
-from matplotlib import animation as anim
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 def suffixFor(i,iMaxP1):
