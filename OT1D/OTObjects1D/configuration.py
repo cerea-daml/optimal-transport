@@ -338,7 +338,7 @@ class Configuration(object):
 
         self.attributes.append('fineResolution')
         self.defaultValues.append(1000)
-        self.isSubAttribute.append(('algoName','anamorph'))
+        self.isSubAttribute.append(None)
         self.attributeType.append(int)
 
     def defaultValueFor(self,attrName):
