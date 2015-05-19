@@ -2,6 +2,7 @@
 import sys
 
 from OT1D.utils.run                           import runCommand
+from OT1D.OTObjects1D.configuration           import Configuration
 from OT1D.OTObjects1D.plotting.plotAnalyse    import plotAnalyseDefaultSubplots
 from OT1D.OTObjects1D.plotting.plotFinalState import plotFinalState
 from OT1D.OTObjects1D.plotting.plotFinalState import defaultTransparency
@@ -67,9 +68,12 @@ try:
 except:
     opt        = None
 
+if config.swappedInitFinal:
+    swapInitFinal = not swapInitFinal
+
+runCommand('mkdir -p '+figDir, printIO)
 plotAnalyseDefaultSubplots(outputDir, figDir, 'analyseIter')
 plotAnalyseDefaultSubplots(outputDir, figDir, 'analyseTime', 'time')
-
-plotFinalState(outputDir, plotDir, prefixFigName, transpFun=transpFun, options=opt, swapInitFinal=swapInitFinal)
+plotFinalState(outputDir, figDir, prefixFigName, transpFun=transpFun, options=opt, swapInitFinal=swapInitFinal)
 
 

@@ -2,6 +2,7 @@
 import sys
 
 from OT1D.utils.run                           import runCommand
+from OT1D.OTObjects1D.configuration           import Configuration
 from OT1D.OTObjects1D.plotting.animFinalState import animFinalState
 from OT1D.OTObjects1D.plotting.animFinalState import defaultTransparency
 from OT1D.OTObjects1D.plotting.animFinalState import fastVanishingTransparency
@@ -76,5 +77,9 @@ try:
 except:
     opt        = None
 
+if config.swappedInitFinal:
+    swapInitFinal = not swapInitFinal
+
+runCommand('mkdir -p '+figDir, printIO)
 animFinalState(outputDir, figDir, figName, writer, interval, transpFun, options=opt, swapInitFinal=swapInitFinal)
 

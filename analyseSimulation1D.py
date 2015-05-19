@@ -1,6 +1,7 @@
 #!/usr/bin/env python 
 import sys
 from OT1D.OTObjects1D.analyse.computeOperators import applyAllOperators
+from OT1D.OTObjects1D.configuration            import Configuration
 
 sys.argv.pop(0)
 arguments = dict()
