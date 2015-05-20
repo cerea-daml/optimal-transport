@@ -46,7 +46,7 @@ except:
 try:
     writer = arguments['WRITER']
 except:
-    writer = 'ffmpeg'
+    writer = 'avconv'
 
 try:
     interval = arguments['INTERVAL']
@@ -81,5 +81,5 @@ if config.swappedInitFinal:
     swapInitFinal = not swapInitFinal
 
 runCommand('mkdir -p '+figDir, printIO)
-animFinalState(outputDir, figDir, figName, writer, interval, transpFun, options=opt, swapInitFinal=swapInitFinal)
+animFinalState(config.outputDir, figDir, figName, writer, interval, transpFun, options=opt, swapInitFinal=swapInitFinal)
 
