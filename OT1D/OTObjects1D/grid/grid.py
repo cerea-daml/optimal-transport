@@ -302,7 +302,7 @@ class CenteredField( Field ):
 
     def functionalJ(self):
         return ( ( self.m * self.m ) * ( self.f > 0 ) / 
-                 ( self.f * (self.f > 0) + 1. * ( 1. - (self.f > 0) ) ) ).sum()
+                 ( self.f * (self.f > 0) + 1. * ( self.f <= 0 ) ) ).sum()
 
     def proximalJ(self, gamma):
         unity = np.ones(shape=self.f.shape)
