@@ -27,9 +27,9 @@ def boundaryGaussianSine(M,N,P,
     y11 = np.mod(y11,1.)
 
     # Defines f0 and f1
-    x   = np.linspace( 0.0 , 1.0 , M + 1 )
-    y   = np.linspace( 0.0 , 1.0 , N + 1 )
-    X,Y = np.meshgrid( x , y , indexing='ij' )
+    x   = np.linspace(0.5/(M+1.), 1.0-0.5/(M+1.), M + 1)
+    y   = np.linspace(0.5/(N+1.), 1.0-0.5/(N+1.), N + 1)
+    X,Y = np.meshgrid(x ,y ,indexing='ij')
 
     f0  = ( A0 * ( np.exp( -alphaX0 * np.power( X - x00 , 2 ) ) * 
                    np.exp( -alphaY0 * np.power( Y - y00 , 2 ) ) *
@@ -66,9 +66,9 @@ def boundaryGaussianCosine(M,N,P,
     y11 = np.mod(y11,1.)
 
     # Defines f0 and f1
-    x   = np.linspace( 0.0 , 1.0 , M + 1 )
-    y   = np.linspace( 0.0 , 1.0 , N + 1 )
-    X,Y = np.meshgrid( x , y , indexing='ij' )
+    x   = np.linspace(0.5/(M+1.), 1.0-0.5/(M+1.), M + 1)
+    y   = np.linspace(0.5/(N+1.), 1.0-0.5/(N+1.), N + 1)
+    X,Y = np.meshgrid(x ,y ,indexing='ij')
 
     f0  = ( A0 * ( np.exp( -alphaX0 * np.power( X - x00 , 2 ) ) * 
                    np.exp( -alphaY0 * np.power( Y - y00 , 2 ) ) *

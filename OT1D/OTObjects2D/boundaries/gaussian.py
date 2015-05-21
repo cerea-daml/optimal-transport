@@ -22,9 +22,9 @@ def boundaryGaussian(M,N,P,
     y1 = np.mod(y1,1.)
 
     # Defines f0 and f1
-    x   = np.linspace( 0.0 , 1.0 , M + 1 )
-    y   = np.linspace( 0.0 , 1.0 , N + 1 ) 
-    X,Y = np.meshgrid( x , y , indexing='ij' )
+    x   = np.linspace(0.5/(M+1.), 1.0-0.5/(M+1.), M + 1)
+    y   = np.linspace(0.5/(N+1.), 1.0-0.5/(N+1.), N + 1)
+    X,Y = np.meshgrid(x ,y ,indexing='ij')
 
     f0  = A0 * np.exp( -alphaX0 * np.power( X - x0 , 2 ) ) * np.exp( -alphaY0 * np.power( Y - y0 , 2 ) )
     f1  = A1 * np.exp( -alphaX1 * np.power( X - x1 , 2 ) ) * np.exp( -alphaY1 * np.power( Y - y1 , 2 ) )
@@ -54,9 +54,9 @@ def boundaryGaussian2(M,N,P,
     y11 = np.mod(y11,1.)
 
     # Defines f0 and f1
-    x   = np.linspace( 0.0 , 1.0 , M + 1 )
-    y   = np.linspace( 0.0 , 1.0 , N + 1 )
-    X,Y = np.meshgrid( x , y , indexing='ij')
+    x   = np.linspace(0.5/(M+1.), 1.0-0.5/(M+1.), M + 1)
+    y   = np.linspace(0.5/(N+1.), 1.0-0.5/(N+1.), N + 1)
+    X,Y = np.meshgrid(x ,y ,indexing='ij')
 
     f0 = ( A00 * np.exp( -alphaX00 * np.power( X - x00 , 2 ) ) * np.exp( -alphaY00 * np.power( Y - y00 , 2 ) ) +
            A01 * np.exp( -alphaX01 * np.power( X - x01 , 2 ) ) * np.exp( -alphaY01 * np.power( Y - y01 , 2 ) ) )

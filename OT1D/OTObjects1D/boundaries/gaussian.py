@@ -20,7 +20,7 @@ def boundaryGaussian(N,P,
     x1 = np.mod(x1,1.)
 
     # Defines f0 and f1
-    X  = np.linspace( 0.0 , 1.0 , N + 1 )
+    X  = np.linspace(0.5/(N+1.), 1.0-0.5/(N+1.), N + 1)
 
     f0 = A0 * np.exp( -alphaX0 * np.power( X - x0 , 2 ) )
     f1 = A1 * np.exp( -alphaX1 * np.power( X - x1 , 2 ) )
@@ -45,7 +45,7 @@ def boundaryGaussian2(N,P,
     x11 = np.mod(x11,1.)
 
     # Defines f0 and f1
-    X  = np.linspace( 0.0 , 1.0 , N + 1 )
+    X  = np.linspace(0.5/(N+1.), 1.0-0.5/(N+1.), N + 1)
 
     f0 = ( A00 * np.exp( -alphaX00 * np.power( X - x00 , 2 ) ) +
            A01 * np.exp( -alphaX01 * np.power( X - x01 , 2 ) ) )

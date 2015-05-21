@@ -21,7 +21,7 @@ def boundaryGaussianSplit1(N,P,
     x01 = np.mod(x01,1.)
 
     # Defines f0 and f1
-    X  = np.linspace( 0.0 , 1.0 , N + 1 )
+    X  = np.linspace(0.5/(N+1.), 1.0-0.5/(N+1.), N + 1)
     
     f0 = ( A00 * np.exp( -alphaX00 * np.power( X - x00 , 2 ) ) +
            A01 * np.exp( -alphaX01 * np.power( X - x01 , 2 ) ) )
@@ -47,7 +47,7 @@ def boundaryGaussianSplit2(N,P,
     x11 = np.mod(x11,1.)
 
     # Defines f0 and f1
-    X  = np.linspace( 0.0 , 1.0 , N + 1 )
+    X  = np.linspace(0.5/(N+1.), 1.0-0.5/(N+1.), N + 1)
 
     f0 = ( A0  * np.exp( -alphaX0  * np.power( X - x0  , 2 ) ) )
     f1 = ( A10 * np.exp( -alphaX10 * np.power( X - x10 , 2 ) ) +
