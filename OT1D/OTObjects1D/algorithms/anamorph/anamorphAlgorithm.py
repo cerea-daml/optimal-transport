@@ -45,12 +45,6 @@ class AnamorphAlgorithm( OTObject ):
             p.dump(self.state)
             f.close()
 
-            f   = open(fileTmap, 'wb')
-            X,T = self.state.interpolation().Tmap(self.config.fineResolution)
-            np.save(f, X)
-            np.save(f, T)
-            f.close()
-
             try:
                 f = open(fileRunCount, 'rb')
                 p = pck.Unpickler(f)
@@ -84,7 +78,8 @@ class AnamorphAlgorithm( OTObject ):
     def run(self):
         self.config.iterTarget = 1
         fileCurrentState = self.config.outputDir + 'states.bin'
-    
+        fileTmap         = self.config.outputDir + 'Tmap.npy'    
+
         f = open(fileCurrentState, 'ab')
         p = pck.Pickler(f,protocol=-1)
 
@@ -217,5 +212,11 @@ class AnamorphAlgorithm( OTObject ):
         print('Time taken : '+str(timeAlgo))
         print('__________________________________________________')
 
+        # Saves Tmap
+        f = open(fileTmap, 'wb')
+        np.save(f, XT[1:NN+2])
+        np.save(f, Tarray[1:NN+2])
+        f.close()
+        
         self.saveState()
         return finalJ
