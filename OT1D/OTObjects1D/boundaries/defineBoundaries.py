@@ -93,15 +93,31 @@ def boundariesFromFile(config):
 
     if not bt0.size == config.N + 1:
         print( 'Interpolating bt0 into OT resolution ...')
-        bt0temp = bt0.copy()
-        interpBt0 = interp1d( np.linspace( 0.0 , 1.0 , bt0.size ) , bt0temp )
-        bt0 = interpBt0( np.linspace( 0.0 , 1.0 , config.N + 1 ) )
+
+        NN              = bt0.size
+        X               = np.zeros(NN+2)
+        X[1:NN+1]       = np.linspace(0.5/NN, 1.0-0.5/NN, NN)
+        X[NN+1]         = 1.0
+        bt0temp         = np.zeros(NN+2) 
+        bt0temp[1:NN+1] = bt0.copy()
+
+        interpBt0       = interp1d(X, bt0temp)
+
+        bt0             = interpBt0(np.linspace(0.5/(config.N+1.), 1.0-0.5/(config.N+1.), config.N+1))
 
     if not bt1.size == config.N + 1:
         print( 'Interpolating bt1 into OT resolution ...')
-        bt1temp = bt1.copy()
-        interpBt1 = interp1d( np.linspace( 0.0 , 1.0 , bt1.size ) , bt1temp )
-        bt1 = interpBt1( np.linspace( 0.0 , 1.0 , config.N + 1 ) )
+
+        NN              = bt1.size
+        X               = np.zeros(NN+2)
+        X[1:NN+1]       = np.linspace(0.5/NN,1.0-0.5/NN, NN)
+        X[NN+1]         = 1.0
+        bt1temp         = np.zeros(NN+2)
+        bt1temp[1:NN+1] = bt1.copy()
+
+        interpBt1       = interp1d(X , bt1temp)
+
+        bt1             = interpBt1(np.linspace(0.5/(config.N+1.), 1.0-0.5/(config.N+1.), config.N+1))
 
     temporalBoundaries = grid.TemporalBoundaries( config.N , config.P , bt0 , bt1 )
 
@@ -127,15 +143,31 @@ def boundariesFromFile(config):
 
     if not bx0.size == config.P + 1:
         print( 'Interpolating bx0 into OT resolution ...')
-        bx0temp = bx0.copy()
-        interpBx0 = interp1d( np.linspace( 0.0 , 1.0 , bx0.size ) , bx0temp )
-        bx0 = interpBx0( np.linspace( 0.0 , 1.0 , config.P + 1 ) )
+
+        PP              = bx0.size
+        T               = np.zeros(PP+2)
+        T[1:PP+1]       = np.linspace(0.5/PP, 1.0-0.5/PP, PP)
+        T[PP+1]         = 1.0
+        bx0temp         = np.zeros(PP+2)
+        bx0temp[1:PP+1] = bx0.copy()
+
+        interpBx0       = interp1d(T, bx0temp)
+
+        bx0             = interpBx0(np.linspace(0.5/(config.P+1.), 1.0-0.5/(config.P+1.), config.P+1))
 
     if not bx1.size == config.P + 1:
         print( 'Interpolating bx1 into OT resolution ...')
-        bx1temp = bx1.copy()
-        interpBx1 = interp1d( np.linspace( 0.0 , 1.0 , bx1.size ) , bx1temp )
-        bx1 = interpBx1( np.linspace( 0.0 , 1.0 , config.P + 1 ) )
+
+        PP              = bx1.size
+        T               = np.zeros(PP+2)
+        T[1:PP+1]       = np.linspace(0.5/PP, 1.0-0.5/PP, PP)
+        T[PP+1]         = 1.0
+        bx1temp         = np.zeros(PP+2)
+        bx1temp[1:PP+1] = bx1.copy()
+
+        interpBx1       = interp1d(T, bx1temp)
+
+        bx1             = interpBx1(np.linspace(0.5/(config.P+1.), 1.0-0.5/(config.P+1.), config.P+1))
 
     spatialBoundaries = grid.SpatialBoundaries( config.N , config.P , bx0 , bx1 )
     
