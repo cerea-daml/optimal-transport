@@ -72,8 +72,11 @@ if config.swappedInitFinal:
     swapInitFinal = not swapInitFinal
 
 runCommand('mkdir -p '+figDir, printIO)
-plotAnalyseDefaultSubplots(config.outputDir, figDir, 'analyseIter')
-plotAnalyseDefaultSubplots(config.outputDir, figDir, 'analyseTime', 'time')
+try:
+    plotAnalyseDefaultSubplots(config.outputDir, figDir, 'analyseIter')
+    plotAnalyseDefaultSubplots(config.outputDir, figDir, 'analyseTime', 'time')
+except:
+    pass
 plotFinalState(config.outputDir, figDir, prefixFigName, transpFun=transpFun, options=opt, swapInitFinal=swapInitFinal)
 
 
