@@ -345,8 +345,8 @@ class CenteredField( Field ):
         if fineResolution is None:
             fineResolution = self.N + 1
 
-        f      = self.f + 1.0 * ( self.f == 0 )
-        v      = self.m * ( self.f != 0 ) / f
+        f      = self.f * ( self.f > 0 ) + 1.0 * ( self.f <= 0 )
+        v      = self.m * ( self.f > 0 ) / f
         Tarray = np.linspace(0.0, 1.0, fineResolution)
 
         for j in xrange(self.P+1):
