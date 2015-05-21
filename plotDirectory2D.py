@@ -2,12 +2,12 @@
 import sys
 
 from OT1D.utils.run                           import runCommand
-from OT1D.OTObjects1D.configuration           import Configuration
-from OT1D.OTObjects1D.plotting.plotAnalyse    import plotAnalyseDefaultSubplots
-from OT1D.OTObjects1D.plotting.plotFinalState import plotFinalState
-from OT1D.OTObjects1D.plotting.plotFinalState import defaultTransparency
-from OT1D.OTObjects1D.plotting.plotFinalState import fastVanishingTransparency
-from OT1D.OTObjects1D.plotting.plotFinalState import customTransparency
+from OT1D.OTObjects2D.configuration           import Configuration
+from OT1D.OTObjects2D.plotting.plotAnalyse    import plotAnalyseDefaultSubplots
+from OT1D.OTObjects2D.plotting.plotFinalState import plotFinalState
+from OT1D.OTObjects2D.plotting.plotFinalState import defaultTransparency
+from OT1D.OTObjects2D.plotting.plotFinalState import fastVanishingTransparency
+from OT1D.OTObjects2D.plotting.plotFinalState import customTransparency
 
 sys.argv.pop(0)
 arguments = dict()
