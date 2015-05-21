@@ -5,17 +5,19 @@
 # Function boundariesForConfig returns boundary conditions for the given configuration
 #
 
-from ..grid import grid
-
-from gaussian import defaultBoundaryGaussian
-from gaussian import defaultBoundaryGaussian2
-from gaussianSplit import defaultBoundaryGaussianSplit1
-from gaussianSplit import defaultBoundaryGaussianSplit2
-from gaussianSine import defaultBoundaryGaussianSine
-from gaussianSine import defaultBoundaryGaussianCosine
-
 import numpy as np
 from scipy.interpolate import interp1d
+
+from ...utils.io   import extensionOfFile
+from ...utils.io   import arrayFromFile
+from ..grid        import grid
+
+from gaussian      import defaultBoundaryGaussian
+from gaussian      import defaultBoundaryGaussian2
+from gaussianSplit import defaultBoundaryGaussianSplit1
+from gaussianSplit import defaultBoundaryGaussianSplit2
+from gaussianSine  import defaultBoundaryGaussianSine
+from gaussianSine  import defaultBoundaryGaussianCosine
 
 def boundariesForConfig(config):
     # default configurations
@@ -73,27 +75,6 @@ def boundariesForConfig(config):
     elif config.dynamics == 3 or config.dynamics == 4:
         config.boundaries.spatialBoundaries = grid.SpatialBoundaries( config.M , config.N , config.P )
         config.boundaries.placeReservoir(config)
-
-def extensionOfFile(fileName):
-    if not '.' in fileName:
-        return None
-    else:
-        l = fileName.split('.')
-        return l[len(l)-1]
-
-def arrayFromFile(fileName):
-    if fileName is None or fileName == '':
-        return None
-
-    ext = extensionOfFile(fileName)
-
-    try:
-        if ext == 'npy':
-            return np.load(fileName)
-        else:
-            return np.fromfile(fileName)
-    except:
-        return None
 
 def boundariesFromFile(config):
     # Catching bt from files
