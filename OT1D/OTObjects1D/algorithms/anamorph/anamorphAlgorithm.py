@@ -115,7 +115,7 @@ class AnamorphAlgorithm( OTObject ):
         # Small corrections to insure that CDF's are strictly growing
         error           = 0.001
         CDFInit[1:N+3]  = np.maximum(CDFInit[1:N+3], error*NZmin/N)
-        CDFFinal[1:N+3] = np.maximum(CDFInit[1:N+3], error*NZmin/N)
+        CDFFinal[1:N+3] = np.maximum(CDFFinal[1:N+3], error*NZmin/N)
 
         CDFInit         = CDFInit.cumsum()
         CDFFinal        = CDFFinal.cumsum()
