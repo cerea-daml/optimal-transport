@@ -302,7 +302,7 @@ class CenteredField( Field ):
 
     def functionalJ(self):
         return ( ( self.m * self.m ) * ( self.f > 0 ) / 
-                 ( self.f * (self.f > 0) + 1. * ( 1. - (self.f > 0) ) ) ).sum()
+                 ( self.f * (self.f > 0) + 1. * ( self.f <= 0 ) ) ).sum()
 
     def proximalJ(self, gamma):
         unity = np.ones(shape=self.f.shape)
@@ -349,7 +349,7 @@ class CenteredField( Field ):
         v      = self.m * ( self.f > 0 ) / f
         Tarray = np.linspace(0.0, 1.0, fineResolution)
 
-        for j in xrange(self.P):
+        for j in xrange(self.P+1):
             vmap    = interp1d(np.linspace(0.0, 1.0, self.N+1), v[:,j], copy=False, bounds_error=False, fill_value=0.0)
             Tarray += vmap(Tarray) / self.P
         
