@@ -13,6 +13,7 @@ import pickle
 import time as tm
 import numpy as np
 from scipy.interpolate import interp1d
+from scipy.integrate   import cumtrapz
 
 from ...OTObject import OTObject
 from ...grid import grid
@@ -45,12 +46,6 @@ class AnamorphAlgorithm( OTObject ):
             f = open(fileState, 'wb')
             p = pck.Pickler(f,protocol=-1)
             p.dump(self.state)
-            f.close()
-
-            f   = open(fileTmap, 'wb')
-            X,T = self.state.interpolation().Tmap()
-            np.save(f, X)
-            np.save(f, T)
             f.close()
 
             try:
@@ -86,6 +81,7 @@ class AnamorphAlgorithm( OTObject ):
     def run(self):
         self.config.iterTarget = 1
         fileCurrentState = self.config.outputDir + 'states.bin'
+        fileTmap         = self.config.outputDir + 'Tmap.npy'
     
         f = open(fileCurrentState, 'ab')
         p = pck.Pickler(f,protocol=-1)
@@ -104,24 +100,31 @@ class AnamorphAlgorithm( OTObject ):
         fInit  = self.config.boundaries.temporalBoundaries.bt0
         fFinal = self.config.boundaries.temporalBoundaries.bt1
 
-        CDFInit  = np.zeros(N+1)
-        CDFFinal = np.zeros(N+1)
+        X          = np.linspace(0.0, 1.0, N+1)
+        FInitMap   = interp1d(X, fInit)
+        FFinalMap  = interp1d(X, fFinal)
 
-        CDFInit[1:N+1]  = 0.5*( fInit[0:N]  + fInit[1:N+1]  )
-        CDFFinal[1:N+1] = 0.5*( fFinal[0:N] + fFinal[1:N+1] )
+        NN         = self.config.fineResolution
+        XI         = np.linspace(0.0, 1.0, NN)
+        FInitFine  = FInitMap(XI)
+        FFinalFine = FFinalMap(XI)
 
-        CDFInit  = CDFInit.cumsum()
-        CDFFinal = CDFFinal.cumsum()
+        NZmin      = min( ( FInitFine * ( FInitFine > 0 ) +
+                            FInitFine.max() * ( FInitFine <=0 ) ).min() ,
+                          ( FFinalFine * ( FFinalFine > 0 ) +
+                            FFinalFine.max() * ( FFinalFine <=0 ) ).min() )
 
-        # This should do nothing, but just to make sure ...
-        CDFFinal *= CDFInit[N] / CDFFinal[N]
+        tolerance  = 0.01
+        FInitFine  = np.maximum(FInitFine,  tolerance*NZmin/NN)
+        FFinalFine = np.maximum(FFinalFine, tolerance*NZmin/NN)
 
-        # Computes maps associated to the CDF arrays by interpolating
-        XCDF        = np.linspace( 0.0-0.001 , 1.0+0.001 , N+1 )
+        CDFInit    = cumtrapz(FInitFine, XI, initial=0.)
+        CDFFinal   = cumtrapz(FFinalFine, XI, initial=0.)
 
-        FInitMap    = interp1d( XCDF , fInit    )
-        CDFFinalMap = interp1d( XCDF , CDFFinal )
-        iCDFInitMap = interp1d( CDFInit , XCDF  )
+        CDFFinal  *= CDFInit[NN-1] / CDFFinal[NN-1]
+
+        CDFFinalMap = interp1d(XI, CDFFinal)
+        iCDFInitMap = interp1d(CDFInit, XI)
 
         # T = CDFInit^(-1) o CDFFinal
         def Tmap(x):
@@ -130,22 +133,22 @@ class AnamorphAlgorithm( OTObject ):
         # Computes the derivative of T by finate differences
         # on a finer grid (to try and avoid infinite derivative)
         # result is stored in partialXTarray
-        NN         = self.config.fineResolution
-        XT         = np.zeros(NN+3)
-        XT[1:NN+2] = np.linspace( 0.0 , 1.0 , NN+1 )
-        XT[0]      = - XT[2]
-        XT[NN+2]   = 1. + XT[2]
+        Tarray               = Tmap(XI)
 
-        Tarray         = np.zeros(NN+3)
-        Tarray[1:NN+2] = Tmap(XT[1:NN+2])
-        Tarray[0]      = XT[0]
-        Tarray[NN+2 ]  = XT[NN+2]
+        partialXTarray       = np.zeros(NN+1)
+        partialXTarray[1:NN] = NN * ( Tarray[1:] - Tarray[:NN-1] )
+        partialXTarray[0]    = partialXTarray[1]
+        partialXTarray[NN]   = partialXTarray[NN-1]
 
-        partialXTarray = NN * ( Tarray[1:] - Tarray[:NN+2] ) 
-        Xpartial       = 0.5 * ( XT[1:] + XT[:NN+2] )
+        Xpartial             = np.zeros(NN+1)
+        Xpartial[1:NN]       = 0.5 * ( XI[1:] + XI[:NN-1] )
+        Xpartial[NN]         = 1.0
 
-        # Computes maps associated to the derivative of T by interpolating         
-        partialXTmap = interp1d( Xpartial , partialXTarray )
+        # avoid extremal values of partialXTarray
+        partialXTarray       = np.minimum(10*partialXTarray.mean(), partialXTarray)
+
+        # Computes maps associated to the derivative of T by interpolating
+        partialXTmap = interp1d(Xpartial, partialXTarray)
 
         # Approximate solution of the optimal transport
         def func(x,t):
@@ -153,17 +156,13 @@ class AnamorphAlgorithm( OTObject ):
                      abs( ( 1. - t ) + t * partialXTmap(x) ) )
 
         # Storing solution in a staggered grid
-        fu = np.zeros(shape=(N+1,P+2))
-        X  = np.linspace( 0.0 , 1.0 , N+1 )
-        T  = np.zeros(P+2)
+        x        = np.linspace(0.0, 1.0, N+1)
+        t        = np.zeros(P+2)
+        t[1:P+1] =  np.linspace(0.5/P, 1.-0.5/P, P)
+        t[P+1]   = 1.
 
-        T[1:P+1] = np.linspace( 0.5/P , 1.0-0.5/P , P )
-        T[0]     = 0.
-        T[P+1]   = 1.
-
-        for i in xrange(N+1):
-            for j in xrange(P+2):
-                fu[i,j] = func( X[i] , T[j] )
+        X, T     = np.meshgrid(x,t,indexing='ij')
+        fu       = func(X, T)
 
         # Now computes m to complete the solution of the optimal transport
         # We have df/dt + dm/dx = 0
@@ -205,5 +204,11 @@ class AnamorphAlgorithm( OTObject ):
         print('Time taken : '+str(timeAlgo))
         print('__________________________________________________')
 
+        # Saves Tmap
+        f = open(fileTmap, 'wb')
+        np.save(f, XI)
+        np.save(f, Tarray)
+        f.close()
+        
         self.saveState()
         return finalJ
