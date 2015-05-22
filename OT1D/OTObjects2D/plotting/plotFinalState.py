@@ -49,17 +49,13 @@ def plotFinalState(outputDir, figDir, prefixFigName='finalState', transpFun=None
         ffinal = config.boundaries.temporalBoundaries.bt1
         f      = finalState.f
 
-    mini = np.min( [ finit.min() , ffinal.min() , f.min() ] ) 
-    maxi = np.max( [ finit.max() , ffinal.max() , f.max() ] ) 
+    mini = np.min( [ finit.min() , ffinal.min() , f.min() , 0.0 ] ) 
+    maxi = np.max( [ finit.max() , ffinal.max() , f.max() , 0.0 ] ) 
 
     xTxt  = 0.01
     yTxt  = -0.05
     yPbar = -0.05
 
-    if not kwargsCurrent.has_key('origin'):
-        kwargsCurrent['origin'] = 'lower'
-    if not kwargsCurrent.has_key('extent'):
-        kwargsCurrent['extent'] = [0.,1.,0.,1.]
     if not kwargsCurrent.has_key('vmin'):
         kwargsCurrent['vmin'] = mini
     if not kwargsCurrent.has_key('vmax'):
@@ -67,10 +63,6 @@ def plotFinalState(outputDir, figDir, prefixFigName='finalState', transpFun=None
     if not kwargsCurrent.has_key('interpolation'):
         kwargsCurrent['interpolation'] = 'nearest'
 
-    if not kwargsInit.has_key('origin'):
-        kwargsInit['origin'] = 'lower'
-    if not kwargsInit.has_key('extent'):
-        kwargsInit['extent'] = [0.,1.,0.,1.]
     if not kwargsInit.has_key('vmin'):
         kwargsInit['vmin'] = mini
     if not kwargsInit.has_key('vmax'):
@@ -82,10 +74,6 @@ def plotFinalState(outputDir, figDir, prefixFigName='finalState', transpFun=None
     if not kwargsInit.has_key('linewidths'):
         kwargsInit['linewidths'] = 1.5
     
-    if not kwargsFinal.has_key('origin'):
-        kwargsFinal['origin'] = 'lower'
-    if not kwargsFinal.has_key('extent'):
-        kwargsFinal['extent'] = [0.,1.,0.,1.]
     if not kwargsFinal.has_key('vmin'):
         kwargsFinal['vmin'] = mini
     if not kwargsFinal.has_key('vmax'):
