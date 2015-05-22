@@ -5,28 +5,12 @@
 # util to plot the final state 
 #
 
-import numpy as np
-import cPickle as pck
-from matplotlib import pyplot as plt
+import numpy             as np
+import cPickle           as pck
+import matplotlib.pyplot as plt
 
-def suffixFor(i,iMaxP1):
-    nDigit = np.ceil(np.log10(iMaxP1))
-    s = str(int(i))
-    while len(s) < nDigit:
-        s = '0'+s
-    return s
-
-def defaultTransparency(t):
-    return t
-
-def fastVanishingTransparency(t):
-    if t < 0.6:
-        return 0.
-    else:
-        return 1. + (1./0.4)*(t-1.)
-
-def customTransparency(t):
-    return max(t,0.25)
+from ...utils.io                  import fileNameSuffix
+from ...utils.defaultTransparency import customTransparency
 
 def plotFinalState(outputDir, figDir, prefixFigName='finalState', transpFun=None, options=None, swapInitFinal=False):
 
@@ -84,7 +68,7 @@ def plotFinalState(outputDir, figDir, prefixFigName='finalState', transpFun=None
         plt.clf()
         ax = plt.subplot(111)
 
-        timeText     = ax.text(xTxt, yTxt, suffixFor(t,config.P+1)+' / '+str(config.P+1))
+        timeText     = ax.text(xTxt, yTxt, fileNameSuffix(t,config.P+2)+' / '+str(config.P+1))
         if t < config.P + 1:
             lineBkgPbar, = ax.plot([float((0.+t)/(finalState.P+1.))*0.6+0.2,0.8],[yPbar,yPbar], 'k-', linewidth=5)
         if t > 0:
@@ -103,9 +87,9 @@ def plotFinalState(outputDir, figDir, prefixFigName='finalState', transpFun=None
         except:
             ax.legend(fontsize='xx-small',loc='center right',bbox_to_anchor=(1.13, 0.5),fancybox=True)            
 
-        ax.set_title('Final iteration\nt = ' + suffixFor(t,config.P+1) + ' / '+str(config.P+1))
+        ax.set_title('Final iteration\nt = ' + fileNameSuffix(t,config.P+2) + ' / '+str(config.P+1))
         plt.tight_layout()
 
-        figName = figDir + prefixFigName + suffixFor(t,finalState.P+1) + '.pdf'
+        figName = figDir + prefixFigName + fileNameSuffix(t,finalState.P+2) + '.pdf'
         print('Writing '+figName+' ...')
         plt.savefig(figName)

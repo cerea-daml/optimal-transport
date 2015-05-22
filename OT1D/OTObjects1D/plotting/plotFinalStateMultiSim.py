@@ -5,30 +5,15 @@
 # util to plot the final state for multiple simulations 
 #
 
-import numpy as np
-import cPickle as pck
-from matplotlib import pyplot as plt
+import numpy             as np
+import cPickle           as pck
+import matplotlib.pyplot as plt
+
+from matplotlib        import gridspec
 from scipy.interpolate import interp1d
-from matplotlib import gridspec
 
-def suffixFor(i,iMaxP1):
-    nDigit = np.ceil(np.log10(iMaxP1))
-    s = str(int(i))
-    while len(s) < nDigit:
-        s = '0'+s
-    return s
-
-def defaultTransparency(t):
-    return t
-
-def fastVanishingTransparency(t):
-    if t < 0.6:
-        return 0.
-    else:
-        return 1. + (1./0.4)*(t-1.)
-
-def customTransparency(t):
-    return max(t,0.25)
+from ...utils.io                  import fileNameSuffix
+from ...utils.defaultTransparency import customTransparency
 
 def plotFinalStateMultiSim(outputDirList, figDir, prefixFigName='finalState', transpFun=None, swapInitFinal=None,
                            titlesList=None, options=None):
@@ -161,7 +146,7 @@ def plotFinalStateMultiSim(outputDirList, figDir, prefixFigName='finalState', tr
             j += 1        
 
         gs.tight_layout(figure)
-        figName = figDir + prefixFigName + suffixFor(t,Tmax) + '.pdf'
+        figName = figDir + prefixFigName + fileNameSuffix(t,Pmax+2) + '.pdf'
         print('Writing '+figName+' ...')
         plt.savefig(figName)
         plt.close()
