@@ -14,6 +14,7 @@ from ...utils.defaultTransparency import customTransparency
 from ...utils.extent              import xExtentPP
 from ...utils.extent              import extendY1d
 from ...utils.extent              import extendY2d
+from ...utils.plot                import plot
 
 def plotFinalState(outputDir, figDir, prefixFigName='finalState', transpFun=None, options=None, swapInitFinal=False):
 
@@ -75,13 +76,13 @@ def plotFinalState(outputDir, figDir, prefixFigName='finalState', transpFun=None
 
         timeText     = ax.text(xTxt, yTxt, fileNameSuffix(t,config.P+2)+' / '+str(config.P+1))
         if t < config.P + 1:
-            lineBkgPbar, = ax.plot([float((0.+t)/(finalState.P+1.))*0.6+0.2,0.8],[yPbar,yPbar], 'k-', linewidth=5)
+            lineBkgPbar, = plot(ax, [yPbar,yPbar], [float(t)/(finalState.P+1.)*0.6+0.2,0.8], 'k-', linewidth=5)
         if t > 0:
-            linePbar,    = ax.plot([0.2,float((0.+t)/(finalState.P+1.))*0.6+0.2],[yPbar,yPbar], 'g-', linewidth=5)
+            linePbar,    = plot(ax, [yPbar,yPbar], [0.2,float(t)/(finalState.P+1.)*0.6+0.2], 'g-', linewidth=5)
 
-        ax.plot(X,finit,options[0],label='$f_{init}$',alpha=alphaInit)
-        ax.plot(X,ffinal,options[1],label='$f_{final}$',alpha=alphaFinal)
-        ax.plot(X,finalState.f[:,t],options[2],label='$f$')
+        plot(ax, finit, X, options[0], label='$f_{init}$', alpha=alphaInit)
+        plot(ax, ffinal, X, options[1], label='$f_{final}$', alpha=alphaFinal)
+        plot(ax, finalState.f[:,t], X, options[2], label='$f$')
         
         ax.set_xlabel('$x$')
         ax.set_ylim(mini,maxi)

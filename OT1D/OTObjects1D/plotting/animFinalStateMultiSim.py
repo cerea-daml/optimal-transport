@@ -17,6 +17,7 @@ from ...utils.defaultTransparency import customTransparency
 from ...utils.extent              import xExtentPP
 from ...utils.extent              import extendY1d
 from ...utils.extent              import extendY2d
+from ...utils.plot                import plot
 
 def animFinalStateMultiSim(outputDirList, figDir, figName='finalState.mp4', writer='ffmpeg', interval=100., transpFun=None,
                            swapInitFinal=None, titlesList=None, options=None):
@@ -133,9 +134,9 @@ def animFinalStateMultiSim(outputDirList, figDir, figName='finalState.mp4', writ
         ax = plt.subplot(gs[nl,nc])
         axes.append(ax)
 
-        lineInit,    = ax.plot(X,finit,options[0],label='$f_{init}$',alpha=alphaInit)
-        lineFinal,   = ax.plot(X,ffinal,options[1],label='$f_{final}$',alpha=alphaFinal)
-        lineCurrent, = ax.plot(X,f[:,0],options[2],label='$f$')
+        lineInit,    = plot(ax, finit, X, options[0], label='$f_{init}$', alpha=alphaInit)
+        lineFinal,   = plot(ax, ffinal, X, options[1], label='$f_{final}$', alpha=alphaFinal)
+        lineCurrent, = plot(ax, f[:,0], X, options[2], label='$f$')
 
         try:
             ax.legend(fontsize='xx-small',loc='center right',bbox_to_anchor=(1.13, 0.5),fancybox=True,framealpha=0.40)
@@ -157,9 +158,9 @@ def animFinalStateMultiSim(outputDirList, figDir, figName='finalState.mp4', writ
         for (f,X,finit,ffinal,title,ax) in zip(fs,Xs,finits,ffinals,titlesList,axes):
             ax.cla()
 
-            lineInit,    = ax.plot(X,finit,options[0],label='$f_{init}$',alpha=alphaInit)
-            lineFinal,   = ax.plot(X,ffinal,options[1],label='$f_{final}$',alpha=alphaFinal)
-            lineCurrent, = ax.plot(X,f[:,t],options[2],label='$f$')
+            lineInit,    = plot(ax, finit, X, options[0], label='$f_{init}$', alpha=alphaInit)
+            lineFinal,   = plot(ax, ffinal, X, options[1], label='$f_{final}$', alpha=alphaFinal)
+            lineCurrent, = plot(ax, f[:,t], X, options[2], label='$f$')
 
             ret.extend([lineInit,lineFinal,lineCurrent])
 

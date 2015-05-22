@@ -17,6 +17,7 @@ from ...utils.defaultTransparency import customTransparency
 from ...utils.extent              import xExtentPP
 from ...utils.extent              import extendY1d
 from ...utils.extent              import extendY2d
+from ...utils.plot                import plot
 
 def plotFinalStateMultiSim(outputDirList, figDir, prefixFigName='finalState', transpFun=None, swapInitFinal=None,
                            titlesList=None, options=None):
@@ -135,9 +136,10 @@ def plotFinalStateMultiSim(outputDirList, figDir, prefixFigName='finalState', tr
             nl = int((j-nc)/Nc)
             ax = plt.subplot(gs[nl,nc])
 
-            ax.plot( X,    finit,  options[0], label=lbl+'$f_{init}$',  alpha=alphaInit  )
-            ax.plot( X,   ffinal, options[1], label=lbl+'$f_{final}$', alpha=alphaFinal )
-            ax.plot( X, f[:,t], options[2], label=lbl+'$f$' )
+            plot(ax, finit, X, options[0], label=lbl+'$f_{init}$', alpha=alphaInit)
+            plot(ax, ffinal, X, options[1], label=lbl+'$f_{final}$', alpha=alphaFinal)
+            plot(ax, f[:,t], X, options[2], label=lbl+'$f$' )
+
             ax.set_ylim(mini,maxi)
             ax.set_xlim(0.0, 1.0)
             try:

@@ -15,6 +15,7 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 from ...utils.io                  import fileNameSuffix
 from ...utils.defaultTransparency import customTransparency
 from ...utils.plotMatrix          import plotMatrix
+from ...utils.plot                import plot
 
 def plotFinalState(outputDir, figDir, prefixFigName='finalState', transpFun=None, plotter='imshow', swapInitFinal=False,
                    kwargsCurrent={}, kwargsInit={}, kwargsFinal={}):
@@ -105,8 +106,8 @@ def plotFinalState(outputDir, figDir, prefixFigName='finalState', transpFun=None
         ax = plt.subplot(111)
 
         timeText     = ax.text(xTxt, yTxt, fileNameSuffix(t,config.P+2)+' / '+str(config.P+1))
-        lineBkgPbar, = ax.plot([float((0.+t)/(config.P+1.))*0.6+0.2,0.8],[yPbar,yPbar], 'k-', linewidth=5)
-        linePbar,    = ax.plot([0.2,float((0.+t)/(config.P+1.))*0.6+0.2],[yPbar,yPbar], 'g-', linewidth=5)
+        lineBkgPbar, = plot(ax, [yPbar,yPbar], [float(t)/(config.P+1.)*0.6+0.2,0.8], 'k-', linewidth=5)
+        linePbar,    = plot(ax, [yPbar,yPbar], [0.2,float(t)/(config.P+1.)*0.6+0.2], 'g-', linewidth=5)
 
         im = plotMatrix(ax, f[:,:,t], plotter, **kwargsCurrent)
         plotMatrix(ax, finit, 'contour', **kwargsInit)
