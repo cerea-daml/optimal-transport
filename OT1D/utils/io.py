@@ -2,6 +2,8 @@
 # io.py
 #######
 
+import numpy as np
+
 def extensionOfFile(fileName):
     if not '.' in fileName:
         return None
@@ -22,3 +24,10 @@ def arrayFromFile(fileName):
             return np.fromfile(fileName)
     except:
         return None
+
+def fileNameSuffix(i,iMaxP1):
+    nDigit = np.ceil(np.log10(iMaxP1))
+    s = str(int(i))
+    while len(s) < nDigit:
+        s = '0'+s
+    return s
