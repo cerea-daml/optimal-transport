@@ -16,6 +16,7 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 from ...utils.io                  import fileNameSuffix
 from ...utils.defaultTransparency import customTransparency
 from ...utils.plotMatrix          import plotMatrix
+from ...utils.plot                import plot
 
 def animFinalState(outputDir, figDir, figName='finalState.mp4', writer='ffmpeg', interval=100., transpFun=None, plotter='imshow', swapInitFinal=False,
                    kwargsCurrent={}, kwargsInit={}, kwargsFinal={}):
@@ -104,8 +105,8 @@ def animFinalState(outputDir, figDir, figName='finalState.mp4', writer='ffmpeg',
     kwargsInit['alpha']  = transpFun(1.)
     kwargsFinal['alpha'] = transpFun(0.)
 
-    lineBkgPbar, = ax.plot([0.2,0.8], [yPbar,yPbar], 'k-', linewidth=5)
-    linePbar,    = ax.plot([0.2,0.2], [yPbar,yPbar], 'g-', linewidth=5)
+    lineBkgPbar, = plot(ax, [yPbar,yPbar], [0.2,0.8], 'k-', linewidth=5)
+    linePbar,    = plot(ax, [yPbar,yPbar], [0.2,0.2], 'g-', linewidth=5)
     timeText     = ax.text(xTxt, yTxt, fileNameSuffix(0.,config.P+2)+' / '+str(config.P+1))
     imC          = plotMatrix(ax, f[:,:,0], plotter, **kwargsCurrent)
     imI          = plotMatrix(ax, finit, 'contour', **kwargsInit)
@@ -133,8 +134,8 @@ def animFinalState(outputDir, figDir, figName='finalState.mp4', writer='ffmpeg',
         ax.cla()
 
         timeText     = ax.text(xTxt, yTxt, fileNameSuffix(t,config.P+2)+' / '+str(config.P+1))
-        lineBkgPbar, = ax.plot([float((0.+t)/(config.P+1.))*0.6+0.2,0.8],[yPbar,yPbar], 'k-', linewidth=5)
-        linePbar,    = ax.plot([0.2,float((0.+t)/(config.P+1.))*0.6+0.2],[yPbar,yPbar], 'g-', linewidth=5)
+        lineBkgPbar, = plot(ax, [yPbar,yPbar], [float(t)/(config.P+1.)*0.6+0.2,0.8], 'k-', linewidth=5)
+        linePbar,    = plot(ax, [yPbar,yPbar], [0.2,float(t)/(config.P+1.)*0.6+0.2], 'g-', linewidth=5)
 
         ret.extend([timeText,lineBkgPbar,linePbar])
 
