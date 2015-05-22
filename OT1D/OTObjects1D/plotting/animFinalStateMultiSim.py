@@ -14,6 +14,9 @@ from scipy.interpolate import interp1d
 from matplotlib        import gridspec
 
 from ...utils.defaultTransparency import customTransparency
+from ...utils.extent              import xExtentPP
+from ...utils.extent              import extendY1d
+from ...utils.extent              import extendY2d
 
 def animFinalStateMultiSim(outputDirList, figDir, figName='finalState.mp4', writer='ffmpeg', interval=100., transpFun=None,
                            swapInitFinal=None, titlesList=None, options=None):
@@ -35,6 +38,7 @@ def animFinalStateMultiSim(outputDirList, figDir, figName='finalState.mp4', writ
         transpFun = customTransparency
 
     fs      = []
+    Xs      = []
     finits  = []
     ffinals = []
     Plist   = []
@@ -56,9 +60,12 @@ def animFinalStateMultiSim(outputDirList, figDir, figName='finalState.mp4', writ
         else:
             f = fstate.f
 
-        fs.append( f )
+        Xs.append(xExtentPP, fstate.N)
+        fs.append(extendY2d(f, axis=0, copy=False))
+
         minis.append( f.min() )
         maxis.append( f.max() )
+
         fileConfig = outputDir + 'config.bin'
         f = open(fileConfig,'rb')
         p = pck.Unpickler(f)
@@ -74,14 +81,17 @@ def animFinalStateMultiSim(outputDirList, figDir, figName='finalState.mp4', writ
             else:
                 finit = config.boundaries.temporalBoundaries.bt0
                 ffinal = config.boundaries.temporalBoundaries.bt1
-            finits.append( finit )
-            ffinals.append( ffinal )
-            minis.append( finit.min() )
-            minis.append( ffinal.min() )
-            maxis.append( finit.max() )
-            maxis.append( ffinal.max() )
-            Plist.append( config.P )
 
+            finits.append(extendY1d(finit, copy=False))
+            ffinals.append(extendY1d(ffinal, copy=False))
+            minis.append(finit.min())
+            minis.append(ffinal.min())
+            maxis.append(finit.max())
+            maxis.append(ffinal.max())
+            Plist.append(config.P)
+
+    minis.append(0.0)
+    maxis.append(0.0)
     mini  = np.min( minis )
     maxi  = np.max( maxis )
     Pmax  = np.max( Plist )
@@ -116,19 +126,16 @@ def animFinalStateMultiSim(outputDirList, figDir, figName='finalState.mp4', writ
     j = 0
     axes = []
 
-    for (f,finit,ffinal,title) in zip(fs,finits,ffinals,titlesList):
+    for (f,X,finit,ffinal,title) in zip(fs,Xs,finits,ffinals,titlesList):
         nc = int(np.mod(j,Nc))
         nl = int((j-nc)/Nc)
 
         ax = plt.subplot(gs[nl,nc])
         axes.append(ax)
 
-        XInit    = np.linspace( 0.0 , 1.0 , finit.size  )
-        XFinal   = np.linspace( 0.0 , 1.0 , ffinal.size )
-        XCurrent = np.linspace( 0.0 , 1.0 , f[:,0].size ) 
-        lineInit,    = ax.plot(XInit,finit,options[0],label='$f_{init}$',alpha=alphaInit)
-        lineFinal,   = ax.plot(XFinal,ffinal,options[1],label='$f_{final}$',alpha=alphaFinal)
-        lineCurrent, = ax.plot(XCurrent,f[:,0],options[2],label='$f$')
+        lineInit,    = ax.plot(X,finit,options[0],label='$f_{init}$',alpha=alphaInit)
+        lineFinal,   = ax.plot(X,ffinal,options[1],label='$f_{final}$',alpha=alphaFinal)
+        lineCurrent, = ax.plot(X,f[:,0],options[2],label='$f$')
 
         try:
             ax.legend(fontsize='xx-small',loc='center right',bbox_to_anchor=(1.13, 0.5),fancybox=True,framealpha=0.40)
@@ -147,16 +154,12 @@ def animFinalStateMultiSim(outputDirList, figDir, figName='finalState.mp4', writ
         alphaInit  = transpFun(1.-float(t)/(Pmax+1.))
         alphaFinal = transpFun(float(t)/(Pmax+1.))
 
-        for (f,finit,ffinal,title,ax) in zip(fs,finits,ffinals,titlesList,axes):
+        for (f,X,finit,ffinal,title,ax) in zip(fs,Xs,finits,ffinals,titlesList,axes):
             ax.cla()
 
-            XInit    = np.linspace( 0.0 , 1.0 , finit.size  )
-            XFinal   = np.linspace( 0.0 , 1.0 , ffinal.size )
-            XCurrent = np.linspace( 0.0 , 1.0 , f[:,t].size )
-
-            lineInit,    = ax.plot(XInit,finit,options[0],label='$f_{init}$',alpha=alphaInit)
-            lineFinal,   = ax.plot(XFinal,ffinal,options[1],label='$f_{final}$',alpha=alphaFinal)
-            lineCurrent, = ax.plot(XCurrent,f[:,t],options[2],label='$f$')
+            lineInit,    = ax.plot(X,finit,options[0],label='$f_{init}$',alpha=alphaInit)
+            lineFinal,   = ax.plot(X,ffinal,options[1],label='$f_{final}$',alpha=alphaFinal)
+            lineCurrent, = ax.plot(X,f[:,t],options[2],label='$f$')
 
             ret.extend([lineInit,lineFinal,lineCurrent])
 

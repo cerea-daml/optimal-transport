@@ -14,6 +14,9 @@ from scipy.interpolate import interp1d
 
 from ...utils.io                  import fileNameSuffix
 from ...utils.defaultTransparency import customTransparency
+from ...utils.extent              import xExtentPP
+from ...utils.extent              import extendY1d
+from ...utils.extent              import extendY2d
 
 def plotFinalStateMultiSim(outputDirList, figDir, prefixFigName='finalState', transpFun=None, swapInitFinal=None,
                            titlesList=None, options=None):
@@ -35,6 +38,7 @@ def plotFinalStateMultiSim(outputDirList, figDir, prefixFigName='finalState', tr
         transpFun = customTransparency
 
     fs      = []
+    Xs      = []
     finits  = []
     ffinals = []
     Plist   = []
@@ -56,10 +60,11 @@ def plotFinalStateMultiSim(outputDirList, figDir, prefixFigName='finalState', tr
         else:
             f = fstate.f
 
-        fs.append( f )
-        minis.append( f.min() )
-        maxis.append( f.max() )
+        Xs.append(xExtentPP, fstate.N)
+        fs.append(extendY2d(f, axis=0, copy=False))
 
+        minis.append(f.min())
+        maxis.append(f.max())
 
         fileConfig = outputDir + 'config.bin'
         f = open(fileConfig,'rb')
@@ -76,17 +81,20 @@ def plotFinalStateMultiSim(outputDirList, figDir, prefixFigName='finalState', tr
             else:
                 finit = config.boundaries.temporalBoundaries.bt0
                 ffinal = config.boundaries.temporalBoundaries.bt1
-            finits.append( finit )
-            ffinals.append( ffinal )
-            minis.append( finit.min() )
-            minis.append( ffinal.min() )
-            maxis.append( finit.max() )
-            maxis.append( ffinal.max() )
-            Plist.append( config.P )
 
-    Pmax = np.max( Plist )
-    mini = np.min( minis )
-    maxi = np.max( maxis )
+            finits.append(extendY1d(finit, copy=False))
+            ffinals.append(extendY1d(ffinal, copy=False))
+            minis.append(finit.min())
+            minis.append(ffinal.min())
+            maxis.append(finit.max())
+            maxis.append(ffinal.max())
+            Plist.append(config.P)
+
+    minis.append(0.0)
+    maxis.append(0.0)
+    Pmax = np.max(Plist)
+    mini = np.min(minis)
+    maxi = np.max(maxis)
 
     extend = maxi - mini + 1.e-6
     maxi += 0.05*extend
@@ -122,20 +130,16 @@ def plotFinalStateMultiSim(outputDirList, figDir, prefixFigName='finalState', tr
         gs = gridspec.GridSpec(Nl, Nc)
         j = 0
 
-        for (f,finit,ffinal,title) in zip(fs,finits,ffinals,titlesList):
+        for (f,X,finit,ffinal,title) in zip(fs,Xs,finits,ffinals,titlesList):
             nc = int(np.mod(j,Nc))
             nl = int((j-nc)/Nc)
             ax = plt.subplot(gs[nl,nc])
 
-            XInit    = np.linspace( 0.0 , 1.0 , finit.size  )
-            XFinal   = np.linspace( 0.0 , 1.0 , ffinal.size )
-            XCurrent = np.linspace( 0.0 , 1.0 , f[:,t].size )
-
-            ax.plot( XInit,    finit,  options[0], label=lbl+'$f_{init}$',  alpha=alphaInit  )
-            ax.plot( XFinal,   ffinal, options[1], label=lbl+'$f_{final}$', alpha=alphaFinal )
-            ax.plot( XCurrent, f[:,t], options[2], label=lbl+'$f$' )
+            ax.plot( X,    finit,  options[0], label=lbl+'$f_{init}$',  alpha=alphaInit  )
+            ax.plot( X,   ffinal, options[1], label=lbl+'$f_{final}$', alpha=alphaFinal )
+            ax.plot( X, f[:,t], options[2], label=lbl+'$f$' )
             ax.set_ylim(mini,maxi)
-            
+            ax.set_xlim(0.0, 1.0)
             try:
                 ax.legend(fontsize='xx-small',loc='center right',bbox_to_anchor=(1.13, 0.5),fancybox=True,framealpha=0.40)
             except:

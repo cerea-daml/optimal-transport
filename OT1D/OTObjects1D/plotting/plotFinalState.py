@@ -11,6 +11,9 @@ import matplotlib.pyplot as plt
 
 from ...utils.io                  import fileNameSuffix
 from ...utils.defaultTransparency import customTransparency
+from ...utils.extent              import xExtentPP
+from ...utils.extent              import extendY1d
+from ...utils.extent              import extendY2d
 
 def plotFinalState(outputDir, figDir, prefixFigName='finalState', transpFun=None, options=None, swapInitFinal=False):
 
@@ -38,7 +41,7 @@ def plotFinalState(outputDir, figDir, prefixFigName='finalState', transpFun=None
     if swapInitFinal:
         finit  = config.boundaries.temporalBoundaries.bt1
         ffinal = config.boundaries.temporalBoundaries.bt0
-        f      = finalState.f.copy()
+        f      = np.zeros(shape=finalState.f.shape)
         for t in xrange(config.P+2):
             f[:,t] = finalState.f[:,config.P+1-t]
     else:
@@ -46,19 +49,21 @@ def plotFinalState(outputDir, figDir, prefixFigName='finalState', transpFun=None
         ffinal = config.boundaries.temporalBoundaries.bt1
         f      = finalState.f
 
-    mini = np.min( [ finit.min() , ffinal.min() , f.min() ] ) 
-    maxi = np.max( [ finit.max() , ffinal.max() , f.max() ] ) 
+    finit  = extendY1d(finit, copy=False)
+    ffinal = extendY1d(ffinal, copy=False)
+    f      = extendY2d(f, axis=0, copy=False)
+    X      = xExtentPP(config.N)
+
+    mini   = np.min( [ finit.min() , ffinal.min() , f.min() ] ) 
+    maxi   = np.max( [ finit.max() , ffinal.max() , f.max() ] ) 
     extend = maxi - mini + 1.e-6
 
-    yPbar = mini-0.05*extend
-    xTxt  = 0.01
-    yTxt  = yPbar
+    yPbar  = mini-0.05*extend
+    xTxt   = 0.01
+    yTxt   = yPbar
 
-    maxi += 0.1*extend
-    mini -= 0.1*extend
-
-
-    X = np.linspace( 0.0 , 1.0 , config.N + 1 )
+    maxi  += 0.1*extend
+    mini  -= 0.1*extend
 
     for t in xrange(config.P+2):
         alphaInit  = transpFun(1.-float(t)/(finalState.P+1.))
@@ -80,6 +85,7 @@ def plotFinalState(outputDir, figDir, prefixFigName='finalState', transpFun=None
         
         ax.set_xlabel('$x$')
         ax.set_ylim(mini,maxi)
+        ax.set_xlim(0.0, 1.0)
         ax.grid()
 
         try:

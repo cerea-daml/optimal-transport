@@ -12,6 +12,9 @@ import matplotlib.animation as anim
 
 from ...utils.io                  import fileNameSuffix
 from ...utils.defaultTransparency import customTransparency
+from ...utils.extent              import xExtentPP
+from ...utils.extent              import extendY1d
+from ...utils.extent              import extendY2d
 
 def animFinalState(outputDir, figDir, figName='finalState.mp4', writer='ffmpeg', interval=100., transpFun=None, options=None, swapInitFinal=False):
 
@@ -47,19 +50,21 @@ def animFinalState(outputDir, figDir, figName='finalState.mp4', writer='ffmpeg',
         ffinal = config.boundaries.temporalBoundaries.bt1
         f      = finalState.f
 
-    mini = np.min( [ finit.min() , ffinal.min() , f.min() ] )
-    maxi = np.max( [ finit.max() , ffinal.max() , f.max() ] )
+    finit  = extendY1d(finit, copy=False)
+    ffinal = extendY1d(ffinal, copy=False)
+    f      = extendY2d(f, axis=0, copy=False)
+    X      = xExtentPP(config.N)
+
+    mini   = np.min( [ finit.min() , ffinal.min() , f.min() ] )
+    maxi   = np.max( [ finit.max() , ffinal.max() , f.max() ] )
     extend = maxi - mini + 1.e-6
 
-    yPbar = mini-0.05*extend
-    xTxt  = 0.01
-    yTxt  = yPbar
+    yPbar  = mini-0.05*extend
+    xTxt   = 0.01
+    yTxt   = yPbar
 
-    maxi += 0.1*extend
-    mini -= 0.1*extend
-
-
-    X = np.linspace( 0.0 , 1.0 , config.N + 1 )
+    maxi  += 0.1*extend
+    mini  -= 0.1*extend
 
     figure = plt.figure()
     plt.clf()
@@ -77,6 +82,7 @@ def animFinalState(outputDir, figDir, figName='finalState.mp4', writer='ffmpeg',
 
     ax.set_xlabel('$x$')
     ax.set_ylim(mini-0.15*extend,maxi)
+    ax.set_xlim(0.0,1.0)
     ax.grid()
 
     try:
@@ -109,6 +115,7 @@ def animFinalState(outputDir, figDir, figName='finalState.mp4', writer='ffmpeg',
 
         ax.set_xlabel('$x$')
         ax.set_ylim(mini,maxi)
+        ax.set_xlim(0.0,1.0)
         ax.set_title('Final iteration\nt = ' + fileNameSuffix(t,config.P+2) + ' / '+str(config.P+1))
         ax.grid()
         try:
