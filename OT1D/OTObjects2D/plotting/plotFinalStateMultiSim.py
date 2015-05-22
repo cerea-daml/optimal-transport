@@ -46,7 +46,7 @@ def plotFinalStateMultiSim(outputDirList, figDir, prefixFigName='finalState', tr
         fileFinalState = outputDir + 'finalState.bin'
         f = open(fileFinalState,'rb')
         p = pck.Unpickler(f)
-        fstate = p.load()
+        fstate = p.load().convergingStaggeredField()
         f.close()
 
         if swap:

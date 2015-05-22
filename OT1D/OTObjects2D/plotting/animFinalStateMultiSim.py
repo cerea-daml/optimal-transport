@@ -47,7 +47,7 @@ def animFinalStateMultiSim(outputDirList, figDir, figName='finalState.mp4', writ
         fileFinalState = outputDir + 'finalState.bin'
         f = open(fileFinalState,'rb')
         p = pck.Unpickler(f)
-        fstate = p.load()
+        fstate = p.load().convergingStaggeredField()
         f.close()
 
         if swap:

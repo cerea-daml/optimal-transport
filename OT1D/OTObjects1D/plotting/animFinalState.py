@@ -25,7 +25,7 @@ def animFinalState(outputDir, figDir, figName='finalState.mp4', writer='ffmpeg',
     fileFinalState = outputDir + 'finalState.bin'
     f = open(fileFinalState,'rb')
     p = pck.Unpickler(f)
-    finalState = p.load()
+    finalState = p.load().convergingStaggeredField()
     f.close()
 
     fileConfig = outputDir + 'config.bin'

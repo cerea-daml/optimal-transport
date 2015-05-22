@@ -26,7 +26,7 @@ def plotFinalState(outputDir, figDir, prefixFigName='finalState', transpFun=None
     fileFinalState = outputDir + 'finalState.bin'
     f = open(fileFinalState,'rb')
     p = pck.Unpickler(f)
-    finalState = p.load()
+    finalState = p.load().convergingStaggeredField()
     f.close()
 
     fileConfig = outputDir + 'config.bin'

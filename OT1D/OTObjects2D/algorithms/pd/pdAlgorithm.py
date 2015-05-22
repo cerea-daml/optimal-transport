@@ -5,15 +5,15 @@
 # defines a PD algorithm for a given configuration
 #
 
-from ..algorithm import Algorithm
-from ...grid import grid
-from ...init.initialFields import initialStaggeredField
+from ..algorithm                  import Algorithm
+from ...grid                      import grid
+from ...init.initialFields        import initialStaggeredField
 from ...proximals.defineProximals import proximalForConfig
 
 from pdState import PdState
-from pdStep import PdStep
-from proxPd import Prox1Pd
-from proxPd import Prox2Pd
+from pdStep  import PdStep
+from proxPd  import Prox1Pd
+from proxPd  import Prox2Pd
 
 class PdAlgorithm( Algorithm ):
     '''
@@ -31,11 +31,21 @@ class PdAlgorithm( Algorithm ):
     def __repr__(self):
         return ( 'PD algorithm' )
 
-    def setState(self, newState):
-        stagField = newState
-        centField = stagField.interpolation()
+    def setState(self, newState, copy=True):
+        if isinstance(newState, Adr3State):
+            if copy:
+                self.stateN = newState.copy()
+            else:
+                self.stateN = newState
+        else:
+            if copy:
+                stagField = newState.convergingStaggeredField().copy()
+            else:
+                stagField = newState.convergingStaggeredField()
 
-        self.stateN = PdState( self.M , self.N , self.P , stagField , stagField.copy() , centField )
+            centField   = stagField.interpolation()
+            self.stateN = PdState( self.M , self.N , self.P , stagField , stagField.copy() , centField )
+
         self.stateNP1 = self.stateN.copy()
 
     def initialize(self):
