@@ -12,8 +12,8 @@ import matplotlib.pyplot as plt
 from matplotlib        import gridspec
 from scipy.interpolate import interp1d
 
-from ...utils.io                     import fileNameSuffix
-from ...utils.defaultTransparency.py import customTransparency
+from ...utils.io                  import fileNameSuffix
+from ...utils.defaultTransparency import customTransparency
 
 def plotFinalStateMultiSim(outputDirList, figDir, prefixFigName='finalState', transpFun=None, swapInitFinal=None,
                            titlesList=None, options=None):

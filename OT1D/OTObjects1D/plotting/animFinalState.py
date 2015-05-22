@@ -10,8 +10,8 @@ import cPickle              as pck
 import matplotlib.pyplot    as plt
 import matplotlib.animation as anim
 
-from ...utils.io                     import fileNameSuffix
-from ...utils.defaultTransparency.py import customTransparency
+from ...utils.io                  import fileNameSuffix
+from ...utils.defaultTransparency import customTransparency
 
 def animFinalState(outputDir, figDir, figName='finalState.mp4', writer='ffmpeg', interval=100., transpFun=None, options=None, swapInitFinal=False):
 

@@ -13,7 +13,7 @@ import matplotlib.animation as anim
 from scipy.interpolate import interp1d
 from matplotlib        import gridspec
 
-from ...utils.defaultTransparency.py import customTransparency
+from ...utils.defaultTransparency import customTransparency
 
 def animFinalStateMultiSim(outputDirList, figDir, figName='finalState.mp4', writer='ffmpeg', interval=100., transpFun=None,
                            swapInitFinal=None, titlesList=None, options=None):

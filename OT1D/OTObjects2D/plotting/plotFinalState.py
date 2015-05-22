@@ -5,38 +5,16 @@
 # util to plot the final state 
 #
 
-import numpy as np
-import cPickle as pck
-import matplotlib as mpl
-from matplotlib import pyplot as plt
+import numpy             as np
+import cPickle           as pck
+import matplotlib        as mpl
+import matplotlib.pyplot as plt
+
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
-def suffixFor(i,iMaxP1):
-    nDigit = np.ceil(np.log10(iMaxP1))
-    s = str(int(i))
-    while len(s) < nDigit:
-        s = '0'+s
-    return s
-
-def defaultTransparency(t):
-    return t
-
-def fastVanishingTransparency(t):
-    if t < 0.6:
-        return 0.
-    else:
-        return 1. + (1./0.4)*(t-1.)
-
-def customTransparency(t):
-    return max(t,0.25)
-
-def plotMatrix(ax, matrix, plotter='imshow', **kwargs):
-    if plotter == 'imshow':
-        return ax.imshow(matrix, **kwargs)
-    elif plotter == 'contour':
-        return ax.contour(matrix, **kwargs)
-    elif plotter == 'contourf':
-        return ax.contourf(matrix, **kwargs)
+from ...utils.io                  import fileNameSuffix
+from ...utils.defaultTransparency import customTransparency
+from ...utils.plotMatrix          import plotMatrix
 
 def plotFinalState(outputDir, figDir, prefixFigName='finalState', transpFun=None, plotter='imshow', swapInitFinal=False,
                    kwargsCurrent={}, kwargsInit={}, kwargsFinal={}):
@@ -126,9 +104,9 @@ def plotFinalState(outputDir, figDir, prefixFigName='finalState', transpFun=None
         plt.clf()
         ax = plt.subplot(111)
 
-        timeText     = ax.text(xTxt, yTxt, suffixFor(t,config.P+1)+' / '+str(config.P+1))
-        lineBkgPbar, = ax.plot([float((0.+t)/(finalState.P+1.))*0.6+0.2,0.8],[yPbar,yPbar], 'k-', linewidth=5)
-        linePbar,    = ax.plot([0.2,float((0.+t)/(finalState.P+1.))*0.6+0.2],[yPbar,yPbar], 'g-', linewidth=5)
+        timeText     = ax.text(xTxt, yTxt, fileNameSuffix(t,config.P+2)+' / '+str(config.P+1))
+        lineBkgPbar, = ax.plot([float((0.+t)/(config.P+1.))*0.6+0.2,0.8],[yPbar,yPbar], 'k-', linewidth=5)
+        linePbar,    = ax.plot([0.2,float((0.+t)/(config.P+1.))*0.6+0.2],[yPbar,yPbar], 'g-', linewidth=5)
 
         im = plotMatrix(ax, f[:,:,t], plotter, **kwargsCurrent)
         plotMatrix(ax, finit, 'contour', **kwargsInit)
@@ -147,10 +125,10 @@ def plotFinalState(outputDir, figDir, prefixFigName='finalState', transpFun=None
         norm = mpl.colors.Normalize(vmin=mini, vmax=maxi)
         cb1 = mpl.colorbar.ColorbarBase(cax, cmap=cmap, norm=norm, orientation='vertical')
 
-        ax.set_title('Final iteration\nt = ' + suffixFor(t,config.P+1) + ' / '+str(config.P+1))
+        ax.set_title('Final iteration\nt = ' + fileNameSuffix(t,config.P+2) + ' / '+str(config.P+1))
         plt.tight_layout()
 
-        figName = figDir + prefixFigName + suffixFor(t,config.P+1) + '.pdf'
+        figName = figDir + prefixFigName + fileNameSuffix(t,config.P+2) + '.pdf'
         print('Writing '+figName+' ...')
         plt.savefig(figName)
         plt.close()

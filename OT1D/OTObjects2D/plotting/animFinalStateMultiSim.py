@@ -5,41 +5,18 @@
 # util to plot the final state for multiple simulations 
 #
 
-import numpy as np
-import cPickle as pck
-import matplotlib as mpl
-from matplotlib import pyplot as plt
-from matplotlib import animation as anim
+import numpy                as np
+import cPickle              as pck
+import matplotlib           as mpl
+import matplotlib.pyplot    as plt
+import matplotlib.animation as anim
+
 from mpl_toolkits.axes_grid1 import make_axes_locatable
-from scipy.interpolate import interp1d
-from matplotlib import gridspec
+from scipy.interpolate       import interp1d
+from matplotlib              import gridspec
 
-def suffixFor(i,iMaxP1):
-    nDigit = np.ceil(np.log10(iMaxP1))
-    s = str(int(i))
-    while len(s) < nDigit:
-        s = '0'+s
-    return s
-
-def defaultTransparency(t):
-    return t
-
-def fastVanishingTransparency(t):
-    if t < 0.6:
-        return 0.
-    else:
-        return 1. + (1./0.4)*(t-1.)
-
-def customTransparency(t):
-    return max(t,0.25)
-
-def plotMatrix(ax, matrix, plotter='imshow', **kwargs):
-    if plotter == 'imshow':
-        return ax.imshow(matrix, **kwargs)
-    elif plotter == 'contour':
-        return ax.contour(matrix, **kwargs)
-    elif plotter == 'contourf':
-        return ax.contourf(matrix, **kwargs)
+from ...utils.defaultTransparency import customTransparency
+from ...utils.plotMatrix          import plotMatrix
 
 def animFinalStateMultiSim(outputDirList, figDir, figName='finalState.mp4', writer='ffmpeg', interval=100., transpFun=None, 
                            plotter='imshow', swapInitFinal=None,

@@ -9,8 +9,8 @@ import numpy             as np
 import cPickle           as pck
 import matplotlib.pyplot as plt
 
-from ...utils.io                     import fileNameSuffix
-from ...utils.defaultTransparency.py import customTransparency
+from ...utils.io                  import fileNameSuffix
+from ...utils.defaultTransparency import customTransparency
 
 def plotFinalState(outputDir, figDir, prefixFigName='finalState', transpFun=None, options=None, swapInitFinal=False):
 
