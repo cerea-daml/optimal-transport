@@ -72,9 +72,11 @@ omega3 = 0.34
 
 #__________________________________________________
 # Initial condition
-# 0 -> default
-# 1 -> from the result of an other simulation
+# 0 -> default initial condition
+# 1 -> tries to catch initial condition from the result of a previous simulation, stored in outputDir
+# 2 -> tries to catch initial condition from the result of an other simulation, for which results are stored in initialInputDir
+# 3 -> 1 & 2 (searches in outputDir first)
 initial = 0
 
-# for initial = 1
+# for initial = 2 or 3
 initialInputDir = ./

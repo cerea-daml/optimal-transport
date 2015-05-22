@@ -87,29 +87,31 @@ class Algorithm( OTObject ):
     def initialize(self):
         self.stateN = None
 
-        print('Searching for previous runs in '+self.config.outputDir+'...')
-        fileRunCount = self.config.outputDir + 'runCount.bin'
-        try:
-            f = open(fileRunCount, 'rb')
-            p = pck.Unpickler(f)
-            runCount = p.load()
-            f.close()
-        except:
-            runCount = 0
-        
-        if runCount > 0:
-            print('Found '+str(runCount)+' previous run(s).')
-            fileState = self.config.outputDir + 'finalState.bin'
+        if self.config.initial in [1, 3]:
+            print('Searching for previous runs in '+self.config.outputDir+'...')
+            fileRunCount = self.config.outputDir + 'runCount.bin'
             try:
-                f = open(fileState, 'rb')
+                f = open(fileRunCount, 'rb')
                 p = pck.Unpickler(f)
-                self.setState( p.load() )
+                runCount = p.load()
                 f.close()
-                print ( 'State loaded from '+fileState )
             except:
-                self.stateN = None
-        else:
-            if self.config.initial == 1:
+                runCount = 0
+        
+            if runCount > 0:
+                print('Found '+str(runCount)+' previous run(s).')
+                fileState = self.config.outputDir + 'finalState.bin'
+                try:
+                    f = open(fileState, 'rb')
+                    p = pck.Unpickler(f)
+                    self.setState( p.load() )
+                    f.close()
+                    print ( 'State loaded from '+fileState )
+                except:
+                    self.stateN = None
+
+        if self.stateN is None:
+            if self.config.initial in [2, 3]:
                 print('Searching for previous runs in '+self.config.initialInputDir+'...')
                 fileRunCount = self.config.initialInputDir + 'runCount.bin'
                 try:
@@ -119,20 +121,18 @@ class Algorithm( OTObject ):
                     f.close()
                 except:
                     runCount = 0
-            else:
-                runCount = 0
 
-            if runCount > 0:
-                print('Found '+str(runCount)+' previous run(s).')
-                fileState = self.config.initialInputDir + 'finalState.bin'
-                try:
-                    f = open(fileState, 'rb')
-                    p = pck.Unpickler(f)
-                    self.setState( p.load() )
-                    f.close()
-                    print ( 'State loaded from '+fileState )
-                except:
-                    self.stateN = None
+                if runCount > 0:
+                    print('Found '+str(runCount)+' previous run(s).')
+                    fileState = self.config.initialInputDir + 'finalState.bin'
+                    try:
+                        f = open(fileState, 'rb')
+                        p = pck.Unpickler(f)
+                        self.setState( p.load() )
+                        f.close()
+                        print ( 'State loaded from '+fileState )
+                    except:
+                        self.stateN = None
 
         self.config.iterCount = 0
 
