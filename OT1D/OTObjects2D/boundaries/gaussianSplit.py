@@ -6,7 +6,9 @@
 #
 
 import numpy as np
-from ..grid import grid
+
+from ..grid          import grid
+from ...utils.extent import xyExtent
 
 def boundaryGaussianSplit1(M,N,P,
                            A00,A01,alphaX00,alphaX01,x00,x01,alphaY00,alphaY01,y00,y01,
@@ -25,9 +27,7 @@ def boundaryGaussianSplit1(M,N,P,
     y01 = np.mod(y01,1.)
     
     # Defines f0 and f1
-    x   = np.linspace(0.5/(M+1.), 1.0-0.5/(M+1.), M + 1)
-    y   = np.linspace(0.5/(N+1.), 1.0-0.5/(N+1.), N + 1)
-    X,Y = np.meshgrid(x ,y ,indexing='ij')
+    X,Y = xyExtent(M, N)
 
     f0  = ( A00 * np.exp( -alphaX00 * np.power( X - x00 , 2 ) ) * np.exp( -alphaY00 * np.power( Y - y00 , 2 ) ) +
             A01 * np.exp( -alphaX01 * np.power( X - x01 , 2 ) ) * np.exp( -alphaY01 * np.power( Y - y01 , 2 ) ) )
@@ -57,9 +57,7 @@ def boundaryGaussianSplit2(M,N,P,
     y11 = np.mod(y11,1.)
 
     # Defines f0 and f1
-    x   = np.linspace(0.5/(M+1.), 1.0-0.5/(M+1.), M + 1)
-    y   = np.linspace(0.5/(N+1.), 1.0-0.5/(N+1.), N + 1)
-    X,Y = np.meshgrid(x ,y ,indexing='ij')
+    X,Y = xyExtent(M, N)
 
     f0  = ( A0  * np.exp( -alphaX0  * np.power( X - x0  , 2 ) ) * np.exp( -alphaY0  * np.power( Y - y0  , 2 ) ) )
     f1  = ( A10 * np.exp( -alphaX10 * np.power( X - x10 , 2 ) ) * np.exp( -alphaY10 * np.power( Y - y10 , 2 ) ) +

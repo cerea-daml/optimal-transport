@@ -8,9 +8,12 @@
 import numpy as np
 from scipy.interpolate import interp1d
 
-from ...utils.io   import extensionOfFile
-from ...utils.io   import arrayFromFile
-from ..grid        import grid
+from ...utils.io     import extensionOfFile
+from ...utils.io     import arrayFromFile
+from ...utils.extent import xExtent
+from ...utils.extent import xExtentPP
+from ...utils.extent import extendY1d
+from ..grid          import grid
 
 from gaussian      import defaultBoundaryGaussian
 from gaussian      import defaultBoundaryGaussian2

@@ -7,6 +7,11 @@ import numpy as np
 def xExtent(N):
     return np.linspace(0.5/(N+1.), 1.0-0.5/(N+1.), N+1)
 
+def xyExtent(M,N):
+    x = np.linspace(0.5/(M+1.), 1.0-0.5/(M+1.), M + 1)
+    y = np.linspace(0.5/(N+1.), 1.0-0.5/(N+1.), N + 1)
+    return np.meshgrid(x, y, indexing='ij')
+
 def xExtentPP(N):
     X        = np.zeros(N+3)
     X[1:N+2] = xExtent(N)

@@ -105,58 +105,38 @@ def boundariesFromFile(config):
 
         if not bt0.shape[0] == config.M + 1:
 
-            MM                = bt0.shape[0]
-            X                 = np.zeros(MM+2)
-            X[1:MM+1]         = np.linspace(0.5/MM, 1.0-0.5/MM, MM)
-            X[MM+1]           = 1.0
-            bt0temp           = np.zeros(shape=(MM+2, bt0.shape[1]))
-            bt0temp[1:MM+1,:] = bt0.copy()
-
-            interpBt0         = interp1d(X, bt0temp, axis=0)
-
-            bt0               = interpBt0(np.linspace(0.5/(config.M+1.), 1.0-0.5/(config.M+1.), config.M+1))
+            MM        = bt0.shape[0]
+            X         = xExtentPP(MM-1)
+            bt0temp   = extendY2d(bt0, axis=0, copy=False)
+            interpBt0 = interp1d(X, bt0temp, axis=0)
+            bt0       = interpBt0(xExtent(config.M))
 
         if not bt0.shape[1] == config.N + 1:
 
-            NN                = bt0.shape[1]
-            Y                 = np.zeros(NN+2)
-            Y[1:NN+1]         = np.linspace(0.5/NN, 1.0-0.5/NN, NN)
-            Y[NN+1]           = 1.0
-            bt0temp           = np.zeros(shape=(bt0.shape[0],NN+2))
-            bt0temp[:,1:NN+1] = bt0.copy()
-
-            interpBt0         = interp1d(Y, bt0temp, axis=1)
-
-            bt0               = interpBt0(np.linspace(0.5/(config.N+1.), 1.0-0.5/(config.N+1.), config.N+1))
+            NN        = bt0.shape[1]
+            Y         = xExtentPP(NN-1)
+            bt0temp   = extendY2d(bt0, axis=1, copy=False)
+            interpBt0 = interp1d(Y, bt0temp, axis=1)
+            bt0       = interpBt0(xExtent(config.N))
 
     if not bt1.shape == (config.M+1,config.N+1):
         print( 'Interpolating bt1 into OT resolution ...')
 
         if not bt1.shape[0] == config.M + 1:
 
-            MM                = bt1.shape[0]
-            X                 = np.zeros(MM+2)
-            X[1:MM+1]         = np.linspace(0.5/MM, 1.0-0.5/MM, MM)
-            X[MM+1]           = 1.0
-            bt1temp           = np.zeros(shape=(MM+2, bt1.shape[1]))
-            bt1temp[1:MM+1,:] = bt1.copy()
-
-            interpBt1         = interp1d(X, bt1temp, axis=0)
-
-            bt1               = interpBt1(np.linspace(0.5/(config.M+1.), 1.0-0.5/(config.M+1.), config.M+1))
+            MM        = bt1.shape[0]
+            X         = xExtentPP(MM-1)
+            bt1temp   = extendY2d(bt1, axis=0, copy=False)
+            interpBt1 = interp1d(X, bt1temp, axis=0)
+            bt1       = interpBt1(xExtent(config.M))
 
         if not bt1.shape[1] == config.N + 1:
 
-            NN                = bt1.shape[1]
-            Y                 = np.zeros(NN+2)
-            Y[1:NN+1]         = np.linspace(0.5/NN, 1.0-0.5/NN, NN)
-            Y[NN+1]           = 1.0
-            bt1temp           = np.zeros(shape=(bt1.shape[0],NN+2))
-            bt1temp[:,1:NN+1] = bt1.copy()
-
-            interpBt1         = interp1d(Y, bt1temp, axis=1)
-
-            bt1               = interpBt1(np.linspace(0.5/(config.N+1.), 1.0-0.5/(config.N+1.), config.N+1))
+            NN        = bt1.shape[1]
+            Y         = xExtentPP(NN-1)
+            bt1temp   = extendY2d(bt1, axis=1, copy=False)
+            interpBt1 = interp1d(Y, bt1temp, axis=1)
+            bt1       = interpBt1(xExtent(config.N))
 
     temporalBoundaries = grid.TemporalBoundaries( config.M , config.N , config.P , bt0 , bt1 )
 
@@ -192,58 +172,38 @@ def boundariesFromFile(config):
 
         if not bx0.shape[0] == config.N + 1:
 
-            NN                = bx0.shape[0]
-            Y                 = np.zeros(NN+2)
-            Y[1:NN+1]         = np.linspace(0.5/NN, 1.0-0.5/NN, NN)
-            Y[NN+1]           = 1.0
-            bx0temp           = np.zeros(shape=(NN+2, bx0.shape[1]))
-            bx0temp[1:NN+1,:] = bx0.copy()
-
-            interpBx0         = interp1d(Y, bx0temp, axis=0)
-
-            bx0               = interpBx0(np.linspace(0.5/(config.N+1.), 1.0-0.5/(config.N+1.), config.N+1))
+            NN        = bx0.shape[0]
+            Y         = xExtentPP(NN-1)
+            bx0temp   = extendY2d(bx0, axis=0, copy=False)
+            interpBx0 = interp1d(Y, bx0temp, axis=0)
+            bx0       = interpBx0(xExtent(config.N))
 
         if not bx0.shape[1] == config.P + 1:
 
-            PP                = bx0.shape[1]
-            T                 = np.zeros(PP+2)
-            T[1:PP+1]         = np.linspace(0.5/PP, 1.0-0.5/PP, PP)
-            T[PP+1]           = 1.0
-            bx0temp           = np.zeros(shape=(bx0.shape[0], PP+2))
-            bx0temp[:,1:PP+1] = bx0.copy()
-
-            interpBx0         = interp1d(T, bx0temp, axis=1)
-
-            bx0               = interpBx0(np.linspace(0.5/(config.P+1.), 1.0-0.5/(config.P+1.), config.P+1))
+            PP        = bx0.shape[1]
+            T         = xExtentPP(PP-1)
+            bx0temp   = extendY2d(bx0, axis=1, copy=False)
+            interpBx0 = interp1d(T, bx0temp, axis=1)
+            bx0       = interpBx0(xExtent(config.P))
 
     if not bx1.shape == (config.N+1,config.P+1):
         print( 'Interpolating bx1 into OT resolution ...')
 
         if not bx1.shape[0] == config.N + 1:
 
-            NN                = bx1.shape[0]
-            Y                 = np.zeros(NN+2)
-            Y[1:NN+1]         = np.linspace(0.5/NN, 1.0-0.5/NN, NN)
-            Y[NN+1]           = 1.0
-            bx1temp           = np.zeros(shape=(NN+2, bx1.shape[1]))
-            bx1temp[1:NN+1,:] = bx1.copy()
-
-            interpBx1         = interp1d(Y, bx1temp, axis=0)
-
-            bx1               = interpBx1(np.linspace(0.5/(config.N+1.), 1.0-0.5/(config.N+1.), config.N+1))
+            NN        = bx1.shape[0]
+            Y         = xExtentPP(NN-1)
+            bx1temp   = extendY2d(bx1, axis=0, copy=False)
+            interpBx1 = interp1d(Y, bx1temp, axis=0)
+            bx1       = interpBx1(xExtent(config.N))
 
         if not bx1.shape[1] == config.P + 1:
 
-            PP                = bx1.shape[1]
-            T                 = np.zeros(PP+2)
-            T[1:PP+1]         = np.linspace(0.5/PP, 1.0-0.5/PP, PP)
-            T[PP+1]           = 1.0
-            bx1temp           = np.zeros(shape=(bx1.shape[0], PP+2))
-            bx1temp[:,1:PP+1] = bx1.copy()
-
-            interpBx1         = interp1d(T, bx1temp, axis=1)
-
-            bx1               = interpBx1(np.linspace(0.5/(config.P+1.), 1.0-0.5/(config.P+1.), config.P+1))
+            PP        = bx1.shape[1]
+            T         = xExtentPP(PP-1)
+            bx1temp   = extendY2d(bx1, axis=1, copy=False)
+            interpBx1 = interp1d(T, bx1temp, axis=1)
+            bx1       = interpBx1(xExtent(config.P))
 
     # catching by from files
     by0 = arrayFromFile( config.filemy0 )
@@ -273,58 +233,38 @@ def boundariesFromFile(config):
 
         if not by0.shape[0] == config.M + 1:
 
-            MM                = by0.shape[0]
-            X                 = np.zeros(MM+2)
-            X[1:MM+1]         = np.linspace(0.5/MM, 1.0-0.5/MM, MM)
-            X[MM+1]           = 1.0
-            by0temp           = np.zeros(shape=(MM+2, by0.shape[1]))
-            by0temp[1:MM+1,:] = by0.copy()
-
-            interpBy0         = interp1d(X, by0temp, axis=0)
-
-            by0               = interpBy0(np.linspace(0.5/(config.M+1.), 1.0-0.5/(config.M+1.), config.M+1))
+            MM        = by0.shape[0]
+            X         = xExtentPP(MM-1)
+            by0temp   = extendY2d(by0, axis=0, copy=False)
+            interpBy0 = interp1d(X, by0temp, axis=0)
+            by0       = interpBy0(xExtent(config.M))
 
         if not by0.shape[1] == config.P + 1:
 
-            PP                = by0.shape[1]
-            T                 = np.zeros(PP+2)
-            T[1:PP+1]         = np.linspace(0.5/PP, 1.0-0.5/PP, PP)
-            T[PP+1]           = 1.0
-            by0temp           = np.zeros(shape=(by0.shape[0], PP+2))
-            by0temp[:,1:PP+1] = by0.copy()
-
-            interpBy0         = interp1d(T, by0temp, axis=1)
-
-            by0               = interpBy0(np.linspace(0.5/(config.P+1.), 1.0-0.5/(config.P+1.), config.P+1))
+            PP        = by0.shape[1]
+            T         = xExtentPP(PP-1)
+            by0temp   = extendY2d(by0, axis=1, copy=False)
+            interpBy0 = interp1d(T, by0temp, axis=1)
+            by0       = interpBy0(xExtent(config.P))
 
     if not by1.shape == (config.M+1,config.P+1):
         print( 'Interpolating by1 into OT resolution ...')
 
         if not by1.shape[0] == config.M + 1:
 
-            MM                = by1.shape[0]
-            X                 = np.zeros(MM+2)
-            X[1:MM+1]         = np.linspace(0.5/MM, 1.0-0.5/MM, MM)
-            X[MM+1]           = 1.0
-            by1temp           = np.zeros(shape=(MM+2, by1.shape[1]))
-            by1temp[1:MM+1,:] = by1.copy()
-
-            interpBy1         = interp1d(X, by1temp, axis=0)
-
-            by1               = interpBy1(np.linspace(0.5/(config.M+1.), 1.0-0.5/(config.M+1.), config.M+1))
+            MM        = by1.shape[0]
+            X         = xExtentPP(MM-1)
+            by1temp   = extendY2d(by1, axis=0, copy=False)
+            interpBy1 = interp1d(X, by1temp, axis=0)
+            by1       = interpBy1(xExtent(config.M))
 
         if not by1.shape[1] == config.P + 1:
 
-            PP                = by1.shape[1]
-            T                 = np.zeros(PP+2)
-            T[1:PP+1]         = np.linspace(0.5/PP, 1.0-0.5/PP, PP)
-            T[PP+1]           = 1.0
-            by1temp           = np.zeros(shape=(by1.shape[0], PP+2))
-            by1temp[:,1:PP+1] = by1.copy()
-
-            interpBy1         = interp1d(T, by1temp, axis=1)
-
-            by1               = interpBy1(np.linspace(0.5/(config.P+1.), 1.0-0.5/(config.P+1.), config.P+1))
+            PP        = by1.shape[1]
+            T         = xExtentPP(PP-1)
+            by1temp   = extendY2d(by1, axis=1, copy=False)
+            interpBy1 = interp1d(T, by1temp, axis=1)
+            by1       = interpBy1(xExtent(config.P))
 
 
     spatialBoundaries = grid.SpatialBoundaries( config.M , config.N , config.P , bx0 , bx1 , by0 , by1 )
