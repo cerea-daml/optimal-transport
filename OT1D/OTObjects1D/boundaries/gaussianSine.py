@@ -6,7 +6,9 @@
 #
 
 import numpy as np
-from ..grid import grid
+
+from ..grid          import grid
+from ...utils.extent import xExtent
 
 def boundaryGaussianSine(N,P,
                          A0,alphaX0,betaX0,x00,x01,
@@ -22,7 +24,7 @@ def boundaryGaussianSine(N,P,
     x11 = np.mod(x11,1.)
 
     # Defines f0 and f1
-    X  = np.linspace(0.5/(N+1.), 1.0-0.5/(N+1.), N + 1)
+    X  = xExtent(N)
 
     f0 = ( A0 * np.exp( -alphaX0 * np.power( X - x00 , 2 ) ) *
            np.power( np.sin( betaX0 * ( X - x01 ) ) , 2 ) )
@@ -50,7 +52,7 @@ def boundaryGaussianCosine(N,P,
     x11 = np.mod(x11,1.)
 
     # Defines f0 and f1
-    X  = np.linspace(0.5/(N+1.), 1.0-0.5/(N+1.), N + 1)
+    X  = xExtent(N)
 
     f0 = ( A0 * np.exp( -alphaX0 * np.power( X - x00 , 2 ) ) *
            np.power( np.cos( betaX0 * ( X - x01 ) ) , 2 ) )
