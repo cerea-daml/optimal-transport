@@ -14,10 +14,8 @@ from scipy.interpolate import interp1d
 from matplotlib        import gridspec
 
 from ...utils.defaultTransparency import customTransparency
-from ...utils.extent              import xExtentPP
-from ...utils.extent              import extendY1d
-from ...utils.extent              import extendY2d
 from ...utils.plot                import plot
+from ...utils.plot                import extandAndPlot
 
 def animFinalStateMultiSim(outputDirList, figDir, figName='finalState.mp4', writer='ffmpeg', interval=100., transpFun=None,
                            swapInitFinal=None, titlesList=None, options=None):
@@ -39,7 +37,6 @@ def animFinalStateMultiSim(outputDirList, figDir, figName='finalState.mp4', writ
         transpFun = customTransparency
 
     fs      = []
-    Xs      = []
     finits  = []
     ffinals = []
     Plist   = []
@@ -61,8 +58,7 @@ def animFinalStateMultiSim(outputDirList, figDir, figName='finalState.mp4', writ
         else:
             f = fstate.f
 
-        Xs.append(xExtentPP, fstate.N)
-        fs.append(extendY2d(f, axis=0, copy=False))
+        fs.append(f)
 
         minis.append( f.min() )
         maxis.append( f.max() )
@@ -83,8 +79,8 @@ def animFinalStateMultiSim(outputDirList, figDir, figName='finalState.mp4', writ
                 finit = config.boundaries.temporalBoundaries.bt0
                 ffinal = config.boundaries.temporalBoundaries.bt1
 
-            finits.append(extendY1d(finit, copy=False))
-            ffinals.append(extendY1d(ffinal, copy=False))
+            finits.append(finit)
+            ffinals.append(ffinal)
             minis.append(finit.min())
             minis.append(ffinal.min())
             maxis.append(finit.max())
@@ -127,16 +123,16 @@ def animFinalStateMultiSim(outputDirList, figDir, figName='finalState.mp4', writ
     j = 0
     axes = []
 
-    for (f,X,finit,ffinal,title) in zip(fs,Xs,finits,ffinals,titlesList):
+    for (f,finit,ffinal,title) in zip(fs,finits,ffinals,titlesList):
         nc = int(np.mod(j,Nc))
         nl = int((j-nc)/Nc)
 
         ax = plt.subplot(gs[nl,nc])
         axes.append(ax)
 
-        lineInit,    = plot(ax, finit, X, options[0], label='$f_{init}$', alpha=alphaInit)
-        lineFinal,   = plot(ax, ffinal, X, options[1], label='$f_{final}$', alpha=alphaFinal)
-        lineCurrent, = plot(ax, f[:,0], X, options[2], label='$f$')
+        lineInit,    = extandAndPlot(ax, finit, options[0], label='$f_{init}$', alpha=alphaInit)
+        lineFinal,   = extandAndPlot(ax, ffinal, options[1], label='$f_{final}$', alpha=alphaFinal)
+        lineCurrent, = extandAndPlot(ax, f[:,0], options[2], label='$f$')
 
         try:
             ax.legend(fontsize='xx-small',loc='center right',bbox_to_anchor=(1.13, 0.5),fancybox=True,framealpha=0.40)
@@ -155,12 +151,12 @@ def animFinalStateMultiSim(outputDirList, figDir, figName='finalState.mp4', writ
         alphaInit  = transpFun(1.-float(t)/(Pmax+1.))
         alphaFinal = transpFun(float(t)/(Pmax+1.))
 
-        for (f,X,finit,ffinal,title,ax) in zip(fs,Xs,finits,ffinals,titlesList,axes):
+        for (f,finit,ffinal,title,ax) in zip(fs,finits,ffinals,titlesList,axes):
             ax.cla()
 
-            lineInit,    = plot(ax, finit, X, options[0], label='$f_{init}$', alpha=alphaInit)
-            lineFinal,   = plot(ax, ffinal, X, options[1], label='$f_{final}$', alpha=alphaFinal)
-            lineCurrent, = plot(ax, f[:,t], X, options[2], label='$f$')
+            lineInit,    = extandAndPlot(ax, finit, options[0], label='$f_{init}$', alpha=alphaInit)
+            lineFinal,   = extandAndPlot(ax, ffinal, options[1], label='$f_{final}$', alpha=alphaFinal)
+            lineCurrent, = extandAndPlot(ax, f[:,t], options[2], label='$f$')
 
             ret.extend([lineInit,lineFinal,lineCurrent])
 

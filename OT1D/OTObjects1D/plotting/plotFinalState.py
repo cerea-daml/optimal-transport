@@ -11,10 +11,8 @@ import matplotlib.pyplot as plt
 
 from ...utils.io                  import fileNameSuffix
 from ...utils.defaultTransparency import customTransparency
-from ...utils.extent              import xExtentPP
-from ...utils.extent              import extendY1d
-from ...utils.extent              import extendY2d
 from ...utils.plot                import plot
+from ...utils.plot                import extandAndPlot
 
 def plotFinalState(outputDir, figDir, prefixFigName='finalState', transpFun=None, options=None, swapInitFinal=False):
 
@@ -50,13 +48,8 @@ def plotFinalState(outputDir, figDir, prefixFigName='finalState', transpFun=None
         ffinal = config.boundaries.temporalBoundaries.bt1
         f      = finalState.f
 
-    finit  = extendY1d(finit, copy=False)
-    ffinal = extendY1d(ffinal, copy=False)
-    f      = extendY2d(f, axis=0, copy=False)
-    X      = xExtentPP(config.N)
-
-    mini   = np.min( [ finit.min() , ffinal.min() , f.min() ] ) 
-    maxi   = np.max( [ finit.max() , ffinal.max() , f.max() ] ) 
+    mini   = np.min( [ finit.min() , ffinal.min() , f.min() , 0.0 ] ) 
+    maxi   = np.max( [ finit.max() , ffinal.max() , f.max() , 0.0 ] ) 
     extend = maxi - mini + 1.e-6
 
     yPbar  = mini-0.05*extend
@@ -80,9 +73,9 @@ def plotFinalState(outputDir, figDir, prefixFigName='finalState', transpFun=None
         if t > 0:
             linePbar,    = plot(ax, [yPbar,yPbar], [0.2,float(t)/(finalState.P+1.)*0.6+0.2], 'g-', linewidth=5)
 
-        plot(ax, finit, X, options[0], label='$f_{init}$', alpha=alphaInit)
-        plot(ax, ffinal, X, options[1], label='$f_{final}$', alpha=alphaFinal)
-        plot(ax, finalState.f[:,t], X, options[2], label='$f$')
+        extandAndPlot(ax, finit, options[0], label='$f_{init}$', alpha=alphaInit)
+        extandAndPlot(ax, ffinal, options[1], label='$f_{final}$', alpha=alphaFinal)
+        extandAndPlot(ax, finalState.f[:,t], options[2], label='$f$')
         
         ax.set_xlabel('$x$')
         ax.set_ylim(mini,maxi)

@@ -14,10 +14,8 @@ from scipy.interpolate import interp1d
 
 from ...utils.io                  import fileNameSuffix
 from ...utils.defaultTransparency import customTransparency
-from ...utils.extent              import xExtentPP
-from ...utils.extent              import extendY1d
-from ...utils.extent              import extendY2d
 from ...utils.plot                import plot
+from ...utils.plot                import extandAndPlot
 
 def plotFinalStateMultiSim(outputDirList, figDir, prefixFigName='finalState', transpFun=None, swapInitFinal=None,
                            titlesList=None, options=None):
@@ -39,7 +37,6 @@ def plotFinalStateMultiSim(outputDirList, figDir, prefixFigName='finalState', tr
         transpFun = customTransparency
 
     fs      = []
-    Xs      = []
     finits  = []
     ffinals = []
     Plist   = []
@@ -61,8 +58,7 @@ def plotFinalStateMultiSim(outputDirList, figDir, prefixFigName='finalState', tr
         else:
             f = fstate.f
 
-        Xs.append(xExtentPP, fstate.N)
-        fs.append(extendY2d(f, axis=0, copy=False))
+        fs.append(f)
 
         minis.append(f.min())
         maxis.append(f.max())
@@ -83,8 +79,8 @@ def plotFinalStateMultiSim(outputDirList, figDir, prefixFigName='finalState', tr
                 finit = config.boundaries.temporalBoundaries.bt0
                 ffinal = config.boundaries.temporalBoundaries.bt1
 
-            finits.append(extendY1d(finit, copy=False))
-            ffinals.append(extendY1d(ffinal, copy=False))
+            finits.append(finits)
+            ffinals.append(ffinal)
             minis.append(finit.min())
             minis.append(ffinal.min())
             maxis.append(finit.max())
@@ -131,14 +127,14 @@ def plotFinalStateMultiSim(outputDirList, figDir, prefixFigName='finalState', tr
         gs = gridspec.GridSpec(Nl, Nc)
         j = 0
 
-        for (f,X,finit,ffinal,title) in zip(fs,Xs,finits,ffinals,titlesList):
+        for (f,finit,ffinal,title) in zip(fs,finits,ffinals,titlesList):
             nc = int(np.mod(j,Nc))
             nl = int((j-nc)/Nc)
             ax = plt.subplot(gs[nl,nc])
 
-            plot(ax, finit, X, options[0], label=lbl+'$f_{init}$', alpha=alphaInit)
-            plot(ax, ffinal, X, options[1], label=lbl+'$f_{final}$', alpha=alphaFinal)
-            plot(ax, f[:,t], X, options[2], label=lbl+'$f$' )
+            extandAndPlot(ax, finit, options[0], label=lbl+'$f_{init}$', alpha=alphaInit)
+            extandAndPlot(ax, ffinal, options[1], label=lbl+'$f_{final}$', alpha=alphaFinal)
+            extandAndPlot(ax, f[:,t], options[2], label=lbl+'$f$' )
 
             ax.set_ylim(mini,maxi)
             ax.set_xlim(0.0, 1.0)

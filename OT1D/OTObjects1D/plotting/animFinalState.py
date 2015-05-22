@@ -12,10 +12,8 @@ import matplotlib.animation as anim
 
 from ...utils.io                  import fileNameSuffix
 from ...utils.defaultTransparency import customTransparency
-from ...utils.extent              import xExtentPP
-from ...utils.extent              import extendY1d
-from ...utils.extent              import extendY2d
 from ...utils.plot                import plot
+from ...utils.plot                import extandAndPlot
 
 def animFinalState(outputDir, figDir, figName='finalState.mp4', writer='ffmpeg', interval=100., transpFun=None, options=None, swapInitFinal=False):
 
@@ -51,13 +49,8 @@ def animFinalState(outputDir, figDir, figName='finalState.mp4', writer='ffmpeg',
         ffinal = config.boundaries.temporalBoundaries.bt1
         f      = finalState.f
 
-    finit  = extendY1d(finit, copy=False)
-    ffinal = extendY1d(ffinal, copy=False)
-    f      = extendY2d(f, axis=0, copy=False)
-    X      = xExtentPP(config.N)
-
-    mini   = np.min( [ finit.min() , ffinal.min() , f.min() ] )
-    maxi   = np.max( [ finit.max() , ffinal.max() , f.max() ] )
+    mini   = np.min( [ finit.min() , ffinal.min() , f.min() , 0.0 ] )
+    maxi   = np.max( [ finit.max() , ffinal.max() , f.max() , 0.0 ] )
     extend = maxi - mini + 1.e-6
 
     yPbar  = mini-0.05*extend
@@ -77,9 +70,9 @@ def animFinalState(outputDir, figDir, figName='finalState.mp4', writer='ffmpeg',
     lineBkgPbar, = plot(ax, [yPbar,yPbar], [0.2,0.8], 'k-', linewidth=5)
     timeText     = ax.text(xTxt, yTxt, fileNameSuffix(0.,config.P+2)+' / '+str(config.P+1))
 
-    lineInit,    = plot(ax, finit, X, options[0], label='$f_{init}$', alpha=alphaInit)
-    lineFinal,   = plot(ax, ffinal, X, options[1], label='$f_{final}$', alpha=alphaFinal)
-    lineCurrent, = plot(ax, finalState.f[:,0], X, options[2], label='$f$')
+    lineInit,    = extandAndPlot(ax, finit, options[0], label='$f_{init}$', alpha=alphaInit)
+    lineFinal,   = extandAndPlot(ax, ffinal, options[1], label='$f_{final}$', alpha=alphaFinal)
+    lineCurrent, = extandAndPlot(ax, finalState.f[:,0], options[2], label='$f$')
 
     ax.set_xlabel('$x$')
     ax.set_ylim(mini-0.15*extend,maxi)
@@ -108,9 +101,9 @@ def animFinalState(outputDir, figDir, figName='finalState.mp4', writer='ffmpeg',
             linePbar,    = plot(ax, [yPbar,yPbar], [0.2,float(t)/(config.P+1.)*0.6+0.2], 'g-', linewidth=5)
             ret.append(linePbar)
 
-        lineInit,    = plot(ax, finit, X, options[0], label='$f_{init}$', alpha=alphaInit)
-        lineFinal,   = plot(ax, ffinal, X, options[1], label='$f_{final}$', alpha=alphaFinal)
-        lineCurrent, = plot(ax, finalState.f[:,t], X, options[2], label='$f$')
+        lineInit,    = extandAndPlot(ax, finit, options[0], label='$f_{init}$', alpha=alphaInit)
+        lineFinal,   = extandAndPlot(ax, ffinal, options[1], label='$f_{final}$', alpha=alphaFinal)
+        lineCurrent, = extandAndPlot(ax, finalState.f[:,t], options[2], label='$f$')
 
         ret.extend([lineInit,lineFinal,lineCurrent])
 
