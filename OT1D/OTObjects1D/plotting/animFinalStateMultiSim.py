@@ -14,6 +14,7 @@ from scipy.interpolate import interp1d
 from matplotlib        import gridspec
 
 from ...utils.defaultTransparency import customTransparency
+from ...utils.plot                import plot
 
 def animFinalStateMultiSim(outputDirList, figDir, figName='finalState.mp4', writer='ffmpeg', interval=100., transpFun=None,
                            swapInitFinal=None, titlesList=None, options=None):
@@ -126,9 +127,9 @@ def animFinalStateMultiSim(outputDirList, figDir, figName='finalState.mp4', writ
         XInit    = np.linspace( 0.0 , 1.0 , finit.size  )
         XFinal   = np.linspace( 0.0 , 1.0 , ffinal.size )
         XCurrent = np.linspace( 0.0 , 1.0 , f[:,0].size ) 
-        lineInit,    = ax.plot(XInit,finit,options[0],label='$f_{init}$',alpha=alphaInit)
-        lineFinal,   = ax.plot(XFinal,ffinal,options[1],label='$f_{final}$',alpha=alphaFinal)
-        lineCurrent, = ax.plot(XCurrent,f[:,0],options[2],label='$f$')
+        lineInit,    = plot(ax, finit, XInit, options[0], label='$f_{init}$', alpha=alphaInit)
+        lineFinal,   = plot(ax, ffinal, XFinal, options[1], label='$f_{final}$', alpha=alphaFinal)
+        lineCurrent, = plot(ax, f[:,0], XCurrent, options[2], label='$f$')
 
         try:
             ax.legend(fontsize='xx-small',loc='center right',bbox_to_anchor=(1.13, 0.5),fancybox=True,framealpha=0.40)
@@ -154,9 +155,9 @@ def animFinalStateMultiSim(outputDirList, figDir, figName='finalState.mp4', writ
             XFinal   = np.linspace( 0.0 , 1.0 , ffinal.size )
             XCurrent = np.linspace( 0.0 , 1.0 , f[:,t].size )
 
-            lineInit,    = ax.plot(XInit,finit,options[0],label='$f_{init}$',alpha=alphaInit)
-            lineFinal,   = ax.plot(XFinal,ffinal,options[1],label='$f_{final}$',alpha=alphaFinal)
-            lineCurrent, = ax.plot(XCurrent,f[:,t],options[2],label='$f$')
+            lineInit,    = plot(ax, finit, XInit, options[0], label='$f_{init}$', alpha=alphaInit)
+            lineFinal,   = plot(ax, ffinal, XFinal, options[1], label='$f_{final}$', alpha=alphaFinal)
+            lineCurrent, = plot(ax, f[:,t], XCurrent, options[2], label='$f$')
 
             ret.extend([lineInit,lineFinal,lineCurrent])
 

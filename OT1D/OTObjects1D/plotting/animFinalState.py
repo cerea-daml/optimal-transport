@@ -12,6 +12,7 @@ import matplotlib.animation as anim
 
 from ...utils.io                  import fileNameSuffix
 from ...utils.defaultTransparency import customTransparency
+from ...utils.plot                import plot
 
 def animFinalState(outputDir, figDir, figName='finalState.mp4', writer='ffmpeg', interval=100., transpFun=None, options=None, swapInitFinal=False):
 
@@ -68,12 +69,12 @@ def animFinalState(outputDir, figDir, figName='finalState.mp4', writer='ffmpeg',
     alphaInit  = transpFun(1.)
     alphaFinal = transpFun(0.)
 
-    lineBkgPbar, = ax.plot([0.2,0.8], [yPbar,yPbar], 'k-', linewidth=5)
+    lineBkgPbar, = plot(ax, [yPbar,yPbar], [0.2,0.8], 'k-', linewidth=5)
     timeText     = ax.text(xTxt, yTxt, fileNameSuffix(0.,config.P+2)+' / '+str(config.P+1))
 
-    lineInit,    = ax.plot(X,finit,options[0],label='$f_{init}$',alpha=alphaInit)
-    lineFinal,   = ax.plot(X,ffinal,options[1],label='$f_{final}$',alpha=alphaFinal)
-    lineCurrent, = ax.plot(X,finalState.f[:,0],options[2],label='$f$')
+    lineInit,    = plot(ax, finit, X, options[0], label='$f_{init}$', alpha=alphaInit)
+    lineFinal,   = plot(ax, ffinal, X, options[1], label='$f_{final}$', alpha=alphaFinal)
+    lineCurrent, = plot(ax, finalState.f[:,0], X, options[2], label='$f$')
 
     ax.set_xlabel('$x$')
     ax.set_ylim(mini-0.15*extend,maxi)
@@ -95,15 +96,15 @@ def animFinalState(outputDir, figDir, figName='finalState.mp4', writer='ffmpeg',
         timeText     = ax.text(xTxt, yTxt, fileNameSuffix(t,config.P+2)+' / '+str(config.P+1))
         ret.append(timeText)
         if t < config.P + 1:
-            lineBkgPbar, = ax.plot([float((0.+t)/(config.P+1.))*0.6+0.2,0.8],[yPbar,yPbar], 'k-', linewidth=5)
+            lineBkgPbar, = plot(ax, [yPbar,yPbar], [float(t)/(config.P+1.)*0.6+0.2,0.8], 'k-', linewidth=5)
             ret.append(lineBkgPbar)
         if t > 0:
-            linePbar,    = ax.plot([0.2,float((0.+t)/(config.P+1.))*0.6+0.2],[yPbar,yPbar], 'g-', linewidth=5)
+            linePbar,    = plot(ax, [yPbar,yPbar], [0.2,float(t)/(config.P+1.)*0.6+0.2], 'g-', linewidth=5)
             ret.append(linePbar)
 
-        lineInit,    = ax.plot(X,finit,options[0],label='$f_{init}$',alpha=alphaInit)
-        lineFinal,   = ax.plot(X,ffinal,options[1],label='$f_{final}$',alpha=alphaFinal)
-        lineCurrent, = ax.plot(X,finalState.f[:,t],options[2],label='$f$')
+        lineInit,    = plot(ax, finit, X, options[0], label='$f_{init}$', alpha=alphaInit)
+        lineFinal,   = plot(ax, ffinal, X, options[1], label='$f_{final}$', alpha=alphaFinal)
+        lineCurrent, = plot(ax, finalState.f[:,t], X, options[2], label='$f$')
 
         ret.extend([lineInit,lineFinal,lineCurrent])
 

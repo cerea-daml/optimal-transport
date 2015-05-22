@@ -14,6 +14,7 @@ from scipy.interpolate import interp1d
 
 from ...utils.io                  import fileNameSuffix
 from ...utils.defaultTransparency import customTransparency
+from ...utils.plot                import plot
 
 def plotFinalStateMultiSim(outputDirList, figDir, prefixFigName='finalState', transpFun=None, swapInitFinal=None,
                            titlesList=None, options=None):
@@ -131,9 +132,9 @@ def plotFinalStateMultiSim(outputDirList, figDir, prefixFigName='finalState', tr
             XFinal   = np.linspace( 0.0 , 1.0 , ffinal.size )
             XCurrent = np.linspace( 0.0 , 1.0 , f[:,t].size )
 
-            ax.plot( XInit,    finit,  options[0], label=lbl+'$f_{init}$',  alpha=alphaInit  )
-            ax.plot( XFinal,   ffinal, options[1], label=lbl+'$f_{final}$', alpha=alphaFinal )
-            ax.plot( XCurrent, f[:,t], options[2], label=lbl+'$f$' )
+            plot(ax, finit, XInit, options[0], label=lbl+'$f_{init}$', alpha=alphaInit)
+            plot(ax, ffinal, XFinal, options[1], label=lbl+'$f_{final}$', alpha=alphaFinal)
+            plot(ax, f[:,t], XCurrent, options[2], label=lbl+'$f$' )
             ax.set_ylim(mini,maxi)
             
             try:
