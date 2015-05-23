@@ -5,61 +5,51 @@
 # plots the result of multiple analyses
 #
 
-import numpy as np
-from matplotlib import pyplot as plt
-import cPickle as pck
+import cPickle           as pck
+import numpy             as np
+import matplotlib.pyplot as plt
 
-def plotAnalyseMultiSim(outputDirList, figDir, prefixFig='analyse', labelsList=None, figSubFig=None):
+from matplotlib              import gridspec
 
-    options = ['b-', 'g-', 'r-', 'm-', 'y-', 'c-', 'k-',
-               'b--','g--','r--','m--','y--','c--','k--',
-               'b:', 'g:', 'r:', 'm:', 'y:', 'c:', 'k:' ]
+from ....utils.plotting.plot import plot
+from ....utils.plotting.plot import plottingOptionsMultiSim
+from ....utils.plotting.plot import tryAddCustomLegend
+from ....utils.io            import makeGrid
 
-    nModOptions = len(options)
+def plotAnalyseMultiSim(outputDirList, figDir, prefixFigName, labelsList, figSubFig, extensionsList):
 
-    numbers = []
-    times   = []
-    values  = []
+    (options, mModOptions, nModOptions) = plottingOptionsMultiSim()
+    
+    iterNumbers = []
+    iterTimes   = []
+    names       = []
+    values      = []
+
     for outputDir in outputDirList:
         fileAnalyse = outputDir + 'analyse.bin'
-        f = open(fileAnalyse, 'rb')
-        p = pck.Unpickler(f)
-        numbers.append(p.load())
-        times.append(p.load())
-        names = p.load()
+        f           = open(fileAnalyse, 'rb')
+        p           = pck.Unpickler(f)
+        iterNumbers.append(p.load())
+        iterTimes.append(p.load())
+        names.append(p.load())
         values.append(p.load())
         f.close()
 
-    N  = len(names)
+    for (columnsList, xAxisList, xScaleList, yScaleList, xLabelList, yLabelList, titleList, gridList, fileNameSuffix) in figSubFig:
 
-    if labelsList is None:
-        labelsList = []
-        for i in xrange(len(outputDirList)):
-            labelsList.append('sim '+str(i))
-
-    if figSubFig is None:
-        figSubFig = []
-        for i in xrange(N):
-            figSubFig.append([ ( [i] , 'iterations' , 'log' , 'log' , 'iterations' , 'operators' , 'title' , True , None ) ] )
-
-    i = 0
-    for fig in figSubFig:
-
-        nbrSubFig = len(fig)
-        Nc = int(np.floor(np.sqrt(nbrSubFig)))
-        Nl = Nc
-        while Nl*Nc < nbrSubFig:
-            Nl += 1
-
-        figure = plt.figure()            
+        nbrSubFig          = len(columnsList)
+        (nLines, nColumns) = makeGrid(nbrSubFig, extendDirection='vertical')
+        figure             = plt.figure()
         plt.clf()
+        gs                 = gridspec.GridSpec(nLines, nColumns)
+        j                  = -1
 
-        j = 1
-        suffix = None
-        for (columns, xaxis, xscale, yscale, xlabel, ylabel, title, grid, suffix) in fig: 
-            ax = plt.subplot(Nl,Nc,j)
-            ax.set_xscale(xscale)
-            ax.set_yscale(yscale)
+        for ( (columns, xAxis, xScale, yScale, xLabel, yLabel, title, grid) in
+              zip(columnsList, xAxisList, xScaleList, yScaleList, xLabelList, yLabelList, titleList, gridList) ):
+            j += 1
+            nc = int(np.mod(j,nColumns))
+            nl = int((j-nColumns)/nColumns)
+            ax = plt.subplot(gs[nl,nc])
 
             if grid:
                 ax.grid()
@@ -67,56 +57,41 @@ def plotAnalyseMultiSim(outputDirList, figDir, prefixFig='analyse', labelsList=N
             ax.set_xlabel(xlabel)
             ax.set_ylabel(ylabel)
 
-            nOptions = 0
-            for value,it,t,label in zip(values,numbers,times,labelsList):
-                if xaxis == 'iterations':
-                    X = it
-                elif xaxis == 'time':
-                    X = t
+            mOptions = -1
 
+            for (iter, times, name, values, label) in zip(iterNumbers, iterTimes, names, values, labelsList):
+                mOptions = np.mod(mOptions+1, mModOptions)
+                if xAxis == 'iterations':
+                    X = iter
+                elif xAxis == 'time':
+                    X = times
+
+                N = len(name)
+                nOptions = -1
                 for column in columns:
-                    column = min(N-1, column)
-                    Y = value[:,column]
-                    ax.plot(X,Y,options[nOptions],label=label+', '+names[column])
-                    nOptions = np.mod(nOptions+1,nModOptions)
-
-            from mpl_toolkits.axes_grid1 import make_axes_locatable
-            divider = make_axes_locatable(ax)
-            lax = divider.append_axes('right', '10%',frameon=False)
-            lax.set_yticks([])
-            lax.set_xticks([])
+                    nOptions = np.mod(nOptions+1, nModOptions)
+                    column   = min(N-1, column)
+                    Y        = values[:, column]
+                    plot(ax, Y, X, options[mOptions, nOptions], label=label+', '+names[column])
 
             try:
-                ax.legend(fontsize='xx-small',loc='center right',bbox_to_anchor=(1.13, 0.5),fancybox=True,framealpha=0.40)
+                ax.set_xscale(xScale)
+                ax.set_yscale(yScale)
             except:
-                ax.legend(fontsize='xx-small',loc='center right',bbox_to_anchor=(1.13, 0.5),fancybox=True)
-            j += 1
+                pass
 
-        figure.tight_layout()
-        if suffix is None:
-            suffix = str(i)
-        figName = figDir + prefixFig + suffix + '.pdf'
-        print('Saving ' + figName + ' ...')
-        plt.savefig(figName)
-        i += 1
+            tryAddCustomLegend(ax)
 
-def plotAnalyseMultiSimDefaultSubplots(outputDirList, figDir, prefixFig='analyse', itOrTime='iterations', labelsList=None):
+        gs.tight_layout(figure)
 
-    figSubFig = [ [ ( [0] , itOrTime , 'log' , 'log' , itOrTime , '$div$' , 'Divergence constrain' , True , 'DivConstrain' ) ] ,
-                  [ ( [1] , itOrTime , 'log' , 'log' , itOrTime , '$abs(min(.))$' , 'Positivity constrain' , True , 'PosConstrain' ) ] ,
-                  [ ( [2] , itOrTime , 'log' , 'log' , itOrTime , '$J$' , 'Cost function' , True , 'J' ) ] ,
-                  [ ( [2,3,4,5,6] , itOrTime , 'log' , 'log' , itOrTime , '$J$' , 'Cost function' , True , 'moreJ' ) ] ,
-                  [ ( [7] , itOrTime , 'log' , 'log' , itOrTime , '' , 'Convergence' , True , 'Convergence' ) ] ]
-    
-    plotAnalyseMultiSim(outputDirList, figDir, prefixFig, labelsList, figSubFig)
+        figName = figDir + prefixFigName + fileNameSuffix
+        for ext in extensionsList:
+            try:
+                plt.savefig(figName+ext)
+                print('Writing '+figName+ext+' ...')
+            except:
+                print('Could not write '+figName+ext+' ...')
 
-def plotAnalyseMultiSimDefaultSubplots2(outputDirList, figDir, prefixFig='analyse', itOrTime='iterations', labelsList=None):
+        plt.close()
 
-    figSubFig = [ [ ( [0] , itOrTime , 'log' , 'log' , itOrTime , '$div$' , 'Divergence constrain' , True , 'DivConstrain' ) ,
-                    ( [1] , itOrTime , 'log' , 'log' , itOrTime , '$abs(min(.))$' , 'Positivity constrain' , True , 'PosConstrain' ) ] ,
-                  [ ( [2] , itOrTime , 'log' , 'log' , itOrTime , '$J$' , 'Cost function' , True , 'J' ) ] ,
-                  [ ( [2] , itOrTime , 'log' , 'log' , itOrTime , '$J$' , 'Cost function' , True , 'moreJ' ) ,
-                    ( [2,3,4,5,6] , itOrTime , 'log' , 'log' , itOrTime , '$J$' , 'Cost function' , True , 'moreJ' ) ] ,
-                  [ ( [7] , itOrTime , 'log' , 'log' , itOrTime , '' , 'Convergence' , True , 'Convergence' ) ] ]
-    
-    plotAnalyseMultiSim(outputDirList, figDir, prefixFig, labelsList, figSubFig)
+

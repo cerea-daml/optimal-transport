@@ -31,3 +31,18 @@ def fileNameSuffix(i,iMaxP1):
     while len(s) < nDigit:
         s = '0'+s
     return s
+
+def makeGrid(nbrOfItems, extendDirection='vertical'):
+    nColumns = int(np.floor(np.sqrt(nbrOfItems)))
+    nLines   = nColumns
+
+    while nColumns*nLines < nbrOfItems:
+        if extendDirection == 'vertical':
+            nLines += 1
+        elif extendDirection == 'horizontal':
+            nColumns += 1
+        else:
+            nLines += 1
+            nColumns += 1
+
+    return (nLines, nColumns)

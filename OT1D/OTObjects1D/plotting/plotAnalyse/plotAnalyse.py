@@ -5,106 +5,85 @@
 # plots the result of an analyse
 #
 
-import numpy as np
-from matplotlib import pyplot as plt
-import cPickle as pck
+import cPickle           as pck
+import numpy             as np
+import matplotlib.pyplot as plt
 
-def plotAnalyse(outputDir, figDir, prefixFig='analyse', figSubFig=None):
+from matplotlib              import gridspec
 
-    options = ['b-','g-','r-','m-','y-','c-','k-']
-    nModOptions = len(options)
+from ....utils.plotting.plot import plot
+from ....utils.plotting.plot import plottingOptions
+from ....utils.plotting.plot import tryAddCustomLegend
+from ....utils.io            import makeGrid
 
-    fileAnalyse = outputDir + 'analyse.bin'
-    f = open(fileAnalyse, 'rb')
-    p = pck.Unpickler(f)
+def plotAnalyse(outputDir, figDir, prefixFigName, figSubFig, extensionsList):
+
+    (options, nModOptions) = plottingOptions()
+
+    fileAnalyse      = outputDir + 'analyse.bin'
+    f                = open(fileAnalyse, 'rb')
+    p                = pck.Unpickler(f)
     iterationNumbers = p.load()
-    iterationTimes = p.load()
-    names = p.load()
-    values = p.load()
+    iterationTimes   = p.load()
+    names            = p.load()
+    values           = p.load()
     f.close()
 
     N  = len(names)
 
-    if figSubFig is None:
-        figSubFig = []
-        for i in xrange(N):
-            figSubFig.append([ ( [i] , 'iterations' , 'log' , 'log' , 'iterations' , 'operators' , 'title' , True , None ) ] )
+    for (columnsList, xAxisList, xScaleList, yScaleList, xLabelList, yLabelList, titleList, gridList, fileNameSuffix) in figSubFig:
 
-    i = 0
-    for fig in figSubFig:
-
-        nbrSubFig = len(fig)
-        Nc = int(np.floor(np.sqrt(nbrSubFig)))
-        Nl = Nc
-        while Nc*Nl < nbrSubFig:
-            Nl += 1
-
-        figure = plt.figure()#figsize=(10*Nl,10*Nc))            
+        nbrSubFig          = len(columnsList)
+        (nLines, nColumns) = makeGrid(nbrSubFig, extendDirection='vertical') 
+        figure             = plt.figure()
         plt.clf()
+        gs                 = gridspec.GridSpec(nLines, nColumns)
+        j                  = -1
 
-        j = 1
-        suffix = None
-        for (columns, xaxis, xscale, yscale, xlabel, ylabel, title, grid, suffix) in fig: 
-            ax = plt.subplot(Nl,Nc,j)
-            ax.set_xscale(xscale)
-            ax.set_yscale(yscale)
+        for ( (columns, xAxis, xScale, yScale, xLabel, yLabel, title, grid) in 
+              zip(columnsList, xAxisList, xScaleList, yScaleList, xLabelList, yLabelList, titleList, gridList) ):
+
+            j += 1
+            nc = int(np.mod(j,nColumns))
+            nl = int((j-nColumns)/nColumns)
+            ax = plt.subplot(gs[nl,nc])
 
             if grid:
                 ax.grid()
             ax.set_title(title)
-            ax.set_xlabel(xlabel)
-            ax.set_ylabel(ylabel)
+            ax.set_xlabel(xLabel)
+            ax.set_ylabel(yLabel)
 
-            if xaxis == 'iterations':
+            if xAxis == 'iterations':
                 X = iterationNumbers
-            elif xaxis == 'time':
+            elif xAxis == 'time':
                 X = iterationTimes
 
-            nOptions = 0
+            nOptions = -1
             for column in columns:
-                column = min(N-1, column)
-                Y = values[:,column]
-                ax.plot(X,Y,options[nOptions],label=names[column])
-                nOptions = np.mod(nOptions+1,nModOptions)
-                
-            from mpl_toolkits.axes_grid1 import make_axes_locatable
-            divider = make_axes_locatable(ax)
-            lax = divider.append_axes('right', '10%',frameon=False)
-            lax.set_yticks([])
-            lax.set_xticks([])
+                nOptions = np.mod(nOptions+1, nModOptions)
+                column   = min(N-1, column)
+                Y        = values[:, column]
+                plot(ax, Y, X, options[nOptions], label=names[column])
 
             try:
-                ax.legend(fontsize='xx-small',loc='center right',bbox_to_anchor=(1.13, 0.5),fancybox=True,framealpha=0.40)
+                ax.set_xscale(xScale)
+                ax.set_yscale(yScale)
             except:
-                ax.legend(fontsize='xx-small',loc='center right',bbox_to_anchor=(1.13, 0.5),fancybox=True)
-            j += 1
+                pass
 
-        figure.tight_layout()
-        if suffix is None:
-            suffix = str(i)
-        figName = figDir + prefixFig + suffix + '.pdf'
-        print('Saving ' + figName + ' ...')
-        plt.savefig(figName)
-        i += 1
+            tryAddCustomLegend(ax)
 
-def plotAnalyseDefaultSubplots(outputDir, figDir, prefixFig='analyse', itOrTime='iterations'):
+        gs.tight_layout(figure)
 
-    figSubFig = [ [ ( [0] , itOrTime , 'log' , 'log' , itOrTime , '$div$' , 'Divergence constrain' , True , 'DivConstrain' ) ] ,
-                  [ ( [1] , itOrTime , 'log' , 'log' , itOrTime , '$abs(min(.))$' , 'Positivity constrain' , True , 'PosConstrain' ) ] ,
-                  [ ( [2] , itOrTime , 'log' , 'log' , itOrTime , '$J$' , 'Cost function' , True , 'J' ) ] ,
-                  [ ( [2,3,4,5,6] , itOrTime , 'log' , 'log' , itOrTime , '$J$' , 'Cost function' , True , 'moreJ' ) ] ,
-                  [ ( [7] , itOrTime , 'log' , 'log' , itOrTime , '' , 'Convergence' , True , 'Convergence' ) ] ]
+        figName = figDir + prefixFigName + fileNameSuffix
+        for ext in extensionsList:
+            try:
+                plt.savefig(figName+ext)
+                print('Writing '+figName+ext+' ...')
+            except:
+                print('Could not write '+figName+ext+' ...')
 
-    plotAnalyse(outputDir, figDir, prefixFig, figSubFig)
+        plt.close()
 
-def plotAnalyseDefaultSubplots2(outputDir, figDir, prefixFig='analyse', itOrTime='iterations'):
-
-    figSubFig = [ [ ( [0] , itOrTime , 'log' , 'log' , itOrTime , '$div$' , 'Divergence constrain' , True , 'DivConstrain' ) ,
-                    ( [1] , itOrTime , 'log' , 'log' , itOrTime , '$abs(min(.))$' , 'Positivity constrain' , True , 'Constrains' ) ] ,
-                  [ ( [2] , itOrTime , 'log' , 'log' , itOrTime , '$J$' , 'Cost function' , True , 'J' ) ] ,
-                  [ ( [2] , itOrTime , 'log' , 'log' , itOrTime , '$J$' , 'Cost function' , True , 'moreJ' )  ,
-                    ( [2,3,4,5,6] , itOrTime , 'log' , 'log' , itOrTime , '$J$' , 'Cost function' , True , 'moreJ' ) ] ,
-                  [ ( [7] , itOrTime , 'log' , 'log' , itOrTime , '' , 'Convergence' , True , 'Convergence' ) ] ]
-
-    plotAnalyse(outputDir, figDir, prefixFig, figSubFig)
 
