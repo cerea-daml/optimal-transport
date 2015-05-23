@@ -14,7 +14,7 @@ class AnalysePlotter:
         self.plottingConfig = plottingConfig
 
     def plot(self):
-        if not self.plottingConfig.plotAnalyse:
+        if not self.plottingConfig.plotAnalyse == 1:
             return
 
         if self.plottingConfig.plotSubplotsFunctionName == 'customPlotSubplots':
@@ -28,6 +28,6 @@ class AnalysePlotter:
             plotAnalyse(self.plottingConfig.outputDir[0], self.plottingConfig.figDir, self.plottingConfig.prefixFigNameAnalyse, 
                         plotSubplots, self.plottingConfig.extension)
 
-        elif self.plottingConfig.singleOrMulti == 0:
+        elif self.plottingConfig.singleOrMulti == 1:
             plotAnalyseMultiSim(self.plottingConfig.outputDir, self.plottingConfig.figDir, self.plottingConfig.prefixFigNameAnalyse, 
                                 self.plottingConfig.label, plotSubplots, self.plottingConfig.extension)

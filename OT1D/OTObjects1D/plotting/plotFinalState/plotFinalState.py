@@ -9,37 +9,36 @@ import numpy             as np
 import cPickle           as pck
 import matplotlib.pyplot as plt
 
-from ...utils.io                  import fileNameSuffix
-from ...utils.defaultTransparency import customTransparency
-from ...utils.plot                import plot
+from ....utils.io            import fileNameSuffix
+from ....utils.plotting.plot import plot
+from ....utils.plotting.plot import plottingOptions
+from ....utils.plotting.plot import positions  
+from ....utils.plotting.plot import tryAddCustomLegend
 
-def plotFinalState(outputDir, figDir, prefixFigName='finalState', transpFun=None, options=None, swapInitFinal=False):
+def plotFinalState(outputDir, figDir, prefixFigName, transpFun, extensionsList, EPSILON):
 
-    if options is None:
-        options = ['b-','r-','g-']
-
-    if transpFun is None:
-        transpFun = customTransparency
+    (options, nModOptions) = plottingOptions()
 
     fileFinalState = outputDir + 'finalState.bin'
-    f = open(fileFinalState,'rb')
-    p = pck.Unpickler(f)
-    finalState = p.load()
+    f              = open(fileFinalState,'rb')
+    p              = pck.Unpickler(f)
+    finalState     = p.load()
     f.close()
 
-    fileConfig = outputDir + 'config.bin'
-    f = open(fileConfig,'rb')
-    p = pck.Unpickler(f)
+    fileConfig     = outputDir + 'config.bin'
+    f              = open(fileConfig,'rb')
+    p              = pck.Unpickler(f)
     try:
         while True:
             config = p.load()
     except:
         f.close()
 
-    if swapInitFinal:
+
+    if config.swappedInitFinal:
         finit  = config.boundaries.temporalBoundaries.bt1
         ffinal = config.boundaries.temporalBoundaries.bt0
-        f      = finalState.f.copy()
+        f      = np.zeros(shape=(config.N+1,config.P+2))
         for t in xrange(config.P+2):
             f[:,t] = finalState.f[:,config.P+1-t]
     else:
@@ -47,50 +46,39 @@ def plotFinalState(outputDir, figDir, prefixFigName='finalState', transpFun=None
         ffinal = config.boundaries.temporalBoundaries.bt1
         f      = finalState.f
 
-    mini = np.min( [ finit.min() , ffinal.min() , f.min() ] ) 
-    maxi = np.max( [ finit.max() , ffinal.max() , f.max() ] ) 
-    extend = maxi - mini + 1.e-6
+    mini   = np.min( [ finit.min() , ffinal.min() , f.min() ] ) 
+    maxi   = np.max( [ finit.max() , ffinal.max() , f.max() ] ) 
 
-    yPbar = mini-0.05*extend
-    xTxt  = 0.01
-    yTxt  = yPbar
+    (mini, maxi, xTxt, yTxt, xPbarStart, xPbarEnd, yPbar) = positions(0.0, 1.0, mini, maxi, EPSILON):
 
-    maxi += 0.1*extend
-    mini -= 0.1*extend
-
-
-    X = np.linspace( 0.0 , 1.0 , config.N + 1 )
+    X      = np.linspace( 0.0 , 1.0 , config.N + 1 )
 
     for t in xrange(config.P+2):
         alphaInit  = transpFun(1.-float(t)/(finalState.P+1.))
         alphaFinal = transpFun(float(t)/(finalState.P+1.))
 
-        plt.figure()
+        figure     = plt.figure()
         plt.clf()
-        ax = plt.subplot(111)
+        ax         = plt.subplot(111)
 
-        timeText     = ax.text(xTxt, yTxt, fileNameSuffix(t,config.P+2)+' / '+str(config.P+1))
-        if t < config.P + 1:
-            lineBkgPbar, = plot(ax, [yPbar,yPbar], [float(t)/(finalState.P+1.)*0.6+0.2,0.8], 'k-', linewidth=5)
-        if t > 0:
-            linePbar,    = plot(ax, [yPbar,yPbar], [0.2,float(t)/(finalState.P+1.)*0.6+0.2], 'g-', linewidth=5)
-
-        plot(ax, finit, X, options[0], label='$f_{init}$', alpha=alphaInit)
-        plot(ax, ffinal, X, options[1], label='$f_{final}$', alpha=alphaFinal)
-        plot(ax, finalState.f[:,t], X, options[2], label='$f$')
+        plotTimeTextPBar(ax, t, config.P+1, xTxt, yTxt, xPbarStart, xPbarEnd, yPbar)
+        plot(ax, finalState.f[:,t], X, options[np.mod(0, nModOptions)], label='$f$')
+        plot(ax, finit, X, options[np.mod(1, nModOptions)], label='$f_{init}$', alpha=alphaInit)
+        plot(ax, ffinal, X, options[np.mod(2, nModOptions)], label='$f_{final}$', alpha=alphaFinal)
         
         ax.set_xlabel('$x$')
-        ax.set_ylim(mini,maxi)
+        ax.set_ylim(mini, maxi)
+        ax.set_xlim(0.0, 1.0)
         ax.grid()
 
-        try:
-            ax.legend(fontsize='xx-small',loc='center right',bbox_to_anchor=(1.13, 0.5),fancybox=True,framealpha=0.40)
-        except:
-            ax.legend(fontsize='xx-small',loc='center right',bbox_to_anchor=(1.13, 0.5),fancybox=True)            
+        tryAddCustomLegend(ax)
 
         ax.set_title('Final iteration\nt = ' + fileNameSuffix(t,config.P+2) + ' / '+str(config.P+1))
         plt.tight_layout()
 
-        figName = figDir + prefixFigName + fileNameSuffix(t,finalState.P+2) + '.pdf'
-        print('Writing '+figName+' ...')
-        plt.savefig(figName)
+        figName = figDir + prefixFigName + fileNameSuffix(t,finalState.P+2)
+        for ext in extensionsList:
+            print('Writing '+figName+ext+' ...')
+            plt.savefig(figName+ext)
+
+        plt.close()

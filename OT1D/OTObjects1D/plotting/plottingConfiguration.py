@@ -190,3 +190,24 @@ class PlottingConfiguration(object):
         self.isList['plotSubplotsFunctionArgs']         = False
         self.isDict['plotSubplotsFunctionArgs']         = True
         self.attributeType['plotSubplotsFunctionArgs']  = None
+
+        self.attributes.append('plotFinalState')
+        self.defaultValues['plotFinalState']  = 1
+        self.isSubAttribute['plotFinalState'] = []
+        self.isList['plotFinalState']         = False
+        self.isDict['plotFinalState']         = False
+        self.attributeType['plotFinalState']  = int
+
+        self.attributes.append('prefixFigNameFinalState')
+        self.defaultValues['prefixFigNameFinalState']  = 'finalState'
+        self.isSubAttribute['prefixFigNameFinalState'] = []
+        self.isList['prefixFigNameFinalState']         = False
+        self.isDict['prefixFigNameFinalState']         = False
+        self.attributeType['prefixFigNameFinalState']  = str
+
+        self.attributes.append('transparencyFunctionName')
+        self.defaultValues['transparencyFunctionName']  = 'customTransparency'
+        self.isSubAttribute['transparencyFunctionName'] = []
+        self.isList['transparencyFunctionName']         = False
+        self.isDict['transparencyFunctionName']         = False
+        self.attributeType['transparencyFunctionName']  = str

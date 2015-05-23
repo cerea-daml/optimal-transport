@@ -50,7 +50,14 @@ plotSubplotsFunctionArgs = grid       : bool : True
 
 
 #__________________________________________________
-# Dynamics / Boundaries parameters
+# Plot final state
+# 0 -> False
+# 1 -> True
+plotFinalState = 1
+
+# Options for plotting final state
+prefixFigNameFinalState  = finalState
+transparencyFunctionName = customTransparency 
 
 # Space / Time disretization
 N = 32
