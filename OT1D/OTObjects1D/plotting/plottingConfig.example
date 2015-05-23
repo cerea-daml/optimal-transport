@@ -1,0 +1,119 @@
+#__________________________________________________
+# Example of configuration file for plotting
+#__________________________________________________
+
+#__________________________________________________
+# Tolerance value for testings 
+EPSILON = 1.e-8
+
+#__________________________________________________
+# Plot single simulation or multiple simulations
+# 0 -> single sim
+# 1 -> multi  sim
+singleOrMulti = 0
+
+#__________________________________________________
+# Figures output directory
+figDir = ./
+
+#__________________________________________________
+# Extension for figures
+# You may want to try more than one extension
+# in that case, just duplicate this line
+extension = .pdf
+extension = .eps
+
+#__________________________________________________
+# Output directory and associated labels
+# For multiple simulations, just duplicate these lines
+# For single simulation, only the first line will be used 
+outputDir = ./
+label     = sim0
+outputDir = ./
+label     = sim1
+
+
+#__________________________________________________
+# Plot analyse
+# 0 -> False
+# 1 -> True
+plotAnalyse = 1
+
+# Defining plotSubplots
+plotSubplotsFunctionName = customPlotSubplots
+prefixFigNameAnalyse     = analyse
+# Arguments for definining plotSubplots
+plotSubplotsFunctionArgs = iterOrTime : str  : iterations
+plotSubplotsFunctionArgs = xScale     : str  : log
+plotSubplotsFunctionArgs = yScale     : str  : log
+plotSubplotsFunctionArgs = grid       : bool : True
+
+
+#__________________________________________________
+# Dynamics / Boundaries parameters
+
+# Space / Time disretization
+N = 32
+P = 32
+
+fineResolution = 1000
+
+# dynamics type
+# 0 -> normal dynamics (requires spatial boundary conditions)
+# 1 -> normal dynamics with 0 spatial boundary conditions
+# 2 -> no spatial boundary conditions
+# 3 -> normal dynamics with a reservoir (for adr)
+# 4 -> normal dynamics with a reservoir (for adr3)
+dynamics = 0
+
+# boundary type
+# 0 -> from file (requires existing files)
+# 1 to 6 -> default configuration (see init/ for more information)
+boundaryType = 1
+
+# normalization
+# -1 -> no normalization
+#  0 -> correct mass default by rescaling f1
+#  1 -> correct mass default by making mass exiting leftward and rightward
+normType = 0
+
+#__________________________________________________
+# Files for boundaryType = 0
+filef0 = f0.bin
+filef1 = f1.bin
+filem0 = m0.bin
+filem1 = m1.bin
+
+#__________________________________________________
+# Algorithm parameters
+algoName   = adr
+iterTarget = 10000
+nModPrint  = 500
+nModWrite  = 500
+
+# for adr algorithm
+gamma = 0.013333333
+alpha = 1.998
+
+# for pd algorithm
+theta = 1.
+sigma = 85.
+tau   = 0.0116470588235294
+
+# for adr3 algorithm
+gamma3 = 0.013333333
+alpha3 = 1.998
+omega1 = 0.33
+omega2 = 0.33
+omega3 = 0.34
+
+#__________________________________________________
+# Initial condition
+# 0 -> default initial condition
+# 1 -> tries to catch initial condition from the result of a previous simulation, stored in outputDir
+# 2 -> tries to catch initial condition from the result of an other simulation, for which results are stored in initialInputDir
+# 3 -> 1 & 2 (searches in outputDir first) 
+initial = 0
+
+# for initial = 2 or 3
+initialInputDir = ./
