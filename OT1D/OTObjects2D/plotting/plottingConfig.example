@@ -1,0 +1,71 @@
+#__________________________________________________
+# Example of configuration file for plotting
+#__________________________________________________
+
+#__________________________________________________
+# Tolerance value for testings 
+EPSILON = 1.e-8
+
+#__________________________________________________
+# Plot single simulation or multiple simulations
+# 0 -> single sim
+# 1 -> multi  sim
+singleOrMulti = 0
+
+#__________________________________________________
+# Figures output directory
+figDir = ./
+
+#__________________________________________________
+# Extension for figures
+# You may want to try more than one extension
+# in that case, just duplicate this line
+extension = .pdf
+extension = .eps
+
+#__________________________________________________
+# Output directory and associated labels
+# For multiple simulations, just duplicate these lines
+# For single simulation, only the first line will be used 
+outputDir = ./
+label     = sim0
+outputDir = ./
+label     = sim1
+
+#__________________________________________________
+# Plot analyse
+# 0 -> False
+# 1 -> True
+plotAnalyse = 1
+
+# Defining plotSubplots
+plotSubplotsFunctionName = customPlotSubplots
+prefixFigNameAnalyse     = analyse
+
+# Arguments for definining plotSubplots
+plotSubplotsFunctionArgs = iterOrTime : str  : iterations
+plotSubplotsFunctionArgs = xScale     : str  : log
+plotSubplotsFunctionArgs = yScale     : str  : log
+plotSubplotsFunctionArgs = grid       : bool : True
+
+#__________________________________________________
+# Plot final state
+# 0 -> False
+# 1 -> True
+plotFinalState = 1
+
+# Options for plotting final state
+prefixFigNameFinalState  = finalState
+transparencyFunctionName = customTransparency 
+
+plotFinalStatePlotter    = imshow
+plotFinalStateArgs       = interpolation : str   : nearest
+
+plotFinalStateArgsInit   = colors        : str   : k
+plotFinalStateArgsInit   = linestyles    : str   : solid
+plotFinalStateArgsInit   = linewidths    : float : 1.5 
+
+plotFinalStateArgsFinal  = colors        : str   : k
+plotFinalStateArgsFinal  = linestyles    : str   : solid
+plotFinalStateArgsFinal  = linewidths    : float : 1.5 
+

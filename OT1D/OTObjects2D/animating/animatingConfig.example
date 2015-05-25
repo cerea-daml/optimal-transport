@@ -1,0 +1,62 @@
+#__________________________________________________
+# Example of configuration file for plotting
+#__________________________________________________
+
+#__________________________________________________
+# Tolerance value for testings 
+EPSILON = 1.e-8
+
+#__________________________________________________
+# Plot single simulation or multiple simulations
+# 0 -> single sim
+# 1 -> multi  sim
+singleOrMulti = 0
+
+#__________________________________________________
+# Figures output directory
+figDir = ./
+
+#__________________________________________________
+# Movie writer
+writerName      = ffmpeg
+writerFPS       = 5
+writerCodec     = 
+writerBitrate   = 
+writerExtraArgs = 
+
+extension       = .mp4
+extension       = .avi
+
+#__________________________________________________
+# FuncAnimation arguments
+funcAnimArgs = blit : bool : true
+
+#__________________________________________________
+# Output directory and associated labels
+# For multiple simulations, just duplicate these lines
+# For single simulation, only the first line will be used 
+outputDir = ./
+label     = sim0
+outputDir = ./
+label     = sim1
+
+#__________________________________________________
+# Animate final state
+# 0 -> False
+# 1 -> True
+animFinalState = 1
+
+# Options for animating final state
+prefixFigNameFinalState  = finalState
+transparencyFunctionName = customTransparency
+
+animFinalStatePlotter    = imshow
+animFinalStateArgs       = interpolation : str   : nearest
+
+animFinalStateArgsInit   = colors        : str   : k
+animFinalStateArgsInit   = linestyles    : str   : solid
+animFinalStateArgsInit   = linewidths    : float : 1.5
+
+animFinalStateArgsFinal  = colors        : str   : k
+animFinalStateArgsFinal  = linestyles    : str   : solid
+animFinalStateArgsFinal  = linewidths    : float : 1.5

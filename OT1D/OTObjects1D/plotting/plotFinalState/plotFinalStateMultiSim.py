@@ -120,7 +120,7 @@ def plotFinalStateMultiSim(outputDirList, figDir, prefixFigName, labelsList, tra
 
         gs.tight_layout(figure)
 
-        figName = figDir + prefixFigName + fileNameSuffix(t,finalState.P+2)
+        figName = figDir + prefixFigName + fileNameSuffix(t, Pmax+2)
         for ext in extensionsList:
             print('Writing '+figName+ext+' ...')
             plt.savefig(figName+ext)

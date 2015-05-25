@@ -76,7 +76,7 @@ def plotFinalState(outputDir, figDir, prefixFigName, label, transpFun, extension
         ax.set_title(label+'\nt = ' + fileNameSuffix(t,config.P+2) + ' / '+str(config.P+1))
         plt.tight_layout()
 
-        figName = figDir + prefixFigName + fileNameSuffix(t,finalState.P+2)
+        figName = figDir + prefixFigName + fileNameSuffix(t,config.P+2)
         for ext in extensionsList:
             print('Writing '+figName+ext+' ...')
             plt.savefig(figName+ext)
