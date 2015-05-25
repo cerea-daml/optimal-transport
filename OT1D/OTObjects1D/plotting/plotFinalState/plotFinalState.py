@@ -15,7 +15,7 @@ from ....utils.plotting.plot import plottingOptions
 from ....utils.plotting.plot import positions  
 from ....utils.plotting.plot import tryAddCustomLegend
 
-def plotFinalState(outputDir, figDir, prefixFigName, transpFun, extensionsList, EPSILON):
+def plotFinalState(outputDir, figDir, prefixFigName, label, transpFun, extensionsList, EPSILON):
 
     (options, nModOptions) = plottingOptions()
 
@@ -73,7 +73,7 @@ def plotFinalState(outputDir, figDir, prefixFigName, transpFun, extensionsList, 
 
         tryAddCustomLegend(ax)
 
-        ax.set_title('Final iteration\nt = ' + fileNameSuffix(t,config.P+2) + ' / '+str(config.P+1))
+        ax.set_title(label+'\nt = ' + fileNameSuffix(t,config.P+2) + ' / '+str(config.P+1))
         plt.tight_layout()
 
         figName = figDir + prefixFigName + fileNameSuffix(t,finalState.P+2)

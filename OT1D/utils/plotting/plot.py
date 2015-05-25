@@ -72,3 +72,18 @@ def plotTimeTextPBar(ax, t, tMax, xTxt, yTxt, xPbarStart, xPbarEnd, yPbar):
         linePbar,    = plot(ax, [yPbar,yPbar], [xPbarStart,xPbarStart+float(t)/(tMax)*(xPbarEnd-xPbarStart)], 'g-', linewidth=5)
         ret.append(linePbar)
     return ret
+
+def makeGrid(nbrOfItems, extendDirection='vertical'):
+    nColumns = int(np.floor(np.sqrt(nbrOfItems)))
+    nLines   = nColumns
+
+    while nColumns*nLines < nbrOfItems:
+        if extendDirection == 'vertical':
+            nLines += 1
+        elif extendDirection == 'horizontal':
+            nColumns += 1
+        else:
+            nLines += 1
+            nColumns += 1
+
+    return (nLines, nColumns)

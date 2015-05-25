@@ -1,25 +1,25 @@
 ###########################
-# plotFinalStateMultiSim.py
+# animFinalStateMultiSim.py
 ###########################
 #
-# util to plot the final state for multiple simulations 
+# util to animate the final state for multiple simulations 
 #
 
-import numpy             as np
-import cPickle           as pck
-import matplotlib.pyplot as plt
+import numpy                as np
+import cPickle              as pck
+import matplotlib.pyplot    as plt
 
-from matplotlib        import gridspec
-from scipy.interpolate import interp1d
+from matplotlib           import gridspec
+from matplotlib.animation import FuncAnimation
+from scipy.interpolate    import interp1d
 
 from ....utils.io            import fileNameSuffix
-from ....utils.plotting.plot import makeGrid
 from ....utils.plotting.plot import plot
 from ....utils.plotting.plot import plottingOptions
 from ....utils.plotting.plot import positions
 from ....utils.plotting.plot import tryAddCustomLegend
 
-def plotFinalStateMultiSim(outputDirList, figDir, prefixFigName, labelsList, transpFun, extensionsList, EPSILON):
+def makeAnimFinalStateMultiSim(outputDirList, labelsList, transpFun, kwargsFuncAnim, EPSILON):
 
     (options, n) = plottingOptions()
 
@@ -53,7 +53,7 @@ def plotFinalStateMultiSim(outputDirList, figDir, prefixFigName, labelsList, tra
             f      = np.zeros(shape=(config.N+1, config.P+2))
             for t in xrange(config.P+2):
                 f[:, t] = fstate.f[:, config.P+1-t]
-        else:
+            else:
             finit  = config.boundaries.temporalBoundaries.bt0
             ffinal = config.boundaries.temporalBoundaries.bt1
             f      = fstate.f
@@ -61,15 +61,15 @@ def plotFinalStateMultiSim(outputDirList, figDir, prefixFigName, labelsList, tra
         fs.append(f )
         finits.append(finit)
         ffinals.append(ffinal)
-                
-        minis.append(f.min())        
+
+        minis.append(f.min())
         minis.append(finit.min())
         minis.append(ffinal.min())
 
         maxis.append(f.max())
         maxis.append(finit.max())
         maxis.append(ffinal.max())
-        
+
         Plist.append(config.P)
 
     Pmax = np.max(Plist)
@@ -77,7 +77,6 @@ def plotFinalStateMultiSim(outputDirList, figDir, prefixFigName, labelsList, tra
     maxi = np.max(maxis)
 
     (mini, maxi, xTxt, yTxt, xPbarStart, xPbarEnd, yPbar) = positions(0.0, 1.0, mini, maxi, EPSILON)
-
     (nLines, nColumns) = makeGrid(len(outputDirList), extendDirection='vertical')
 
     fsCorrected = []
@@ -90,41 +89,54 @@ def plotFinalStateMultiSim(outputDirList, figDir, prefixFigName, labelsList, tra
 
     fs = fsCorrected
 
-    for t in xrange(Pmax+2):
-        alphaInit  = transpFun(1.-float(t)/(Pmax+1))
-        alphaFinal = transpFun(float(t)/(Pmax+1))
+    figure = plt.figure()
+    plt.clf()
 
-        figure     = plt.figure()
-        plt.clf()
 
-        gs         = gridspec.GridSpec(nLines, nColumns)
-        j          = -1
 
-        for (f, finit, ffinal, title) in zip(fs, finits, ffinals, labelsList):
-            j += 1
-            nc = int(np.mod(j,nColumns))
-            nl = int((j-nColumns)/nColumns)
-            ax = plt.subplot(gs[nl,nc])
+    gs     = gridspec.GridSpec(Nl, Nc)
+    j      = -1
+    axes   = []
+
+    for j in xrange(len(fs)):
+        nc = int(np.mod(j,nColumns))
+        nl = int((j-nColumns)/nColumns)
+        axes.append(plt.subplot(gs[nl,nc]))
+
+    def animate(t):
+        ret = []
+        alphaInit  = transpFun(1.-float(t)/(Pmax+1.))
+        alphaFinal = transpFun(float(t)/(Pmax+1.))
+
+        for (f,finit,ffinal,title,ax) in zip(fs,finits,ffinals,labelsList,axes):
+            ax.cla()
 
             X  = np.linspace(0.0, 1.0, finit.size)
 
-            plot(ax, f[:,t], X, options[0], label=lbl+'$f$' )
-            plot(ax, finit, X, options[1], label=lbl+'$f_{init}$', alpha=alphaInit)
-            plot(ax, ffinal, X, options[2], label=lbl+'$f_{final}$', alpha=alphaFinal)
+            lineCurrent, = plot(ax, f[:,t], X, options[np.mod(0, nModOptions)], label='$f$')
+            lineInit,    = plot(ax, finit, X, options[np.mod(1, nModOptions)], label='$f_{init}$', alpha=alphaInit)
+            lineFinal,   = plot(ax, ffinal, X, options[np.mod(2, nModOptions)], label='$f_{final}$', alpha=alphaFinal)
+            ret.extend([lineInit,lineFinal,lineCurrent])
 
             ax.set_ylim(mini,maxi)
             ax.set_xlim(0.0, 1.0)
             ax.grid()
-            ax.set_title(title+'\nt = ' + fileNameSuffix(t,Pmax+2) + ' / '+str(Pmax+1))
+
             tryAddCustomLegend(ax)
+            ax.set_title(label+'\nt = ' + fileNameSuffix(t,config.P+2) + ' / '+str(config.P+1))
 
-        gs.tight_layout(figure)
+            ax.set_ylim(mini-0.15*extend,maxi)
+            ax.set_title(title+'\nt = ' + fileNameSuffix(t,Pmax+2) + ' / '+str(Pmax+1))
 
-        figName = figDir + prefixFigName + fileNameSuffix(t,finalState.P+2)
-        for ext in extensionsList:
-            print('Writing '+figName+ext+' ...')
-            plt.savefig(figName+ext)
+        return tuple(ret)
 
-        plt.close()
+    def init():
+        return animate(0)
+
+    init()
+    gs.tight_layout(figure)
+    frames = np.arange(Pmax+2)    
+    print('Making animation ...')
+    return FuncAnimation(figure, animate, frames, init_func=init, **kwargsFuncAnim)
 
 

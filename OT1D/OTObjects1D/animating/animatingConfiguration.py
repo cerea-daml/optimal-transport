@@ -1,17 +1,17 @@
 #############################
-# Class PlottingConfiguration
+# Class AnimatingConfiguration
 #############################
 #
-# Defines everything necessary for plotting the result of an OT algorithm from a config file
+# Defines everything necessary for animating the result of an OT algorithm from a config file
 #
 
-from plotter     import Plotter
+#from plotter     import Plotter
 
 from ...utils.io import fileNameSuffix
 
-class PlottingConfiguration(object):
+class AnimatorConfiguration(object):
     '''
-    Stores the configuraion for plotting an OT algorithm
+    Stores the configuraion for animating an OT algorithm
     '''
 
     def __init__(self, plottingConfigFile=None):
@@ -21,16 +21,17 @@ class PlottingConfiguration(object):
         self.ckeckAttributes()
 
     def __repr__(self):
-        return 'PlottingConfiguration for a 1D OT algoritm'
+        return 'AnimatingConfiguration for a 1D OT algoritm'
 
-    def plotter(self):
-        return Plotter(self)
+    def animator(self):
+        pass
+#        return Animator(self)
 
     def ckeckAttributes(self):
         for attr in self.attributes:
             if self.isSubAttribute[attr] == [] and not self.isDict[attr]:
                 if self.isList[attr]:
-                    if self.__getattribute__(attr) == []:
+                    if self.__getattribute__(attr) == []:# and self.defaultValues[attr] is not None:
                         print('No valid element found for list '+attr+' .')
                         print('Filling by default value : '+str(self.defaultValues[attr])+' .')
                         self.__setattr__(attr, self.defaultValues[attr])
@@ -49,7 +50,7 @@ class PlottingConfiguration(object):
                 if parentAttributesCompatible:
 
                     if self.isList[attr]:
-                        if self.__getattribute__(attr) == [] and self.defaultValues[attr] is not None:
+                        if self.__getattribute__(attr) == []:# and self.defaultValues[attr] is not None:
                             print('No valid element found for list '+attr+' .')
                             print('Filling by default value : '+str(self.defaultValues[attr])+' .')
                             self.__setattr__(attr, self.defaultValues[attr])
@@ -143,12 +144,54 @@ class PlottingConfiguration(object):
         self.isDict['figDir']         = False
         self.attributeType['figDir']  = str
 
+        self.attributes.append('writerName')
+        self.defaultValues['writerName']  = 'ffmpeg'
+        self.isSubAttribute['writerName'] = []
+        self.isList['writerName']         = False
+        self.isDict['writerName']         = False
+        self.attributeType['writerName']  = str
+
+        self.attributes.append('writerFPS')
+        self.defaultValues['writerFPS']  = 5
+        self.isSubAttribute['writerFPS'] = []
+        self.isList['writerFPS']         = False
+        self.isDict['writerFPS']         = False
+        self.attributeType['writerFPS']  = int
+
+        self.attributes.append('writerCodec')
+        self.defaultValues['writerCodec']  = None
+        self.isSubAttribute['writerCodec'] = []
+        self.isList['writerCodec']         = False
+        self.isDict['writerCodec']         = False
+        self.attributeType['writerCodec']  = int
+
+        self.attributes.append('writerBitrate')
+        self.defaultValues['writerBitrate']  = None
+        self.isSubAttribute['writerBitrate'] = []
+        self.isList['writerBitrate']         = False
+        self.isDict['writerBitrate']         = False
+        self.attributeType['writerBitrate']  = {}
+
+        self.attributes.append('writerExtraArgs')
+        self.defaultValues['writerExtraArgs']  = None
+        self.isSubAttribute['writerExtraArgs'] = []
+        self.isList['writerExtraArgs']         = True
+        self.isDict['writerExtraArgs']         = False
+        self.attributeType['writerExtraArgs']  = str
+
         self.attributes.append('extension')
         self.defaultValues['extension']  = ['.pdf']
         self.isSubAttribute['extension'] = []
         self.isList['extension']         = True
         self.isDict['extension']         = False
         self.attributeType['extension']  = str
+
+        self.attributes.append('funcAnimArgs')
+        self.defaultValues['funcAnimArgs']  = None
+        self.isSubAttribute['funcAnimArgs'] = []
+        self.isList['funcAnimArgs']         = False
+        self.isDict['funcAnimArgs']         = True
+        self.attributeType['funcAnimArgs']  = None
 
         self.attributes.append('outputDir')
         self.defaultValues['outputDir']  = ['./output/']
@@ -158,46 +201,18 @@ class PlottingConfiguration(object):
         self.attributeType['outputDir']  = str
 
         self.attributes.append('label')
-        self.defaultValues['label']  = ['sim0']
+        self.defaultValues['label']  = ['']
         self.isSubAttribute['label'] = []
         self.isList['label']         = True
         self.isDict['label']         = False
         self.attributeType['label']  = str
 
-        self.attributes.append('plotAnalyse')
-        self.defaultValues['plotAnalyse']  = 1 
-        self.isSubAttribute['plotAnalyse'] = []
-        self.isList['plotAnalyse']         = False
-        self.isDict['plotAnalyse']         = False
-        self.attributeType['plotAnalyse']  = int
-
-        self.attributes.append('plotSubplotsFunctionName')
-        self.defaultValues['plotSubplotsFunctionName']  = 'customPlotSubplots' 
-        self.isSubAttribute['plotSubplotsFunctionName'] = [('plotAnalyse', 1)]
-        self.isList['plotSubplotsFunctionName']         = False
-        self.isDict['plotSubplotsFunctionName']         = False
-        self.attributeType['plotSubplotsFunctionName']  = str
-
-        self.attributes.append('prefixFigNameAnalyse')
-        self.defaultValues['prefixFigNameAnalyse']  = 'analyse' 
-        self.isSubAttribute['prefixFigNameAnalyse'] = [('plotAnalyse', 1)]
-        self.isList['prefixFigNameAnalyse']         = False
-        self.isDict['prefixFigNameAnalyse']         = False
-        self.attributeType['prefixFigNameAnalyse']  = str
-
-        self.attributes.append('plotSubplotsFunctionArgs')
-        self.defaultValues['plotSubplotsFunctionArgs']  = None
-        self.isSubAttribute['plotSubplotsFunctionArgs'] = [('plotAnalyse', 1)]
-        self.isList['plotSubplotsFunctionArgs']         = False
-        self.isDict['plotSubplotsFunctionArgs']         = True
-        self.attributeType['plotSubplotsFunctionArgs']  = None
-
-        self.attributes.append('plotFinalState')
-        self.defaultValues['plotFinalState']  = 1
-        self.isSubAttribute['plotFinalState'] = []
-        self.isList['plotFinalState']         = False
-        self.isDict['plotFinalState']         = False
-        self.attributeType['plotFinalState']  = int
+        self.attributes.append('animFinalState')
+        self.defaultValues['animFinalState']  = 1 
+        self.isSubAttribute['animFinalState'] = []
+        self.isList['animFinalState']         = False
+        self.isDict['animFinalState']         = False
+        self.attributeType['animFinalState']  = int
 
         self.attributes.append('prefixFigNameFinalState')
         self.defaultValues['prefixFigNameFinalState']  = 'finalState'

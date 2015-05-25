@@ -2,9 +2,9 @@
 # finalStatePlotter.py
 ######################
 
-from ....utils.defaultTransparency import defaultTransparency
-from ....utils.defaultTransparency import fastVanishingTransparency
-from ....utils.defaultTransparency import customTransparency
+from ....utils.plotting.defaultTransparency import defaultTransparency
+from ....utils.plotting.defaultTransparency import fastVanishingTransparency
+from ....utils.plotting.defaultTransparency import customTransparency
 
 from plotFinalState         import plotFinalState
 from plotFinalStateMultiSim import plotFinalStateMultiSim
@@ -27,7 +27,7 @@ class FinalStatePlotter:
 
         if self.plottingConfig.singleOrMulti == 0:
             plotFinalState(self.plottingConfig.outputDir[0], self.plottingConfig.figDir, self.plottingConfig.prefixFigNameFinalState, 
-                           transparencyFunction, self.plottingConfig.extension, self.plottingConfig.EPSILON)
+                           self.plottingConfig.label[0], transparencyFunction, self.plottingConfig.extension, self.plottingConfig.EPSILON)
 
         elif self.plottingConfig.singleOrMulti == 1:
             plotFinalStateMultiSim(self.plottingConfig.outputDir, self.plottingConfig.figDir, self.plottingConfig.prefixFigNameFinalState, 
