@@ -9,25 +9,19 @@ import cPickle           as pck
 import numpy             as np
 import matplotlib.pyplot as plt
 
-from matplotlib              import gridspec
+from matplotlib                  import gridspec
 
-from ....utils.plotting.plot import plot
-from ....utils.plotting.plot import plottingOptions
-from ....utils.plotting.plot import tryAddCustomLegend
-from ....utils.io            import makeGrid
+from ....utils.plotting.plot     import plot
+from ....utils.plotting.plot     import plottingOptions
+from ....utils.plotting.plot     import tryAddCustomLegend
+from ....utils.plotting.plot     import makeGrid
+from ....utils.plotting.saveFig  import saveFig
+from ....utils.io.extractAnalyse import extractAnalyse
 
 def plotAnalyse(outputDir, figDir, prefixFigName, figSubFig, extensionsList):
 
-    (options, nModOptions) = plottingOptions()
-
-    fileAnalyse      = outputDir + 'analyse.bin'
-    f                = open(fileAnalyse, 'rb')
-    p                = pck.Unpickler(f)
-    iterationNumbers = p.load()
-    iterationTimes   = p.load()
-    names            = p.load()
-    values           = p.load()
-    f.close()
+    (options, nModOptions)                            = plottingOptions()
+    (iterationNumbers, iterationTimes, names, values) = extractAnalyse(outputDir)
 
     N  = len(names)
 
@@ -75,15 +69,8 @@ def plotAnalyse(outputDir, figDir, prefixFigName, figSubFig, extensionsList):
             tryAddCustomLegend(ax)
 
         gs.tight_layout(figure)
-
         figName = figDir + prefixFigName + fileNameSuffix
-        for ext in extensionsList:
-            try:
-                plt.savefig(figName+ext)
-                print('Writing '+figName+ext+' ...')
-            except:
-                print('Could not write '+figName+ext+' ...')
-
+        saveFig(plt, figName, extensionsList)
         plt.close()
 
 

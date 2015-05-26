@@ -9,31 +9,19 @@ import cPickle           as pck
 import numpy             as np
 import matplotlib.pyplot as plt
 
-from matplotlib              import gridspec
+from matplotlib                  import gridspec
 
-from ....utils.plotting.plot import plot
-from ....utils.plotting.plot import plottingOptionsMultiSim
-from ....utils.plotting.plot import tryAddCustomLegend
-from ....utils.io            import makeGrid
+from ....utils.plotting.plot     import plot
+from ....utils.plotting.plot     import plottingOptionsMultiSim
+from ....utils.plotting.plot     import tryAddCustomLegend
+from ....utils.plotting.plot     import makeGrid
+from ....utils.plotting.saveFig  import saveFig
+from ....utils.io.extractAnalyse import extractAnalyse
 
 def plotAnalyseMultiSim(outputDirList, figDir, prefixFigName, labelsList, figSubFig, extensionsList):
 
-    (options, mModOptions, nModOptions) = plottingOptionsMultiSim()
-    
-    iterNumbers = []
-    iterTimes   = []
-    names       = []
-    values      = []
-
-    for outputDir in outputDirList:
-        fileAnalyse = outputDir + 'analyse.bin'
-        f           = open(fileAnalyse, 'rb')
-        p           = pck.Unpickler(f)
-        iterNumbers.append(p.load())
-        iterTimes.append(p.load())
-        names.append(p.load())
-        values.append(p.load())
-        f.close()
+    (options, mModOptions, nModOptions)     = plottingOptionsMultiSim()
+    (iterNumbers, iterTimes, names, values) = extractAnalyseMultiSim(outputDirList)
 
     for (columnsList, xAxisList, xScaleList, yScaleList, xLabelList, yLabelList, titleList, gridList, fileNameSuffix) in figSubFig:
 
@@ -46,6 +34,7 @@ def plotAnalyseMultiSim(outputDirList, figDir, prefixFigName, labelsList, figSub
 
         for ( (columns, xAxis, xScale, yScale, xLabel, yLabel, title, grid) in
               zip(columnsList, xAxisList, xScaleList, yScaleList, xLabelList, yLabelList, titleList, gridList) ):
+
             j += 1
             nc = int(np.mod(j,nColumns))
             nl = int((j-nColumns)/nColumns)
@@ -83,15 +72,6 @@ def plotAnalyseMultiSim(outputDirList, figDir, prefixFigName, labelsList, figSub
             tryAddCustomLegend(ax)
 
         gs.tight_layout(figure)
-
         figName = figDir + prefixFigName + fileNameSuffix
-        for ext in extensionsList:
-            try:
-                plt.savefig(figName+ext)
-                print('Writing '+figName+ext+' ...')
-            except:
-                print('Could not write '+figName+ext+' ...')
-
+        saveFig(plt, figName, extensionsList)
         plt.close()
-
-

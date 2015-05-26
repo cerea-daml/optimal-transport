@@ -2,6 +2,9 @@
 # extractFinalState.py
 ######################
 
+from files import fileFinalState
+from files import fileConfig
+
 from ..interpolate.interpolate import interpolateTimeFinalStateMultiSim
 
 def reverseTime(f):
@@ -32,14 +35,12 @@ def reverseTime(f):
 
 def extractFinalState(outputDir):
 
-    fileFinalState = outputDir + 'finalState.bin'
-    f              = open(fileFinalState,'rb')
+    f              = open(fileFinalState(outputDir),'rb')
     p              = pck.Unpickler(f)
     finalState     = p.load()
     f.close()
 
-    fileConfig     = outputDir + 'config.bin'
-    f              = open(fileConfig,'rb')
+    f              = open(fileConfig(outputDir),'rb')
     p              = pck.Unpickler(f)
     try:
         while True:
