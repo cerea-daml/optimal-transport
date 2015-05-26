@@ -33,18 +33,15 @@ class FinalStateAnimator:
 
         if self.animatingConfig.singleOrMulti == 0:
             animation = makeAnimFinalState(self.animatingConfig.outputDir[0], self.animatingConfig.label[0], transparencyFunction, 
-                                           kwargsFuncAnim, plotter,
-                                           kwargs, kwargsInit, kwargsFinal, EPSILON)
-
-            #animation = makeAnimFinalState(self.animatingConfig.outputDir[0], self.animatingConfig.label[0], transparencyFunction, 
-            #                               self.animatingConfig.funcAnimArgs, self.animatingConfig.EPSILON)
+                                           self.animatingConfig.funcAnimArgs, self.animatingConfig.animFinalStatePlotter,
+                                           self.animatingConfig.animFinalStateArgs, self.animatingConfig.animFinalStateArgsInit, 
+                                           self.animatingConfig.animFinalStateArgsFinal, self.animatingConfig.EPSILON)
 
         elif self.plottingConfig.singleOrMulti == 1:
-            animation = makeAnimFinalStateMultiSim(outputDirList, labelsList, transpFun, kwargsFuncAnim, plotter,
-                                                   kwargs, kwargsInit, kwargsFinal, EPSILON):
-
-            #animation = makeAnimFinalStateMultiSim(self.animatingConfig.outputDir, self.animatingConfig.label, transparencyFunction, 
-            #                                       self.animatingConfig.funcAnimArgs, self.animatingConfig.EPSILON)
+            animation = makeAnimFinalStateMultiSim(self.animatingConfig.outputDirList, self.animatingConfig.labelsList, transparencyFunction, 
+                                                   self.animatingConfig.funcAnimArgs, self.animatingConfig.animFinalStatePlotter,
+                                                   self.animatingConfig.animFinalStateArgs, self.animatingConfig.animFinalStateArgsInit,
+                                                   self.animatingConfig.animFinalStateArgsFinal, self.animatingConfig.EPSILON):
 
         saveAnimation(animation, self.animatingConfig.figDir, self.animatingConfig.prefixFigNameFinalState, 
                       self.animatingConfig.extensionsList, MovieWriter)

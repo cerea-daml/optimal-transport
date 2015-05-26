@@ -117,35 +117,35 @@ class PlottingConfiguration(DefaultConfiguration):
 
         self.attributes.append('prefixFigNameFinalState')
         self.defaultValues['prefixFigNameFinalState']   = 'finalState'
-        self.isSubAttribute['prefixFigNameFinalState']  = []
+        self.isSubAttribute['prefixFigNameFinalState']  = [('plotFinalState',1)]
         self.isList['prefixFigNameFinalState']          = False
         self.isDict['prefixFigNameFinalState']          = False
         self.attributeType['prefixFigNameFinalState']   = str
 
         self.attributes.append('transparencyFunctionName')
         self.defaultValues['transparencyFunctionName']  = 'customTransparency'
-        self.isSubAttribute['transparencyFunctionName'] = []
+        self.isSubAttribute['transparencyFunctionName'] = [('plotFinalState',1)]
         self.isList['transparencyFunctionName']         = False
         self.isDict['transparencyFunctionName']         = False
         self.attributeType['transparencyFunctionName']  = str
 
         self.attributes.append('plotFinalStatePlotter')
         self.defaultValues['plotFinalStatePlotter']     = 'imshow'
-        self.isSubAttribute['plotFinalStatePlotter']    = []
+        self.isSubAttribute['plotFinalStatePlotter']    = [('plotFinalState',1)]
         self.isList['plotFinalStatePlotter']            = False
         self.isDict['plotFinalStatePlotter']            = False
         self.attributeType['plotFinalStatePlotter']     = str
 
         self.attributes.append('plotFinalStateArgs')
         self.defaultValues['plotFinalStateArgs']        = None 
-        self.isSubAttribute['plotFinalStateArgs']       = []
+        self.isSubAttribute['plotFinalStateArgs']       = [('plotFinalState',1)]
         self.isList['plotFinalStateArgs']               = False
         self.isDict['plotFinalStateArgs']               = True
         self.attributeType['plotFinalStateArgs']        = None
 
         self.attributes.append('plotFinalStateArgsInit')
         self.defaultValues['plotFinalStateArgsInit']    = None
-        self.isSubAttribute['plotFinalStateArgsInit']   = []
+        self.isSubAttribute['plotFinalStateArgsInit']   = [('plotFinalState',1)]
         self.isList['plotFinalStateArgsInit']           = False
         self.isDict['plotFinalStateArgsInit']           = True
         self.attributeType['plotFinalStateArgsInit']    = None

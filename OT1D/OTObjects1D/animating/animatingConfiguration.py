@@ -1,6 +1,6 @@
-#############################
+##############################
 # Class AnimatingConfiguration
-#############################
+##############################
 #
 # Defines everything necessary for animating the result of an OT algorithm from a config file
 #
@@ -10,13 +10,10 @@ from animator import Animator
 from ...utils.io.io                              import fileNameSuffix
 from ...utils.configuration.defaultConfiguration import DefaultConfiguration
 
-class AnimatorConfiguration(DefaultConfiguration):
-    '''
-    Stores the configuraion for animating a 1D OT algorithm
-    '''
+class AnimatingConfiguration(DefaultConfiguration):
 
-    def __init__(self, plottingConfigFile=None):
-        DefaultConfiguration.__init__(self, plottingConfigFile)
+    def __init__(self, animatingConfigFile=None):
+        DefaultConfiguration.__init__(self, animatingConfigFile)
 
     def __repr__(self):
         return 'AnimatingConfiguration for a 1D OT algoritm'
@@ -131,14 +128,14 @@ class AnimatorConfiguration(DefaultConfiguration):
 
         self.attributes.append('prefixFigNameFinalState')
         self.defaultValues['prefixFigNameFinalState']   = 'finalState'
-        self.isSubAttribute['prefixFigNameFinalState']  = []
+        self.isSubAttribute['prefixFigNameFinalState']  = [('animFinalState',1)]
         self.isList['prefixFigNameFinalState']          = False
         self.isDict['prefixFigNameFinalState']          = False
         self.attributeType['prefixFigNameFinalState']   = str
 
         self.attributes.append('transparencyFunctionName')
         self.defaultValues['transparencyFunctionName']  = 'customTransparency'
-        self.isSubAttribute['transparencyFunctionName'] = []
+        self.isSubAttribute['transparencyFunctionName'] = [('animFinalState',1)]
         self.isList['transparencyFunctionName']         = False
         self.isDict['transparencyFunctionName']         = False
         self.attributeType['transparencyFunctionName']  = str

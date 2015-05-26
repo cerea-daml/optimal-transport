@@ -117,14 +117,14 @@ class PlottingConfiguration(DefaultConfiguration):
 
         self.attributes.append('prefixFigNameFinalState')
         self.defaultValues['prefixFigNameFinalState']   = 'finalState'
-        self.isSubAttribute['prefixFigNameFinalState']  = []
+        self.isSubAttribute['prefixFigNameFinalState']  = [('plotFinalState',1)]
         self.isList['prefixFigNameFinalState']          = False
         self.isDict['prefixFigNameFinalState']          = False
         self.attributeType['prefixFigNameFinalState']   = str
 
         self.attributes.append('transparencyFunctionName')
         self.defaultValues['transparencyFunctionName']  = 'customTransparency'
-        self.isSubAttribute['transparencyFunctionName'] = []
+        self.isSubAttribute['transparencyFunctionName'] = [('plotFinalState',1)]
         self.isList['transparencyFunctionName']         = False
         self.isDict['transparencyFunctionName']         = False
         self.attributeType['transparencyFunctionName']  = str
