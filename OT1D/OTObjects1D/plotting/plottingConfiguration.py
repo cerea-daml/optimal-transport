@@ -12,11 +12,11 @@ from ...utils.configuration.defaultConfiguration import DefaultConfiguration
 
 class PlottingConfiguration(DefaultConfiguration):
     '''
-    Stores the configuraion for plotting an OT algorithm
+    Stores the configuraion for plotting a 1D OT algorithm
     '''
 
     def __init__(self, plottingConfigFile=None):
-        DefaultConfiguration.__init__(self)
+        DefaultConfiguration.__init__(self, plottingConfigFile)
 
     def __repr__(self):
         return 'PlottingConfiguration for a 1D OT algoritm'
