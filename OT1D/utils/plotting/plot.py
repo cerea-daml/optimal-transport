@@ -2,38 +2,30 @@
 # plot.py
 #########
 
-from mpl_toolkits.axes_grid1 import make_axes_locatable
+import numpy as np
 
-from ..io                    import fileNameSuffix
+from mpl_toolkits.axes_grid1 import make_axes_locatable
+from matplotlib              import gridspec
+
+from ..io.io                 import fileNameSuffix
 
 def plottingOptions():
-    options = ['b-', 'g-', 'r-', 'm-', 'y-', 'c-', 'k-',
-               'b--','g--','r--','m--','y--','c--','k--',
-               'b:', 'g:', 'r:', 'm:', 'y:', 'c:', 'k:',
-               'b-.','g-.','r-.','m-.','y-.','c-.','k-.']
+    options = np.array(['b-', 'g-', 'r-', 'm-', 'y-', 'c-', 'k-',
+                        'b--','g--','r--','m--','y--','c--','k--',
+                        'b:', 'g:', 'r:', 'm:', 'y:', 'c:', 'k:',
+                        'b-.','g-.','r-.','m-.','y-.','c-.','k-.'])
     n       = len(options)
     return (options, n)
 
 def plottingOptionsMultiSim():
 
-    options = [['b-', 'g-', 'r-', 'm-', 'y-', 'c-', 'k-'],
-               ['b--','g--','r--','m--','y--','c--','k--'],
-               ['b:', 'g:', 'r:', 'm:', 'y:', 'c:', 'k:' ],
-               ['b-.','g-.','r-.','m-.','y-.','c-.','k-.']]
+    options = np.array([['b-', 'g-', 'r-', 'm-', 'y-', 'c-', 'k-'],
+                        ['b--','g--','r--','m--','y--','c--','k--'],
+                        ['b:', 'g:', 'r:', 'm:', 'y:', 'c:', 'k:' ],
+                        ['b-.','g-.','r-.','m-.','y-.','c-.','k-.']])
 
-    n       = len(options[0])
-    m       = len(options)
+    (m, n) = options.shape
     return (options, m, n)
-
-def plot(ax, Y, X=None, opt=None, **kwargs):
-    args = []
-    if X is not None:
-        args.append(X)
-    args.append(Y)
-    if opt is not None:
-        args.append(opt)
-
-    return ax.plot(*tuple(args), **kwargs)
 
 def tryAddCustomLegend(ax):
     divider = make_axes_locatable(ax)
@@ -45,22 +37,6 @@ def tryAddCustomLegend(ax):
         ax.legend(fontsize='xx-small', loc='center right', bbox_to_anchor=(1.13, 0.5), fancybox=True, framealpha=0.40)
     except:
         ax.legend(fontsize='xx-small', loc='center right', bbox_to_anchor=(1.13, 0.5), fancybox=True)
-
-def positions(xmin, xmax, ymin, ymax, EPSILON):
-    yExtend    = min(ymax - ymin, EPSILON)
-    xExtend    = min(xmax - xmin, EPSILON)
-
-    xPbarStart = xmin + 0.2 * xExtend
-    xPbarEnd   = xmin + 0.8 * xExtend
-    yPbar      = ymin - 0.05 * yExtend
-
-    xTxt       = xmin + 0.01 * xExtend
-    yTxt       = ymin - 0.05 * yExtend
-
-    ymax      += 0.1 * yExtend
-    ymin      -= 0.1 * yExtend
-
-    return (ymin, ymax, xTxt, yTxt, xPbarStart, xPbarEnd, yPbar)
 
 def plotTimeTextPBar(ax, t, tMax, xTxt, yTxt, xPbarStart, xPbarEnd, yPbar):
     timeText = ax.text(xTxt, yTxt, fileNameSuffix(t, tMax+1)+' / '+str(tMax))
@@ -87,3 +63,69 @@ def makeGrid(nbrOfItems, extendDirection='vertical'):
             nColumns += 1
 
     return (nLines, nColumns)
+
+def makeAxesGrid(plt, nbrOfItems, order='horizontalFirst', extendDirection='vertical'):
+    (nLines, nColumns) = makeGrid(nbrOfItems, extendDirection='vertical')
+    gs                 = gridspec.GridSpec(nLines, nColumns)
+    axes               = []
+
+    for j in xrange(nbrOfItems):
+        if order == 'horizontalFirst':
+            modulo = nColumns
+        elif order == 'verticalFirst':
+            modulo = nLines
+
+        nc = int(np.mod(j, modulo))
+        nl = int((j-nc)/modulo)
+        axes.append(plt.subplot(gs[nl,nc]))
+
+    return (gs, axes)
+
+def addTitleLabelsGrid(ax, title=None, xLabel=None, yLabel=None, grid=False):
+    if title is not None:
+        ax.set_title(title)
+    if xLabel is not None:
+        ax.set_xlabel(xLabel)
+    if yLabel is not None:
+        ax.set_ylabel(yLabel)
+    if grid:
+        ax.grid()
+
+def trySetScale(ax, xScale=None, yScale=None):
+    if xScale is not None:
+        try:
+            ax.set_xscale(xScale)
+        except:
+            pass
+
+    if yScale is not None:
+        try:
+            ax.set_yscale(yScale)
+        except:
+            pass
+
+def plot(ax, Y, X=None, opt=None, **kwargs):
+    args = []
+    if X is not None:
+        args.append(X)
+    args.append(Y)
+    if opt is not None:
+        args.append(opt)
+
+    return ax.plot(*tuple(args), **kwargs)
+
+def positions(xmin, xmax, ymin, ymax, EPSILON):
+    yExtend    = min(ymax - ymin, EPSILON)
+    xExtend    = min(xmax - xmin, EPSILON)
+
+    xPbarStart = xmin + 0.2 * xExtend
+    xPbarEnd   = xmin + 0.8 * xExtend
+    yPbar      = ymin - 0.05 * yExtend
+
+    xTxt       = xmin + 0.01 * xExtend
+    yTxt       = ymin - 0.05 * yExtend
+
+    ymax      += 0.1 * yExtend
+    ymin      -= 0.1 * yExtend
+
+    return (ymin, ymax, xTxt, yTxt, xPbarStart, xPbarEnd, yPbar)

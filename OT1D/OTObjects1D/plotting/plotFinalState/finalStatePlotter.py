@@ -31,4 +31,4 @@ class FinalStatePlotter:
 
         elif self.plottingConfig.singleOrMulti == 1:
             plotFinalStateMultiSim(self.plottingConfig.outputDir, self.plottingConfig.figDir, self.plottingConfig.prefixFigNameFinalState, 
-                                   self.plottingConfig.label; transparencyFunction, self.plottingConfig.extension, self.plottingConfig.EPSILON)
+                                   self.plottingConfig.label, transparencyFunction, self.plottingConfig.extension, self.plottingConfig.EPSILON)

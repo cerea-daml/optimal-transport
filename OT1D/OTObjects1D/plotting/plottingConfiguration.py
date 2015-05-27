@@ -24,8 +24,8 @@ class PlottingConfiguration(DefaultConfiguration):
     def plotter(self):
         return Plotter(self)
 
-    def ckeckAttributes(self):
-        DefaultConfiguration.ckeckAttributes(self)
+    def checkAttributes(self):
+        DefaultConfiguration.checkAttributes(self)
 
         if self.singleOrMulti == 1:
             i    = len(self.label)

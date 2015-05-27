@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 from ....utils.io.io                import fileNameSuffix
 from ....utils.io.extractFinalState import extractFinalState
 from ....utils.plotting.plot        import plot
+from ....utils.plotting.plot        import plotTimeTextPBar
 from ....utils.plotting.plot        import plottingOptions
 from ....utils.plotting.plot        import positions  
 from ....utils.plotting.plot        import tryAddCustomLegend
@@ -21,7 +22,7 @@ def plotFinalState(outputDir, figDir, prefixFigName, label, transpFun, extension
 
     (options, nModOptions)            = plottingOptions()
     (f, finit, ffinal, mini, maxi, P) = extractFinalState(outputDir)
-    (mini, maxi, xTxt, yTxt, xPbarStart, xPbarEnd, yPbar) = positions(0.0, 1.0, mini, maxi, EPSILON):
+    (mini, maxi, xTxt, yTxt, xPbarStart, xPbarEnd, yPbar) = positions(0.0, 1.0, mini, maxi, EPSILON)
     X = np.linspace(0.0, 1.0, finit.size)
 
     for t in xrange(P+2):

@@ -14,7 +14,9 @@ from matplotlib                  import gridspec
 from ....utils.plotting.plot     import plot
 from ....utils.plotting.plot     import plottingOptions
 from ....utils.plotting.plot     import tryAddCustomLegend
-from ....utils.plotting.plot     import makeGrid
+from ....utils.plotting.plot     import makeAxesGrid
+from ....utils.plotting.plot     import addTitleLabelsGrid
+from ....utils.plotting.plot     import trySetScale
 from ....utils.plotting.saveFig  import saveFig
 from ....utils.io.extractAnalyse import extractAnalyse
 
@@ -28,25 +30,16 @@ def plotAnalyse(outputDir, figDir, prefixFigName, figSubFig, extensionsList):
     for (columnsList, xAxisList, xScaleList, yScaleList, xLabelList, yLabelList, titleList, gridList, fileNameSuffix) in figSubFig:
 
         nbrSubFig          = len(columnsList)
-        (nLines, nColumns) = makeGrid(nbrSubFig, extendDirection='vertical') 
         figure             = plt.figure()
         plt.clf()
-        gs                 = gridspec.GridSpec(nLines, nColumns)
-        j                  = -1
 
-        for ( (columns, xAxis, xScale, yScale, xLabel, yLabel, title, grid) in 
-              zip(columnsList, xAxisList, xScaleList, yScaleList, xLabelList, yLabelList, titleList, gridList) ):
+        (gs, axes)         = makeAxesGrid(plt, nbrSubFig, order='horizontalFirst', extendDirection='vertical')
 
-            j += 1
-            nc = int(np.mod(j,nColumns))
-            nl = int((j-nColumns)/nColumns)
-            ax = plt.subplot(gs[nl,nc])
+        for (columns, xAxis, xScale, yScale, 
+             xLabel, yLabel, title, grid, ax) in zip(columnsList, xAxisList, xScaleList, yScaleList, 
+                                                     xLabelList, yLabelList, titleList, gridList, axes):
 
-            if grid:
-                ax.grid()
-            ax.set_title(title)
-            ax.set_xlabel(xLabel)
-            ax.set_ylabel(yLabel)
+            addTitleLabelsGrid(ax, title, xLabel, yLabel, grid)
 
             if xAxis == 'iterations':
                 X = iterationNumbers
@@ -60,12 +53,7 @@ def plotAnalyse(outputDir, figDir, prefixFigName, figSubFig, extensionsList):
                 Y        = values[:, column]
                 plot(ax, Y, X, options[nOptions], label=names[column])
 
-            try:
-                ax.set_xscale(xScale)
-                ax.set_yscale(yScale)
-            except:
-                pass
-
+            trySetScale(ax, xScale, yScale)
             tryAddCustomLegend(ax)
 
         gs.tight_layout(figure)

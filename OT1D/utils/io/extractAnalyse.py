@@ -26,12 +26,11 @@ def extractAnalyseMultiSim(outputDirList):
     values      = []
 
     for outputDir in outputDirList:
-        f = open(fileAnalyse(outputDir), 'rb')
-        p = pck.Unpickler(f)
-        iterNumbers.append(p.load())
-        iterTimes.append(p.load())
-        names.append(p.load())
-        values.append(p.load())
-        f.close()
+        (iN, iT, n, v) = extractAnalyse(outputDir)
+
+        iterNumbers.append(iN)
+        iterTimes.append(iT)
+        names.append(n)
+        values.append(v)
 
     return (iterNumbers, iterTimes, names, values) 

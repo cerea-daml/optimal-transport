@@ -32,7 +32,7 @@ def makeAnimFinalStateMultiSim(outputDirList, labelsList, transpFun, kwargsFuncA
     figure = plt.figure()
     plt.clf()
 
-    gs     = gridspec.GridSpec(Nl, Nc)
+    gs     = gridspec.GridSpec(nLines, nColumns)
     j      = -1
     axes   = []
 

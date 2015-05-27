@@ -14,9 +14,11 @@ from matplotlib                  import gridspec
 from ....utils.plotting.plot     import plot
 from ....utils.plotting.plot     import plottingOptionsMultiSim
 from ....utils.plotting.plot     import tryAddCustomLegend
-from ....utils.plotting.plot     import makeGrid
+from ....utils.plotting.plot     import makeAxesGrid
+from ....utils.plotting.plot     import addTitleLabelsGrid
+from ....utils.plotting.plot     import trySetScale
 from ....utils.plotting.saveFig  import saveFig
-from ....utils.io.extractAnalyse import extractAnalyse
+from ....utils.io.extractAnalyse import extractAnalyseMultiSim
 
 def plotAnalyseMultiSim(outputDirList, figDir, prefixFigName, labelsList, figSubFig, extensionsList):
 
@@ -26,29 +28,18 @@ def plotAnalyseMultiSim(outputDirList, figDir, prefixFigName, labelsList, figSub
     for (columnsList, xAxisList, xScaleList, yScaleList, xLabelList, yLabelList, titleList, gridList, fileNameSuffix) in figSubFig:
 
         nbrSubFig          = len(columnsList)
-        (nLines, nColumns) = makeGrid(nbrSubFig, extendDirection='vertical')
         figure             = plt.figure()
         plt.clf()
-        gs                 = gridspec.GridSpec(nLines, nColumns)
-        j                  = -1
+        (gs, axes)         = makeAxesGrid(plt, nbrSubFig, order='horizontalFirst', extendDirection='vertical')
 
-        for ( (columns, xAxis, xScale, yScale, xLabel, yLabel, title, grid) in
-              zip(columnsList, xAxisList, xScaleList, yScaleList, xLabelList, yLabelList, titleList, gridList) ):
+        for (columns, xAxis, xScale, yScale, 
+             xLabel, yLabel, title, grid, ax) in zip(columnsList, xAxisList, xScaleList, yScaleList, xLabelList, 
+                                                     yLabelList, titleList, gridList, axes):
 
-            j += 1
-            nc = int(np.mod(j,nColumns))
-            nl = int((j-nColumns)/nColumns)
-            ax = plt.subplot(gs[nl,nc])
-
-            if grid:
-                ax.grid()
-            ax.set_title(title)
-            ax.set_xlabel(xlabel)
-            ax.set_ylabel(ylabel)
+            addTitleLabelsGrid(ax, title, xLabel, yLabel, grid)
 
             mOptions = -1
-
-            for (iter, times, name, values, label) in zip(iterNumbers, iterTimes, names, values, labelsList):
+            for (iter, times, name, value, label) in zip(iterNumbers, iterTimes, names, values, labelsList):
                 mOptions = np.mod(mOptions+1, mModOptions)
                 if xAxis == 'iterations':
                     X = iter
@@ -60,15 +51,10 @@ def plotAnalyseMultiSim(outputDirList, figDir, prefixFigName, labelsList, figSub
                 for column in columns:
                     nOptions = np.mod(nOptions+1, nModOptions)
                     column   = min(N-1, column)
-                    Y        = values[:, column]
-                    plot(ax, Y, X, options[mOptions, nOptions], label=label+', '+names[column])
+                    Y        = value[:, column]
+                    plot(ax, Y, X, options[mOptions, nOptions], label=label+', '+name[column])
 
-            try:
-                ax.set_xscale(xScale)
-                ax.set_yscale(yScale)
-            except:
-                pass
-
+            trySetScale(ax, xScale, yScale)
             tryAddCustomLegend(ax)
 
         gs.tight_layout(figure)

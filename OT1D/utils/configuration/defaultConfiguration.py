@@ -7,13 +7,13 @@ class DefaultConfiguration(object):
     def __init__(self, configFile=None):
         self.defaultAttributes()
         self.initListsAndDicts()
-        self.fromfile(plottingConfigFile)
-        self.ckeckAttributes()
+        self.fromfile(configFile)
+        self.checkAttributes()
 
     def __repr__(self):
         return 'DefaultConfiguration class'
 
-    def ckeckAttributes(self):
+    def checkAttributes(self):
         for attr in self.attributes:
             if self.isSubAttribute[attr] == [] and not self.isDict[attr]:
                 if self.isList[attr]:
@@ -22,7 +22,7 @@ class DefaultConfiguration(object):
                         print('Filling by default value : '+str(self.defaultValues[attr])+' .')
                         self.__setattr__(attr, self.defaultValues[attr])
                 elif not self.__dict__.has_key(attr):
-                    print('No valid value found for parameter '+attr'.')
+                    print('No valid value found for parameter '+attr+'.')
                     print('Replacing by default value '+str(self.defaultValues[attr])+' .')
                     self.__setattr(attr, self.defaultValues[attr])
 
@@ -41,7 +41,7 @@ class DefaultConfiguration(object):
                             print('Filling by default value : '+str(self.defaultValues[attr])+' .')
                             self.__setattr__(attr, self.defaultValues[attr])
                     elif not self.__dict__.has_key(attr):
-                        print('No valid value found for parameter '+attr'.')
+                        print('No valid value found for parameter '+attr+'.')
                         print('Replacing by default value '+str(self.defaultValues[attr])+' .')
                         self.__setattr(attr, self.defaultValues[attr])
 

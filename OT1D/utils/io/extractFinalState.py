@@ -2,6 +2,9 @@
 # extractFinalState.py
 ######################
 
+import numpy   as np
+import cPickle as pck
+
 from files import fileFinalState
 from files import fileConfig
 
