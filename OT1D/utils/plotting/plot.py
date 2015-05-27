@@ -21,7 +21,6 @@ def plottingOptions():
     return (options, n)
 
 def plottingOptionsMultiSim():
-
     options = np.array([['b-', 'g-', 'r-', 'm-', 'y-', 'c-', 'k-'],
                         ['b--','g--','r--','m--','y--','c--','k--'],
                         ['b:', 'g:', 'r:', 'm:', 'y:', 'c:', 'k:' ],
@@ -30,11 +29,12 @@ def plottingOptionsMultiSim():
     (m, n) = options.shape
     return (options, m, n)
 
-def tryAddCustomLegend(ax):
-    divider = make_axes_locatable(ax)
-    lax     = divider.append_axes('right', '10%',frameon=False)
-    lax.set_yticks([])
-    lax.set_xticks([])
+def tryAddCustomLegend(ax, makeRoom=True):
+    if makeRoom:
+        divider = make_axes_locatable(ax)
+        lax     = divider.append_axes('right', '10%',frameon=False)
+        lax.set_yticks([])
+        lax.set_xticks([])
 
     try:
         ax.legend(fontsize='xx-small', loc='center right', bbox_to_anchor=(1.13, 0.5), fancybox=True, framealpha=0.40)
@@ -107,13 +107,15 @@ def plot(ax, Y, X=None, opt=None, **kwargs):
     return ax.plot(*tuple(args), **kwargs)
 
 def addTimeTextPBar(plt, t, tMax):
-
-    (xTxt, yTxt, xPbarStart, xPbarEnd, yPbar) = positionsTimeTxtPbar()
     rect     = timeTextPBarRect()
     gsTTPB   = gridspec.GridSpec(1, 1, left=rect[0], bottom=rect[1], right=rect[2], top=rect[3])
     ax       = plt.subplot(gsTTPB[0, 0], frameon=False)
-    ret      = [ax.text(xTxt, yTxt, fileNameSuffix(t, tMax+1)+' / '+str(tMax))]
-    
+    return (ax, plotTimeTextPBar(ax, t, tMax))
+
+def plotTimeTextPBar(ax, t, tMax):
+    (xTxt, yTxt, xPbarStart, xPbarEnd, yPbar) = positionsTimeTxtPbar()
+    ret = [ax.text(xTxt, yTxt, fileNameSuffix(t, tMax+1)+' / '+str(tMax))]
+
     if t < tMax:
         lineBkgPbar, = plot(ax, [yPbar,yPbar], [xPbarStart+float(t)/(tMax)*(xPbarEnd-xPbarStart),xPbarEnd], 'k-', linewidth=5)
         ret.append(lineBkgPbar)
@@ -123,11 +125,9 @@ def addTimeTextPBar(plt, t, tMax):
         ret.append(linePbar)
 
     adaptAxesExtent(ax, 0.0, 1.0, -0.5, 0.5, 0.0, 0.0, 0, 0, 1, 1, 0.0)
-    
     return ret
 
-def adaptAxesExtent(ax, xmin, xmax, ymin, ymax, extendX, extendY, nbrXTicks, nbrYTicks, xTicksRound, yTicksRound, EPSILON):
-    
+def adaptAxesExtent(ax, xmin, xmax, ymin, ymax, extendX, extendY, nbrXTicks, nbrYTicks, xTicksRound, yTicksRound, EPSILON):    
     xExtend    = max(xmax - xmin, EPSILON)
     yExtend    = max(ymax - ymin, EPSILON)
 

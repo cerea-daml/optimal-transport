@@ -66,3 +66,5 @@ plotFinalState_nbrXTicks            = 5
 plotFinalState_nbrYTicks            = 5
 plotFinalState_xTicksRound          = 1
 plotFinalState_yTicksRound          = 1
+plotFinalState_order                = horizontalFirst
+plotFinalState_extendDirection      = vertical

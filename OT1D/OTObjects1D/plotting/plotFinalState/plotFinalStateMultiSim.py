@@ -38,6 +38,8 @@ def plotFinalStateMultiSim(outputDirList,
                            nbrYTicks,
                            xTicksRound,
                            yTicksRound,
+                           order,
+                           extendDirection,
                            extensionsList,
                            EPSILON):
 
@@ -54,7 +56,7 @@ def plotFinalStateMultiSim(outputDirList,
         figure     = plt.figure()
         plt.clf()
 
-        (gs, axes) = makeAxesGrid(plt, len(outputDirList), order='horizontalFirst', extendDirection='vertical')
+        (gs, axes) = makeAxesGrid(plt, len(outputDirList), order=order, extendDirection=extendDirection)
 
         for (f, finit, ffinal, label, ax) in zip(fs, finits, ffinals, labelList, axes):
 

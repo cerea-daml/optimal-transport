@@ -18,4 +18,5 @@ def makeMovieWriter(writerName='ffmpeg', writerFPS=5, writerCodec=None, writerBi
 def saveAnimation(anim, figDir, prefixFigName, extensionsList, writer):
     for extension in extensionsList:
         figName = figDir + prefixFigName + extension
+        print('Saving '+figName+' ...')
         anim.save(figName, writer=writer)

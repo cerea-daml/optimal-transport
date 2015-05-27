@@ -191,3 +191,18 @@ class PlottingConfiguration(DefaultConfiguration):
         self.isList['plotFinalState_yTicksRound']                  = False
         self.isDict['plotFinalState_yTicksRound']                  = False
         self.attributeType['plotFinalState_yTicksRound']           = int
+
+        self.attributes.append('plotFinalState_order')
+        self.defaultValues['plotFinalState_order']                 = 'horizontalFirst'
+        self.isSubAttribute['plotFinalState_order']                = [('plotFinalState',1)]
+        self.isList['plotFinalState_order']                        = False
+        self.isDict['plotFinalState_order']                        = False
+        self.attributeType['plotFinalState_order']                 = str
+
+        self.attributes.append('plotFinalState_extendDirection')
+        self.defaultValues['plotFinalState_extendDirection']       = 'vertical'
+        self.isSubAttribute['plotFinalState_extendDirection']      = [('plotFinalState',1)]
+        self.isList['plotFinalState_extendDirection']              = False
+        self.isDict['plotFinalState_extendDirection']              = False
+        self.attributeType['plotFinalState_extendDirection']       = str
+

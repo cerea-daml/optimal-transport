@@ -9,8 +9,8 @@ from ....utils.plotting.defaultTransparency import customTransparency
 from ....utils.animating.saveAnimation      import makeMovieWriter
 from ....utils.animating.saveAnimation      import saveAnimation
 
-from animFinalState         import makeAnimFinalState
-from animFinalStateMultiSim import makeAnimFinalStateMultiSim
+#from animFinalState         import makeAnimFinalState
+from animFinalStateMultiSim                 import makeAnimFinalStateMultiSim
 
 class FinalStateAnimator:
 
@@ -24,20 +24,36 @@ class FinalStateAnimator:
         MovieWriter = makeMovieWriter(self.animatingConfig.writerName, self.animatingConfig.writerFPS, self.animatingConfig.writerCodec, 
                                       self.animatingConfig.writerBitrate, self.animatingConfig.writerExtraArgs)
 
-        if self.animatingConfig.transparencyFunctionName == 'defaultTransparency':
+        if self.animatingConfig.animFinalState_transparencyFunction == 'defaultTransparency':
             transparencyFunction = defaultTransparency
-        elif self.animatingConfig.transparencyFunctionName == 'fastVanishingTransparency':
+        elif self.animatingConfig.animFinalState_transparencyFunction == 'fastVanishingTransparency':
             transparencyFunction = fastVanishingTransparency
-        elif self.animatingConfig.transparencyFunctionName == 'customTransparency':
+        elif self.animatingConfig.animFinalState_transparencyFunction == 'customTransparency':
             transparencyFunction = customTransparency
 
         if self.animatingConfig.singleOrMulti == 0:
-            animation = makeAnimFinalState(self.animatingConfig.outputDir[0], self.animatingConfig.label[0], transparencyFunction, 
-                                           self.animatingConfig.funcAnimArgs, self.animatingConfig.EPSILON)
+            outputDirList = [self.animatingConfig.outputDir[0]]
+            labelList     = [self.animatingConfig.label[0]]
+        elif self.animatingConfig.singleOrMulti == 1:
+            outputDirList = self.animatingConfig.outputDir
+            labelList     = self.animatingConfig.label
 
-        elif self.plottingConfig.singleOrMulti == 1:
-            animation = makeAnimFinalStateMultiSim(self.animatingConfig.outputDir, self.animatingConfig.label, transparencyFunction, 
-                                                   self.animatingConfig.funcAnimArgs, self.animatingConfig.EPSILON)
+        animation = makeAnimFinalStateMultiSim(outputDirList,
+                                               labelList,
+                                               transparencyFunction,
+                                               bool(self.animatingConfig.animFinalState_addLegend),
+                                               bool(self.animatingConfig.animFinalState_grid),
+                                               bool(self.animatingConfig.animFinalState_addTimeTextPbar),
+                                               self.animatingConfig.animFinalState_xLabel,
+                                               self.animatingConfig.animFinalState_yLabel,
+                                               self.animatingConfig.animFinalState_nbrXTicks,
+                                               self.animatingConfig.animFinalState_nbrYTicks,
+                                               self.animatingConfig.animFinalState_xTicksRound,
+                                               self.animatingConfig.animFinalState_yTicksRound,
+                                               self.animatingConfig.animFinalState_order,
+                                               self.animatingConfig.animFinalState_extendDirection,
+                                               self.animatingConfig.funcAnimArgs,
+                                               self.animatingConfig.EPSILON)
 
-        saveAnimation(animation, self.animatingConfig.figDir, self.animatingConfig.prefixFigNameFinalState, 
-                      self.animatingConfig.extensionsList, MovieWriter)
+        saveAnimation(animation, self.animatingConfig.figDir, self.animatingConfig.animFinalState_prefixFigName,
+                      self.animatingConfig.extension, MovieWriter)

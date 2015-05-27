@@ -47,6 +47,16 @@ label     = sim1
 animFinalState = 1
 
 # Options for animating final state
-prefixFigNameFinalState  = finalState
-transparencyFunctionName = customTransparency
-
+animFinalState_prefixFigName        = finalState
+animFinalState_transparencyFunction = customTransparency
+animFinalState_addLegend            = 1
+animFinalState_grid                 = 1
+animFinalState_addTimeTextPbar      = 1
+animFinalState_xLabel               = $x$
+animFinalState_yLabel               =
+animFinalState_nbrXTicks            = 5
+animFinalState_nbrYTicks            = 5
+animFinalState_xTicksRound          = 2
+animFinalState_yTicksRound          = 2
+animFinalState_order                = horizontalFirst
+animFinalState_extendDirection      = vertical

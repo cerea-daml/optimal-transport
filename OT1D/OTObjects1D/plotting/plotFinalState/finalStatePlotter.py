@@ -45,5 +45,7 @@ class FinalStatePlotter:
                                self.plottingConfig.plotFinalState_nbrYTicks,
                                self.plottingConfig.plotFinalState_xTicksRound,
                                self.plottingConfig.plotFinalState_yTicksRound,
+                               self.plottingConfig.plotFinalState_order,
+                               self.plottingConfig.plotFinalState_extendDirection,
                                self.plottingConfig.extension, 
                                self.plottingConfig.EPSILON)

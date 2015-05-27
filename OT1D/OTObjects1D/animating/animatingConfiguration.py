@@ -126,16 +126,94 @@ class AnimatingConfiguration(DefaultConfiguration):
         self.isDict['animFinalState']                   = False
         self.attributeType['animFinalState']            = int
 
-        self.attributes.append('prefixFigNameFinalState')
-        self.defaultValues['prefixFigNameFinalState']   = 'finalState'
-        self.isSubAttribute['prefixFigNameFinalState']  = [('animFinalState',1)]
-        self.isList['prefixFigNameFinalState']          = False
-        self.isDict['prefixFigNameFinalState']          = False
-        self.attributeType['prefixFigNameFinalState']   = str
+        self.attributes.append('animFinalState_prefixFigName')
+        self.defaultValues['animFinalState_prefixFigName']         = 'finalState'
+        self.isSubAttribute['animFinalState_prefixFigName']        = [('animFinalState',1)]
+        self.isList['animFinalState_prefixFigName']                = False
+        self.isDict['animFinalState_prefixFigName']                = False
+        self.attributeType['animFinalState_prefixFigName']         = str
 
-        self.attributes.append('transparencyFunctionName')
-        self.defaultValues['transparencyFunctionName']  = 'customTransparency'
-        self.isSubAttribute['transparencyFunctionName'] = [('animFinalState',1)]
-        self.isList['transparencyFunctionName']         = False
-        self.isDict['transparencyFunctionName']         = False
-        self.attributeType['transparencyFunctionName']  = str
+        self.attributes.append('animFinalState_transparencyFunction')
+        self.defaultValues['animFinalState_transparencyFunction']  = 'customTransparency'
+        self.isSubAttribute['animFinalState_transparencyFunction'] = [('animFinalState',1)]
+        self.isList['animFinalState_transparencyFunction']         = False
+        self.isDict['animFinalState_transparencyFunction']         = False
+        self.attributeType['animFinalState_transparencyFunction']  = str
+
+        self.attributes.append('animFinalState_addLegend')
+        self.defaultValues['animFinalState_addLegend']             = 1
+        self.isSubAttribute['animFinalState_addLegend']            = [('animFinalState',1)]
+        self.isList['animFinalState_addLegend']                    = False
+        self.isDict['animFinalState_addLegend']                    = False
+        self.attributeType['animFinalState_addLegend']             = int
+
+        self.attributes.append('animFinalState_grid')
+        self.defaultValues['animFinalState_grid']                  = 1
+        self.isSubAttribute['animFinalState_grid']                 = [('animFinalState',1)]
+        self.isList['animFinalState_grid']                         = False
+        self.isDict['animFinalState_grid']                         = False
+        self.attributeType['animFinalState_grid']                  = int
+
+        self.attributes.append('animFinalState_addTimeTextPbar')
+        self.defaultValues['animFinalState_addTimeTextPbar']       = 1
+        self.isSubAttribute['animFinalState_addTimeTextPbar']      = [('animFinalState',1)]
+        self.isList['animFinalState_addTimeTextPbar']              = False
+        self.isDict['animFinalState_addTimeTextPbar']              = False
+        self.attributeType['animFinalState_addTimeTextPbar']       = int
+
+        self.attributes.append('animFinalState_xLabel')
+        self.defaultValues['animFinalState_xLabel']                = None
+        self.isSubAttribute['animFinalState_xLabel']               = [('animFinalState',1)]
+        self.isList['animFinalState_xLabel']                       = False
+        self.isDict['animFinalState_xLabel']                       = False
+        self.attributeType['animFinalState_xLabel']                = str
+
+        self.attributes.append('animFinalState_yLabel')
+        self.defaultValues['animFinalState_yLabel']                = None
+        self.isSubAttribute['animFinalState_yLabel']               = [('animFinalState',1)]
+        self.isList['animFinalState_yLabel']                       = False
+        self.isDict['animFinalState_yLabel']                       = False
+        self.attributeType['animFinalState_yLabel']                = str
+
+        self.attributes.append('animFinalState_nbrXTicks')
+        self.defaultValues['animFinalState_nbrXTicks']             = 3
+        self.isSubAttribute['animFinalState_nbrXTicks']            = [('animFinalState',1)]
+        self.isList['animFinalState_nbrXTicks']                    = False
+        self.isDict['animFinalState_nbrXTicks']                    = False
+        self.attributeType['animFinalState_nbrXTicks']             = int
+
+        self.attributes.append('animFinalState_nbrYTicks')
+        self.defaultValues['animFinalState_nbrYTicks']             = 3
+        self.isSubAttribute['animFinalState_nbrYTicks']            = [('animFinalState',1)]
+        self.isList['animFinalState_nbrYTicks']                    = False
+        self.isDict['animFinalState_nbrYTicks']                    = False
+        self.attributeType['animFinalState_nbrYTicks']             = int
+
+        self.attributes.append('animFinalState_xTicksRound')
+        self.defaultValues['animFinalState_xTicksRound']           = 1
+        self.isSubAttribute['animFinalState_xTicksRound']          = [('animFinalState',1)]
+        self.isList['animFinalState_xTicksRound']                  = False
+        self.isDict['animFinalState_xTicksRound']                  = False
+        self.attributeType['animFinalState_xTicksRound']           = int
+
+        self.attributes.append('animFinalState_yTicksRound')
+        self.defaultValues['animFinalState_yTicksRound']           = 1
+        self.isSubAttribute['animFinalState_yTicksRound']          = [('animFinalState',1)]
+        self.isList['animFinalState_yTicksRound']                  = False
+        self.isDict['animFinalState_yTicksRound']                  = False
+        self.attributeType['animFinalState_yTicksRound']           = int
+
+        self.attributes.append('animFinalState_order')
+        self.defaultValues['animFinalState_order']                 = 'horizontalFirst'
+        self.isSubAttribute['animFinalState_order']                = [('animFinalState',1)]
+        self.isList['animFinalState_order']                        = False
+        self.isDict['animFinalState_order']                        = False
+        self.attributeType['animFinalState_order']                 = str
+
+        self.attributes.append('animFinalState_extendDirection')
+        self.defaultValues['animFinalState_extendDirection']       = 'vertical'
+        self.isSubAttribute['animFinalState_extendDirection']      = [('animFinalState',1)]
+        self.isList['animFinalState_extendDirection']              = False
+        self.isDict['animFinalState_extendDirection']              = False
+        self.attributeType['animFinalState_extendDirection']       = str
+

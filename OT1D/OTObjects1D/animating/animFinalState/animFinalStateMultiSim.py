@@ -13,63 +13,91 @@ from matplotlib           import gridspec
 from matplotlib.animation import FuncAnimation
 from scipy.interpolate    import interp1d
 
-from ....utils.io.io                import fileNameSuffix
 from ....utils.io.extractFinalState import extractFinalStateMultiSim
+from ....utils.plotting.plot        import makeAxesGrid
 from ....utils.plotting.plot        import plot
 from ....utils.plotting.plot        import plottingOptions
-from ....utils.plotting.plot        import positions
+from ....utils.plotting.plot        import addTitleLabelsGrid
 from ....utils.plotting.plot        import tryAddCustomLegend
+from ....utils.plotting.plot        import addTimeTextPBar
+from ....utils.plotting.plot        import plotTimeTextPBar
+from ....utils.plotting.plot        import adaptAxesExtent
+from ....utils.plotting.positions   import figureRect
 
-def makeAnimFinalStateMultiSim(outputDirList, labelsList, transpFun, kwargsFuncAnim, EPSILON):
+def makeAnimFinalStateMultiSim(outputDirList,
+                               labelList,
+                               transparencyFunction,
+                               addLegend,
+                               grid,
+                               addTimeTextPbar,
+                               xLabel,
+                               yLabel,
+                               nbrXTicks,
+                               nbrYTicks,
+                               xTicksRound,
+                               yTicksRound,
+                               order,
+                               extendDirection,
+                               kwargsFuncAnim,
+                               EPSILON):
 
-    (options, n)                            = plottingOptions()
+    (options, nModOptions)                  = plottingOptions()
     (fs, finits, ffinals, mini, maxi, Pmax) = extractFinalStateMultiSim(outputDirList)
-    (mini, maxi, xTxt, yTxt, xPbarStart, xPbarEnd, yPbar) = positions(0.0, 1.0, mini, maxi, EPSILON)
-    (nLines, nColumns) = makeGrid(len(outputDirList), extendDirection='vertical')
+ 
+    xmin = 0.0
+    xmax = 1.0
 
-    figure = plt.figure()
+    figure     = plt.figure()
     plt.clf()
+    (gs, axes) = makeAxesGrid(plt, len(outputDirList), order=order, extendDirection=extendDirection)
 
-    gs     = gridspec.GridSpec(Nl, Nc)
-    j      = -1
-    axes   = []
+    alphaInit  = transparencyFunction(1.-float(0)/(Pmax+1.))
+    alphaFinal = transparencyFunction(float(0)/(Pmax+1.))
+    
+    for (f, finit, ffinal, label, ax) in zip(fs, finits, ffinals, labelList, axes):
+        X            = np.linspace(0.0, 1.0, finit.size)
+        lineCurrent, = plot(ax, f[:,0], X, options[np.mod(0, nModOptions)], label='$f$')
+        lineInit,    = plot(ax, finit, X, options[np.mod(1, nModOptions)], label='$f_{init}$', alpha=alphaInit)
+        lineFinal,   = plot(ax, ffinal, X, options[np.mod(2, nModOptions)], label='$f_{final}$', alpha=alphaFinal)
+        
+        adaptAxesExtent(ax, xmin, xmax, mini, maxi, 0.0, 0.05, nbrXTicks, nbrYTicks, xTicksRound, yTicksRound, EPSILON)
+        addTitleLabelsGrid(ax, title=label, xLabel=xLabel, yLabel=yLabel, grid=grid)
+        if addLegend:
+            tryAddCustomLegend(ax, makeRoom=True)
 
-    for j in xrange(len(fs)):
-        nc = int(np.mod(j,nColumns))
-        nl = int((j-nColumns)/nColumns)
-        axes.append(plt.subplot(gs[nl,nc]))
+    gs.tight_layout(figure, rect=figureRect(addColorBar=False, addTimeTextPBar=addTimeTextPbar))
+    if addTimeTextPbar:
+        (TTPBax, ret) = addTimeTextPBar(plt, 0, Pmax+1)
+
 
     def animate(t):
         ret = []
-        alphaInit  = transpFun(1.-float(t)/(Pmax+1.))
-        alphaFinal = transpFun(float(t)/(Pmax+1.))
+        alphaInit  = transparencyFunction(1.-float(t)/(Pmax+1.))
+        alphaFinal = transparencyFunction(float(t)/(Pmax+1.))
 
-        for (f,finit,ffinal,title,ax) in zip(fs,finits,ffinals,labelsList,axes):
+        for (f, finit, ffinal, label, ax) in zip(fs, finits, ffinals, labelList, axes):
             ax.cla()
-
-            X  = np.linspace(0.0, 1.0, finit.size)
+            X            = np.linspace(0.0, 1.0, finit.size)
 
             lineCurrent, = plot(ax, f[:,t], X, options[np.mod(0, nModOptions)], label='$f$')
             lineInit,    = plot(ax, finit, X, options[np.mod(1, nModOptions)], label='$f_{init}$', alpha=alphaInit)
             lineFinal,   = plot(ax, ffinal, X, options[np.mod(2, nModOptions)], label='$f_{final}$', alpha=alphaFinal)
             ret.extend([lineInit,lineFinal,lineCurrent])
 
-            ax.set_ylim(mini,maxi)
-            ax.set_xlim(0.0, 1.0)
-            ax.grid()
+            adaptAxesExtent(ax, xmin, xmax, mini, maxi, 0.0, 0.05, nbrXTicks, nbrYTicks, xTicksRound, yTicksRound, EPSILON)
+            addTitleLabelsGrid(ax, title=label, xLabel=xLabel, yLabel=yLabel, grid=grid)
+            if addLegend:
+                tryAddCustomLegend(ax, makeRoom=False)
 
-            tryAddCustomLegend(ax)
-            ax.set_title(title+'\nt = ' + fileNameSuffix(t,Pmax+2) + ' / '+str(Pmax+1))
+        if addTimeTextPbar:
+            TTPBax.cla()
+            ret.extend(plotTimeTextPBar(TTPBax, t, Pmax+1))
 
         return tuple(ret)
 
     def init():
         return animate(0)
 
-    init()
-    gs.tight_layout(figure)
     frames = np.arange(Pmax+2)    
     print('Making animation ...')
     return FuncAnimation(figure, animate, frames, init_func=init, **kwargsFuncAnim)
-
-
