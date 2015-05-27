@@ -76,7 +76,7 @@ def extractFinalStateMultiSim(outputDirList):
     maxis        = []
 
     for outputDir in outputDirList:
-        (f, finit, ffinal, mini, maxi, P) = (f, finit, ffinal, mini, maxi)
+        (f, finit, ffinal, mini, maxi, P) = extractFinalState(outputDir)
         
         fs.append(f)
         finits.append(finit)

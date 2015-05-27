@@ -55,6 +55,14 @@ plotSubplotsFunctionArgs = grid       : bool : True
 plotFinalState = 1
 
 # Options for plotting final state
-prefixFigNameFinalState  = finalState
-transparencyFunctionName = customTransparency 
-
+plotFinalState_prefixFigName        = finalState
+plotFinalState_transparencyFunction = customTransparency
+plotFinalState_addLegend            = 1
+plotFinalState_grid                 = 1
+plotFinalState_addTimeTextPbar      = 1
+plotFinalState_xLabel               = $x$
+plotFinalState_yLabel               = 
+plotFinalState_nbrXTicks            = 5
+plotFinalState_nbrYTicks            = 5
+plotFinalState_xTicksRound          = 1
+plotFinalState_yTicksRound          = 1

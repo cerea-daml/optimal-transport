@@ -9,6 +9,9 @@ from matplotlib              import gridspec
 
 from ..io.io                 import fileNameSuffix
 
+from positions               import timeTextPBarRect
+from positions               import positionsTimeTxtPbar
+
 def plottingOptions():
     options = np.array(['b-', 'g-', 'r-', 'm-', 'y-', 'c-', 'k-',
                         'b--','g--','r--','m--','y--','c--','k--',
@@ -38,17 +41,6 @@ def tryAddCustomLegend(ax):
     except:
         ax.legend(fontsize='xx-small', loc='center right', bbox_to_anchor=(1.13, 0.5), fancybox=True)
 
-def plotTimeTextPBar(ax, t, tMax, xTxt, yTxt, xPbarStart, xPbarEnd, yPbar):
-    timeText = ax.text(xTxt, yTxt, fileNameSuffix(t, tMax+1)+' / '+str(tMax))
-    ret      = [timeText]
-    if t < tMax:
-        lineBkgPbar, = plot(ax, [yPbar,yPbar], [xPbarStart+float(t)/(tMax)*(xPbarEnd-xPbarStart),xPbarEnd], 'k-', linewidth=5)
-        ret.append(lineBkgPbar)
-    if t > 0:
-        linePbar,    = plot(ax, [yPbar,yPbar], [xPbarStart,xPbarStart+float(t)/(tMax)*(xPbarEnd-xPbarStart)], 'g-', linewidth=5)
-        ret.append(linePbar)
-    return ret
-
 def makeGrid(nbrOfItems, extendDirection='vertical'):
     nColumns = int(np.floor(np.sqrt(nbrOfItems)))
     nLines   = nColumns
@@ -65,7 +57,7 @@ def makeGrid(nbrOfItems, extendDirection='vertical'):
     return (nLines, nColumns)
 
 def makeAxesGrid(plt, nbrOfItems, order='horizontalFirst', extendDirection='vertical'):
-    (nLines, nColumns) = makeGrid(nbrOfItems, extendDirection='vertical')
+    (nLines, nColumns) = makeGrid(nbrOfItems, extendDirection)
     gs                 = gridspec.GridSpec(nLines, nColumns)
     axes               = []
 
@@ -114,18 +106,36 @@ def plot(ax, Y, X=None, opt=None, **kwargs):
 
     return ax.plot(*tuple(args), **kwargs)
 
-def positions(xmin, xmax, ymin, ymax, EPSILON):
-    yExtend    = min(ymax - ymin, EPSILON)
-    xExtend    = min(xmax - xmin, EPSILON)
+def addTimeTextPBar(plt, t, tMax):
 
-    xPbarStart = xmin + 0.2 * xExtend
-    xPbarEnd   = xmin + 0.8 * xExtend
-    yPbar      = ymin - 0.05 * yExtend
+    (xTxt, yTxt, xPbarStart, xPbarEnd, yPbar) = positionsTimeTxtPbar()
+    rect     = timeTextPBarRect()
+    gsTTPB   = gridspec.GridSpec(1, 1, left=rect[0], bottom=rect[1], right=rect[2], top=rect[3])
+    ax       = plt.subplot(gsTTPB[0, 0], frameon=False)
+    ret      = [ax.text(xTxt, yTxt, fileNameSuffix(t, tMax+1)+' / '+str(tMax))]
+    
+    if t < tMax:
+        lineBkgPbar, = plot(ax, [yPbar,yPbar], [xPbarStart+float(t)/(tMax)*(xPbarEnd-xPbarStart),xPbarEnd], 'k-', linewidth=5)
+        ret.append(lineBkgPbar)
 
-    xTxt       = xmin + 0.01 * xExtend
-    yTxt       = ymin - 0.05 * yExtend
+    if t > 0:
+        linePbar,    = plot(ax, [yPbar,yPbar], [xPbarStart,xPbarStart+float(t)/(tMax)*(xPbarEnd-xPbarStart)], 'g-', linewidth=5)
+        ret.append(linePbar)
 
-    ymax      += 0.1 * yExtend
-    ymin      -= 0.1 * yExtend
+    adaptAxesExtent(ax, 0.0, 1.0, -0.5, 0.5, 0.0, 0.0, 0, 0, 1, 1, 0.0)
+    
+    return ret
 
-    return (ymin, ymax, xTxt, yTxt, xPbarStart, xPbarEnd, yPbar)
+def adaptAxesExtent(ax, xmin, xmax, ymin, ymax, extendX, extendY, nbrXTicks, nbrYTicks, xTicksRound, yTicksRound, EPSILON):
+    
+    xExtend    = max(xmax - xmin, EPSILON)
+    yExtend    = max(ymax - ymin, EPSILON)
+
+    ax.set_xlim(xmin-xExtend*extendX, xmax+xExtend*extendX)
+    ax.set_ylim(ymin-yExtend*extendY, ymax+yExtend*extendY)
+
+    xTicks = np.linspace(xmin, xmax, nbrXTicks).round(decimals=xTicksRound).tolist()
+    yTicks = np.linspace(ymin, ymax, nbrYTicks).round(decimals=yTicksRound).tolist()
+
+    ax.set_xticks(xTicks)
+    ax.set_yticks(yTicks)
