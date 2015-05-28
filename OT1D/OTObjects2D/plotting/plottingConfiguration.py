@@ -53,7 +53,7 @@ class PlottingConfiguration(DefaultConfiguration):
                           int)
 
         self.addAttribute('figDir',
-                          ['./figures/'],
+                          './figures/',
                           [],
                           False,
                           False,

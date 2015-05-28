@@ -35,149 +35,249 @@ class AnimatingConfiguration(DefaultConfiguration):
     def defaultAttributes(self):
         DefaultConfiguration.defaultAttributes(self)
 
-        self.attributes.append('EPSILON')
-        self.defaultValues['EPSILON']                   = 1.e-8
-        self.isSubAttribute['EPSILON']                  = []
-        self.isList['EPSILON']                          = False
-        self.isDict['EPSILON']                          = False
-        self.attributeType['EPSILON']                   = float
+        self.addAttribute('EPSILON',
+                          1.e-8,
+                          [],
+                          False,
+                          False,
+                          float)
 
-        self.attributes.append('singleOrMulti')
-        self.defaultValues['singleOrMulti']             = 0
-        self.isSubAttribute['singleOrMulti']            = []
-        self.isList['singleOrMulti']                    = False
-        self.isDict['singleOrMulti']                    = False
-        self.attributeType['singleOrMulti']             = int
+        self.addAttribute('singleOrMulti',
+                          0,
+                          [],
+                          False,
+                          False,
+                          int)
 
-        self.attributes.append('figDir')
-        self.defaultValues['figDir']                    = './figures/'
-        self.isSubAttribute['figDir']                   = []
-        self.isList['figDir']                           = False
-        self.isDict['figDir']                           = False
-        self.attributeType['figDir']                    = str
+        self.addAttribute('figDir',
+                          './figures/',
+                          [],
+                          False,
+                          False,
+                          str)
 
-        self.attributes.append('writerName')
-        self.defaultValues['writerName']                = 'ffmpeg'
-        self.isSubAttribute['writerName']               = []
-        self.isList['writerName']                       = False
-        self.isDict['writerName']                       = False
-        self.attributeType['writerName']                = str
+        self.addAttribute('writerName',
+                          'ffmpeg',
+                          [],
+                          False,
+                          False,
+                          str)
 
-        self.attributes.append('writerFPS')
-        self.defaultValues['writerFPS']                 = 5
-        self.isSubAttribute['writerFPS']                = []
-        self.isList['writerFPS']                        = False
-        self.isDict['writerFPS']                        = False
-        self.attributeType['writerFPS']                 = int
+        self.addAttribute('writerFPS',
+                          5,
+                          [],
+                          False,
+                          False,
+                          int)
 
-        self.attributes.append('writerCodec')
-        self.defaultValues['writerCodec']               = None
-        self.isSubAttribute['writerCodec']              = []
-        self.isList['writerCodec']                      = False
-        self.isDict['writerCodec']                      = False
-        self.attributeType['writerCodec']               = int
+        self.addAttribute('writerCodec',
+                          None,
+                          [],
+                          False,
+                          False,
+                          str)
 
-        self.attributes.append('writerBitrate')
-        self.defaultValues['writerBitrate']             = None
-        self.isSubAttribute['writerBitrate']            = []
-        self.isList['writerBitrate']                    = False
-        self.isDict['writerBitrate']                    = False
-        self.attributeType['writerBitrate']             = {}
+        self.addAttribute('writerBitrate',
+                          None,
+                          [],
+                          False,
+                          False,
+                          int)
 
-        self.attributes.append('writerExtraArgs')
-        self.defaultValues['writerExtraArgs']           = None
-        self.isSubAttribute['writerExtraArgs']          = []
-        self.isList['writerExtraArgs']                  = True
-        self.isDict['writerExtraArgs']                  = False
-        self.attributeType['writerExtraArgs']           = str
+        self.addAttribute('writerExtraArgs',
+                          None,
+                          [],
+                          True,
+                          False,
+                          str)
 
-        self.attributes.append('extension')
-        self.defaultValues['extension']                 = ['.mp4']
-        self.isSubAttribute['extension']                = []
-        self.isList['extension']                        = True
-        self.isDict['extension']                        = False
-        self.attributeType['extension']                 = str
+        self.addAttribute('extension',
+                          ['.mp4'],
+                          [],
+                          True,
+                          False,
+                          str)
 
-        self.attributes.append('outputDir')
-        self.defaultValues['outputDir']                 = ['./output/']
-        self.isSubAttribute['outputDir']                = []
-        self.isList['outputDir']                        = True
-        self.isDict['outputDir']                        = False
-        self.attributeType['outputDir']                 = str
+        self.addAttribute('outputDir',
+                          ['./output/'],
+                          [],
+                          True,
+                          False,
+                          str)
 
-        self.attributes.append('label')
-        self.defaultValues['label']                     = ['sim0']
-        self.isSubAttribute['label']                    = []
-        self.isList['label']                            = True
-        self.isDict['label']                            = False
-        self.attributeType['label']                     = str
+        self.addAttribute('label',
+                          ['sim0'],
+                          [],
+                          True,
+                          False,
+                          str)
+        
+        self.addAttribute('funcAnimArgs',
+                          None,
+                          [],
+                          False,
+                          True,
+                          None)
 
-        self.attributes.append('funcAnimArgs')
-        self.defaultValues['funcAnimArgs']              = None
-        self.isSubAttribute['funcAnimArgs']             = []
-        self.isList['funcAnimArgs']                     = False
-        self.isDict['funcAnimArgs']                     = True
-        self.attributeType['funcAnimArgs']              = None
+        self.addAttribute('animFinalState',
+                          1,
+                          [],
+                          False,
+                          False,
+                          int)
 
-        self.attributes.append('outputDir')
-        self.defaultValues['outputDir']                 = ['./output/']
-        self.isSubAttribute['outputDir']                = []
-        self.isList['outputDir']                        = True
-        self.isDict['outputDir']                        = False
-        self.attributeType['outputDir']                 = str
+        self.addAttribute('animFinalState_prefixFigName',
+                          'finalState',
+                          [('animFinalState',1)],
+                          False,
+                          False,
+                          str)
 
-        self.attributes.append('label')
-        self.defaultValues['label']                     = ['']
-        self.isSubAttribute['label']                    = []
-        self.isList['label']                            = True
-        self.isDict['label']                            = False
-        self.attributeType['label']                     = str
+        self.addAttribute('animFinalState_transparencyFunction',
+                          'customTransparency',
+                          [('animFinalState',1)],
+                          False,
+                          False,
+                          str)
 
-        self.attributes.append('animFinalState')
-        self.defaultValues['animFinalState']            = 1 
-        self.isSubAttribute['animFinalState']           = []
-        self.isList['animFinalState']                   = False
-        self.isDict['animFinalState']                   = False
-        self.attributeType['animFinalState']            = int
+        self.addAttribute('animFinalState_Plotter',
+                          'imshow',
+                          [('animFinalState',1)],
+                          False,
+                          False,
+                          str)
 
-        self.attributes.append('prefixFigNameFinalState')
-        self.defaultValues['prefixFigNameFinalState']   = 'finalState'
-        self.isSubAttribute['prefixFigNameFinalState']  = [('animFinalState',1)]
-        self.isList['prefixFigNameFinalState']          = False
-        self.isDict['prefixFigNameFinalState']          = False
-        self.attributeType['prefixFigNameFinalState']   = str
+        self.addAttribute('animFinalState_Args',
+                          None,
+                          [('animFinalState',1)],
+                          False,
+                          True,
+                          None)
 
-        self.attributes.append('transparencyFunctionName')
-        self.defaultValues['transparencyFunctionName']  = 'customTransparency'
-        self.isSubAttribute['transparencyFunctionName'] = [('animFinalState',1)]
-        self.isList['transparencyFunctionName']         = False
-        self.isDict['transparencyFunctionName']         = False
-        self.attributeType['transparencyFunctionName']  = str
+        self.addAttribute('animFinalState_ArgsInit',
+                          None,
+                          [('animFinalState',1)],
+                          False,
+                          True,
+                          None)
 
-        self.attributes.append('animFinalStatePlotter')
-        self.defaultValues['animFinalStatePlotter']     = 'imshow'
-        self.isSubAttribute['animFinalStatePlotter']    = [('animFinalState',1)]
-        self.isList['animFinalStatePlotter']            = False
-        self.isDict['animFinalStatePlotter']            = False
-        self.attributeType['animFinalStatePlotter']     = str
+        self.addAttribute('animFinalState_ArgsFinal',
+                          None,
+                          [('animFinalState',1)],
+                          False,
+                          True,
+                          None)
 
-        self.attributes.append('animFinalStateArgs')
-        self.defaultValues['animFinalStateArgs']        = None 
-        self.isSubAttribute['animFinalStateArgs']       = [('animFinalState',1)]
-        self.isList['animFinalStateArgs']               = False
-        self.isDict['animFinalStateArgs']               = True
-        self.attributeType['animFinalStateArgs']        = None
+        self.addAttribute('animFinalState_colorBar',
+                          1,
+                          [('animFinalState',1)],
+                          False,
+                          False,
+                          int)
 
-        self.attributes.append('animFinalStateArgsInit')
-        self.defaultValues['animFinalStateArgsInit']    = None 
-        self.isSubAttribute['animFinalStateArgsInit']   = [('animFinalState',1)]
-        self.isList['animFinalStateArgsInit']           = False
-        self.isDict['animFinalStateArgsInit']           = True
-        self.attributeType['animFinalStateArgsInit']    = None
+        self.addAttribute('animFinalState_cmapName',
+                          'jet',
+                          [('animFinalState_colorBar',1)],
+                          False,
+                          False,
+                          str)
 
-        self.attributes.append('animFinalStateArgsFinal')
-        self.defaultValues['animFinalStateArgsFinal']   = None
-        self.isSubAttribute['animFinalStateArgsFinal']  = [('animFinalState',1)]
-        self.isList['animFinalStateArgsFinal']          = False
-        self.isDict['animFinalStateArgsFinal']          = True
-        self.attributeType['animFinalStateArgsFinal']   = None
+        self.addAttribute('animFinalState_timeTextPBar',
+                          1,
+                          [('animFinalState',1)],
+                          False,
+                          False,
+                          int)
+
+
+        self.addAttribute('animFinalState_xLabel',
+                          '',
+                          [('animFinalState',1)],
+                          False,
+                          False,
+                          str)
+
+        self.addAttribute('animFinalState_yLabel',
+                          '',
+                          [('animFinalState',1)],
+                          False,
+                          False,
+                          str)
+
+        self.addAttribute('animFinalState_cLabel',
+                          '',
+                          [('animFinalState',1)],
+                          False,
+                          False,
+                          str)
+
+        self.addAttribute('animFinalState_extendX',
+                          0.0,
+                          [('animFinalState',1)],
+                          False,
+                          False,
+                          float)
+
+        self.addAttribute('animFinalState_extendY',
+                          0.0,
+                          [('animFinalState',1)],
+                          False,
+                          False,
+                          float)
+
+        self.addAttribute('animFinalState_nbrXTicks',
+                          0,
+                          [('animFinalState',1)],
+                          False,
+                          False,
+                          int)
+
+        self.addAttribute('animFinalState_nbrYTicks',
+                          0,
+                          [('animFinalState',1)],
+                          False,
+                          False,
+                          int)
+
+        self.addAttribute('animFinalState_nbrCTicks',
+                          0,
+                          [('animFinalState',1)],
+                          False,
+                          False,
+                          int)
+
+        self.addAttribute('animFinalState_xTicksRound',
+                          1,
+                          [('animFinalState',1)],
+                          False,
+                          False,
+                          int)
+
+
+        self.addAttribute('animFinalState_yTicksRound',
+                          1,
+                          [('animFinalState',1)],
+                          False,
+                          False,
+                          int)
+
+        self.addAttribute('animFinalState_cTicksRound',
+                          1,
+                          [('animFinalState',1)],
+                          False,
+                          False,
+                          int)
+
+        self.addAttribute('animFinalState_order',
+                          'horizontalFirst',
+                          [('animFinalState',1)],
+                          False,
+                          False,
+                          str)
+
+        self.addAttribute('animFinalState_extendDirection',
+                          'vertical',
+                          [('animFinalState',1)],
+                          False,
+                          False,
+                          str)

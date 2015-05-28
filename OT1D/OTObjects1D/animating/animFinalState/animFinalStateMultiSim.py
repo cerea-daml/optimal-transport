@@ -69,7 +69,6 @@ def makeAnimFinalStateMultiSim(outputDirList,
     if addTimeTextPbar:
         (TTPBax, ret) = addTimeTextPBar(plt, 0, Pmax+1)
 
-
     def animate(t):
         ret = []
         alphaInit  = transparencyFunction(1.-float(t)/(Pmax+1.))

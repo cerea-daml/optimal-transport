@@ -6,47 +6,86 @@
 #
 
 import numpy                as np
-import cPickle              as pck
 import matplotlib.pyplot    as plt
 
-from matplotlib              import gridspec
-from matplotlib.animation    import FuncAnimation
+from matplotlib.animation           import FuncAnimation
 
-from ....utils.io                   import fileNameSuffix
-from ....utils.io.extractFinalState import extractFinalState
-
-from ....utils.plotting.plot        import plot
+from ....utils.io.io                import fileNameSuffix
+from ....utils.io.extractFinalState import extractFinalStateMultiSim
+from ....utils.plotting.positions   import figureRect
+from ....utils.plotting.plot        import makeAxesGrid
+from ....utils.plotting.plot        import adaptAxesExtent
+from ....utils.plotting.plot        import addTitleLabelsGrid
+from ....utils.plotting.plot        import addTimeTextPBar
+from ....utils.plotting.plot        import plotTimeTextPBar
+from ....utils.plotting.plotMatrix  import addColorBar
 from ....utils.plotting.plotMatrix  import plotMatrix
-from ....utils.plotting.plotMatrix  import positions2d
-from ....utils.plotting.plotMatrix  import addColorBarMultiSim
 from ....utils.plotting.saveFig     import saveFig
 
-def makeAnimFinalStateMultiSim(outputDirList, labelsList, transpFun, kwargsFuncAnim, plotter,
-                               kwargs, kwargsInit, kwargsFinal, EPSILON):
+def makeAnimFinalStateMultiSim(kwargsFuncAnim,
+                               outputDirList,
+                               figDir,
+                               labelList,
+                               transparencyFunction,
+                               plotter,
+                               kwargs,
+                               kwargsInit,
+                               kwargsFinal,
+                               colorBar,
+                               cmapName,
+                               timeTextPBar,
+                               xLabel,
+                               yLabel,
+                               cLabel,
+                               extendX,
+                               extendY,
+                               nbrXTicks,
+                               nbrYTicks,
+                               nbrCTicks,
+                               xTicksRound,
+                               yTicksRound,
+                               cticksRound,
+                               order,
+                               extendDirection,
+                               EPSILON):
 
     (fs, finits, ffinals, mini, maxi, Pmax) = extractFinalStateMultiSim(outputDirList)
-    (xmin, xmax, ymin, ymax, xTxt, yTxt,
-     xPbarStart, xPbarEnd, yPbar)           = positions2d(0.0, 1.0, 0.0, 1.0, EPSILON)
-    (nLines, nColumns)                      = makeGrid(len(outputDirList), extendDirection='vertical')
+
+    xmin = 0.0
+    xmax = 1.0
+
+    ymin = 0.0
+    ymax = 1.0
 
     figure = plt.figure()
     plt.clf()
 
-    gs     = gridspec.GridSpec(nLines, nColumns)
-    j      = -1
-    axes   = []
+    (gs, axes) = makeAxesGrid(plt, len(outputDirList), order=order, extendDirection=extendDirection)
 
-    for j in xrange(len(fs)):
-        nc = int(np.mod(j,nColumns))
-        nl = int((j-nColumns)/nColumns)
-        axes.append(plt.subplot(gs[nl,nc]))
+    alphaInit  = transparencyFunction(1.-float(0)/(Pmax+1.))
+    alphaFinal = transparencyFunction(float(0)/(Pmax+1.))
+
+    for (f, finit, ffinal, label, ax) in zip(fs, finits, ffinals, labelList, axes):
+        imC = plotMatrix(ax, f[:,:,0], plotter=plotter, vmin=mini, vmax=maxi, **kwargs)
+        imI = plotMatrix(ax, finit, plotter='contour', vmin=mini, vmax=maxi, **kwargsInit)
+        imF = plotMatrix(ax, ffinal, plotter='contour', vmin=mini, vmax=maxi, **kwargsFinal)
+
+        adaptAxesExtent(ax, xmin, xmax, ymin, ymax, extendX, extendY, nbrXTicks, nbrYTicks, xTicksRound, yTicksRound, EPSILON)
+        addTitleLabelsGrid(ax, title=label, xLabel=xLabel, yLabel=yLabel, grid=False)
+
+    gs.tight_layout(figure, rect=figureRect(colorBar, timeTextPBar))
+    if colorBar:
+        (cax, cbar)   = addColorBar(plt, timeTextPBar, cmapName, mini, maxi, nbrCTicks, cticksRound, cLabel)
+
+    if timeTextPBar:
+        (TTPBax, ret) = addTimeTextPBar(plt, 0, Pmax+1)
 
     def animate(t):
         ret = []
-        kwargsInit['alpha']  = transpFun(1.-float(t)/(Pmax+1.))
-        kwargsFinal['alpha'] = transpFun(float(t)/(Pmax+1.))
+        kwargsInit['alpha']  = transparencyFunction(1.-float(t)/(Pmax+1.))
+        kwargsFinal['alpha'] = transparencyFunction(float(t)/(Pmax+1.))
 
-        for (f, finit, ffinal, label, ax) in zip(fs, finits, ffinals, labelsList, axes):
+        for (f, finit, ffinal, label, ax) in zip(fs, finits, ffinals, labelList, axes):
             ax.cla()
 
             imC = plotMatrix(ax, f[:,:,t], plotter=plotter, vmin=mini, vmax=maxi, **kwargs)
@@ -54,28 +93,18 @@ def makeAnimFinalStateMultiSim(outputDirList, labelsList, transpFun, kwargsFuncA
             imF = plotMatrix(ax, ffinal, plotter='contour', vmin=mini, vmax=maxi, **kwargsFinal)
             ret.extend([imC,imI,imF])
 
-            ax.set_yticks([])
-            ax.set_xticks([])
-            ax.set_xlim(xmin, xmax)
-            ax.set_ylim(ymin, ymax)
+            adaptAxesExtent(ax, xmin, xmax, ymin, ymax, extendX, extendY, nbrXTicks, nbrYTicks, xTicksRound, yTicksRound, EPSILON)
+            addTitleLabelsGrid(ax, title=label, xLabel=xLabel, yLabel=yLabel, grid=False)
 
-            ax.set_title(title+'\nt = ' + fileNameSuffix(t,Pmax+2) + ' / '+str(Pmax+1))
+        if timeTextPBar:
+            TTPBax.cla()
+            ret.extend(plotTimeTextPBar(TTPBax, t, Pmax+1))
 
-            ax.set_title(title)
         return tuple(ret)
 
     def init():
         return animate(0)
 
-    init()
-
-    gs.tight_layout(figure, rect=[0.,0.,0.85,1.])
-    gs2 = gridspec.GridSpec(1,1)
-    gs2.update(left=0.87, right=0.93)
-    cax = plt.subplot(gs2[0,0], frameon=False)
-    addColorBarMultiSim(cax, mini, maxi)
-
     frames = np.arange(Pmax+2)
-
     print('Making animation ...')
     return FuncAnimation(figure, animate, frames, init_func=init, **kwargsFuncAnim)

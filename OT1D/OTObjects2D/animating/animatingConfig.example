@@ -1,5 +1,5 @@
 #__________________________________________________
-# Example of configuration file for plotting
+# Example of configuration file for animating
 #__________________________________________________
 
 #__________________________________________________
@@ -7,7 +7,7 @@
 EPSILON = 1.e-8
 
 #__________________________________________________
-# Plot single simulation or multiple simulations
+# Animate single simulation or multiple simulations
 # 0 -> single sim
 # 1 -> multi  sim
 singleOrMulti = 0
@@ -47,16 +47,29 @@ label     = sim1
 animFinalState = 1
 
 # Options for animating final state
-prefixFigNameFinalState  = finalState
-transparencyFunctionName = customTransparency
-
-animFinalStatePlotter    = imshow
-animFinalStateArgs       = interpolation : str   : nearest
-
-animFinalStateArgsInit   = colors        : str   : k
-animFinalStateArgsInit   = linestyles    : str   : solid
-animFinalStateArgsInit   = linewidths    : float : 1.5
-
-animFinalStateArgsFinal  = colors        : str   : k
-animFinalStateArgsFinal  = linestyles    : str   : solid
-animFinalStateArgsFinal  = linewidths    : float : 1.5
+animFinalState_prefixFigName        = finalState
+animFinalState_transparencyFunction = customTransparency
+animFinalState_Plotter              = imshow
+animFinalState_Args                 = interpolation : str   : nearest
+animFinalState_ArgsInit             = colors        : str   : k
+animFinalState_ArgsInit             = linestyles    : str   : solid
+animFinalState_ArgsInit             = linewidths    : float : 1.5
+animFinalState_ArgsFinal            = colors        : str   : k
+animFinalState_ArgsFinal            = linestyles    : str   : solid
+animFinalState_ArgsFinal            = linewidths    : float : 1.5
+animFinalState_colorBar             = 1
+animFinalState_cmapName             = jet
+animFinalState_timeTextPBar         = 1
+animFinalState_xLabel               = $x$
+animFinalState_yLabel               = $y$
+animFinalState_cLabel               = $f$
+animFinalState_extendX              = 0.0
+animFinalState_extendY              = 0.0
+animFinalState_nbrXTicks            = 2
+animFinalState_nbrYTicks            = 2
+animFinalState_nbrCTicks            = 5
+animFinalState_xTicksRound          = 1
+animFinalState_yTicksRound          = 1
+animFinalState_cTicksRound          = 2
+animFinalState_order                = horizontalFirst
+animFinalState_extendDirection      = vertical

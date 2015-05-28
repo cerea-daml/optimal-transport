@@ -36,7 +36,7 @@ class DefaultConfiguration(object):
                 if parentAttributesCompatible:
 
                     if self.isList[attr]:
-                        if self.__getattribute__(attr) == [] and self.defaultValues[attr] is not None:
+                        if self.__getattribute__(attr) == []:# and self.defaultValues[attr] is not None:
                             print('No valid element found for list '+attr+' .')
                             print('Filling by default value : '+str(self.defaultValues[attr])+' .')
                             self.__setattr__(attr, self.defaultValues[attr])

@@ -75,14 +75,14 @@ class AnimatingConfiguration(DefaultConfiguration):
         self.isSubAttribute['writerCodec']              = []
         self.isList['writerCodec']                      = False
         self.isDict['writerCodec']                      = False
-        self.attributeType['writerCodec']               = int
+        self.attributeType['writerCodec']               = str
 
         self.attributes.append('writerBitrate')
         self.defaultValues['writerBitrate']             = None
         self.isSubAttribute['writerBitrate']            = []
         self.isList['writerBitrate']                    = False
         self.isDict['writerBitrate']                    = False
-        self.attributeType['writerBitrate']             = {}
+        self.attributeType['writerBitrate']             = int
 
         self.attributes.append('writerExtraArgs')
         self.defaultValues['writerExtraArgs']           = None
@@ -162,7 +162,7 @@ class AnimatingConfiguration(DefaultConfiguration):
         self.attributeType['animFinalState_addTimeTextPbar']       = int
 
         self.attributes.append('animFinalState_xLabel')
-        self.defaultValues['animFinalState_xLabel']                = None
+        self.defaultValues['animFinalState_xLabel']                = ''
         self.isSubAttribute['animFinalState_xLabel']               = [('animFinalState',1)]
         self.isList['animFinalState_xLabel']                       = False
         self.isDict['animFinalState_xLabel']                       = False
