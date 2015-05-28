@@ -24,8 +24,8 @@ writerCodec     =
 writerBitrate   = 
 writerExtraArgs = 
 
-extension       = .mp4
-extension       = .avi
+extension       = str : .mp4
+extension       = str : .avi
 
 #__________________________________________________
 # FuncAnimation arguments
@@ -35,31 +35,27 @@ funcAnimArgs = blit : bool : true
 # Output directory and associated labels
 # For multiple simulations, just duplicate these lines
 # For single simulation, only the first line will be used 
-outputDir = ./
-label     = sim0
-outputDir = ./
-label     = sim1
+outputDir = str : ./
+label     = str : sim0
+outputDir = str : ./
+label     = str : sim1
 
 #__________________________________________________
 # Animate final state
-# 0 -> False
-# 1 -> True
-animFinalState = 1
+animFinalState = True
 
 # Options for animating final state
-animFinalState_prefixFigName        = finalState
+animFinalState_prefixFigName        = finalState_
 animFinalState_transparencyFunction = customTransparency
-animFinalState_Plotter              = imshow
-animFinalState_Args                 = interpolation : str   : nearest
-animFinalState_ArgsInit             = colors        : str   : k
-animFinalState_ArgsInit             = linestyles    : str   : solid
-animFinalState_ArgsInit             = linewidths    : float : 1.5
-animFinalState_ArgsFinal            = colors        : str   : k
-animFinalState_ArgsFinal            = linestyles    : str   : solid
-animFinalState_ArgsFinal            = linewidths    : float : 1.5
-animFinalState_colorBar             = 1
+animFinalState_plotter              = imshow
+animFinalState_args                 = interpolation : str   : nearest
+animFinalState_argsInit             = colors        : str   : k
+animFinalState_argsInit             = linestyles    : str   : solid
+animFinalState_argsFinal            = colors        : str   : k
+animFinalState_argsFinal            = linestyles    : str   : solid
+animFinalState_colorBar             = True
 animFinalState_cmapName             = jet
-animFinalState_timeTextPBar         = 1
+animFinalState_timeTextPBar         = True
 animFinalState_xLabel               = $x$
 animFinalState_yLabel               = $y$
 animFinalState_cLabel               = $f$
@@ -68,8 +64,8 @@ animFinalState_extendY              = 0.0
 animFinalState_nbrXTicks            = 2
 animFinalState_nbrYTicks            = 2
 animFinalState_nbrCTicks            = 5
-animFinalState_xTicksRound          = 1
-animFinalState_yTicksRound          = 1
-animFinalState_cTicksRound          = 2
+animFinalState_xTicksDecimals       = 1
+animFinalState_yTicksDecimals       = 1
+animFinalState_cTicksDecimals       = 2
 animFinalState_order                = horizontalFirst
-animFinalState_extendDirection      = vertical
+animFinalState_extendDirection      = horizontal

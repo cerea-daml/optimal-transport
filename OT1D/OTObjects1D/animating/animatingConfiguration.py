@@ -84,7 +84,7 @@ class AnimatingConfiguration(DefaultConfiguration):
                           False)
 
         self.addAttribute('extension',
-                          ['.pdf'],
+                          ['.mp4'],
                           [],
                           'list',
                           True)

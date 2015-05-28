@@ -5,11 +5,8 @@
 # plots the result of multiple analyses
 #
 
-import cPickle           as pck
 import numpy             as np
 import matplotlib.pyplot as plt
-
-from matplotlib                  import gridspec
 
 from ....utils.plotting.plot     import plot
 from ....utils.plotting.plot     import plottingOptionsMultiSim
@@ -20,7 +17,7 @@ from ....utils.plotting.plot     import trySetScale
 from ....utils.plotting.saveFig  import saveFig
 from ....utils.io.extractAnalyse import extractAnalyseMultiSim
 
-def plotAnalyseMultiSim(outputDirList, figDir, prefixFigName, labelsList, figSubFig, extensionsList):
+def plotAnalyseMultiSim(outputDirList, figDir, prefixFigName, labelList, figSubFig, extensionsList):
 
     (options, mModOptions, nModOptions)     = plottingOptionsMultiSim()
     (iterNumbers, iterTimes, names, values) = extractAnalyseMultiSim(outputDirList)
@@ -39,7 +36,7 @@ def plotAnalyseMultiSim(outputDirList, figDir, prefixFigName, labelsList, figSub
             addTitleLabelsGrid(ax, title, xLabel, yLabel, grid)
 
             mOptions = -1
-            for (iter, times, name, value, label) in zip(iterNumbers, iterTimes, names, values, labelsList):
+            for (iter, times, name, value, label) in zip(iterNumbers, iterTimes, names, values, labelList):
                 mOptions = np.mod(mOptions+1, mModOptions)
                 if xAxis == 'iterations':
                     X = iter
@@ -55,7 +52,7 @@ def plotAnalyseMultiSim(outputDirList, figDir, prefixFigName, labelsList, figSub
                     plot(ax, Y, X, options[mOptions, nOptions], label=label+', '+name[column])
 
             trySetScale(ax, xScale, yScale)
-            tryAddCustomLegend(ax)
+            tryAddCustomLegend(ax, True)
 
         gs.tight_layout(figure)
         figName = figDir + prefixFigName + fileNameSuffix

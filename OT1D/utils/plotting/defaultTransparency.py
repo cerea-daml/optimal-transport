@@ -12,4 +12,4 @@ def fastVanishingTransparency(t):
         return 1. + ( 1.0 / 0.4 ) * ( t - 1.0 )
 
 def customTransparency(t):
-    return min(max(t, 0.25), 0.9)
+    return min(max(t, 0.25), 0.8)

@@ -42,9 +42,9 @@ def makeAnimFinalStateMultiSim(kwargsFuncAnim,
                                nbrXTicks,
                                nbrYTicks,
                                nbrCTicks,
-                               xTicksRound,
-                               yTicksRound,
-                               cticksRound,
+                               xTicksDecimals,
+                               yTicksDecimals,
+                               cticksDecimals,
                                order,
                                extendDirection,
                                EPSILON):
@@ -70,12 +70,12 @@ def makeAnimFinalStateMultiSim(kwargsFuncAnim,
         imI = plotMatrix(ax, finit, plotter='contour', vmin=mini, vmax=maxi, **kwargsInit)
         imF = plotMatrix(ax, ffinal, plotter='contour', vmin=mini, vmax=maxi, **kwargsFinal)
 
-        adaptAxesExtent(ax, xmin, xmax, ymin, ymax, extendX, extendY, nbrXTicks, nbrYTicks, xTicksRound, yTicksRound, EPSILON)
+        adaptAxesExtent(ax, xmin, xmax, ymin, ymax, extendX, extendY, nbrXTicks, nbrYTicks, xTicksDecimals, yTicksDecimals, EPSILON)
         addTitleLabelsGrid(ax, title=label, xLabel=xLabel, yLabel=yLabel, grid=False)
 
     gs.tight_layout(figure, rect=figureRect(colorBar, timeTextPBar))
     if colorBar:
-        (cax, cbar)   = addColorBar(plt, timeTextPBar, cmapName, mini, maxi, nbrCTicks, cticksRound, cLabel)
+        (cax, cbar)   = addColorBar(plt, timeTextPBar, cmapName, mini, maxi, nbrCTicks, cticksDecimals, cLabel)
 
     if timeTextPBar:
         (TTPBax, ret) = addTimeTextPBar(plt, 0, Pmax+1)
@@ -93,7 +93,7 @@ def makeAnimFinalStateMultiSim(kwargsFuncAnim,
             imF = plotMatrix(ax, ffinal, plotter='contour', vmin=mini, vmax=maxi, **kwargsFinal)
             ret.extend([imC,imI,imF])
 
-            adaptAxesExtent(ax, xmin, xmax, ymin, ymax, extendX, extendY, nbrXTicks, nbrYTicks, xTicksRound, yTicksRound, EPSILON)
+            adaptAxesExtent(ax, xmin, xmax, ymin, ymax, extendX, extendY, nbrXTicks, nbrYTicks, xTicksDecimals, yTicksDecimals, EPSILON)
             addTitleLabelsGrid(ax, title=label, xLabel=xLabel, yLabel=yLabel, grid=False)
 
         if timeTextPBar:

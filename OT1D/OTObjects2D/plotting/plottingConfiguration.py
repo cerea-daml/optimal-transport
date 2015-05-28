@@ -7,19 +7,16 @@
 
 from plotter import Plotter
 
-from ...utils.configuration.defaultConfiguration import DefaultConfiguration
 from ...utils.io.io                              import fileNameSuffix
+from ...utils.configuration.defaultConfiguration import DefaultConfiguration
 
 class PlottingConfiguration(DefaultConfiguration):
-    '''
-    Stores the configuraion for plotting a 2d OT algorithm
-    '''
 
     def __init__(self, plottingConfigFile=None):
         DefaultConfiguration.__init__(self, plottingConfigFile)
 
     def __repr__(self):
-        return 'PlottingConfiguration for a 2d OT algoritm'
+        return 'PlottingConfiguration for a 2D OT algoritm'
 
     def plotter(self):
         return Plotter(self)
@@ -41,230 +38,215 @@ class PlottingConfiguration(DefaultConfiguration):
         self.addAttribute('EPSILON',
                           1.e-8,
                           [],
-                          False,
-                          False,
-                          float)
+                          'float',
+                          True)
 
         self.addAttribute('singleOrMulti',
                           0,
                           [],
-                          False,
-                          False,
-                          int)
+                          'int',
+                          True)
 
         self.addAttribute('figDir',
                           './figures/',
                           [],
-                          False,
-                          False,
-                          str)
+                          'str',
+                          True)
 
         self.addAttribute('extension',
                           ['.pdf'],
                           [],
-                          True,
-                          False,
-                          str)
-        
+                          'list',
+                          True)
+
         self.addAttribute('outputDir',
                           ['./output/'],
                           [],
-                          True,
-                          False,
-                          str)
+                          'list',
+                          True)
 
         self.addAttribute('label',
                           ['sim0'],
                           [],
-                          True,
-                          False,
-                          str)
+                          'list',
+                          True)
 
         self.addAttribute('plotAnalyse',
-                          1,
-                          [],
-                          False,
-                          False,
-                          int)
-
-        self.addAttribute('plotSubplotsFunctionName',
-                          'customPlotSubplots',
-                          [('plotAnalyse', 1)],
-                          False,
-                          False,
-                          str)
-
-        self.addAttribute('prefixFigNameAnalyse',
-                          'analyse',
-                          [('plotAnalyse', 1)],
-                          False,
-                          False,
-                          str)
-
-        self.addAttribute('plotSubplotsFunctionArgs',
-                          None,
-                          [('plotAnalyse', 1)],
-                          False,
                           True,
-                          None)
+                          [],
+                          'bool',
+                          True)
+
+        self.addAttribute('plotAnalyse_plotSubplotsFunction',
+                          'customPlotSubplots',
+                          [('plotAnalyse', True)],
+                          'str',
+                          True)
+
+        self.addAttribute('plotAnalyse_prefixFigName',
+                          'analyse_',
+                          [('plotAnalyse', True)],
+                          'str',
+                          True)
+
+        self.addAttribute('plotAnalyse_plotSubplots_iterOrTime',
+                          'iterations',
+                          [('plotAnalyse', True)],
+                          'str',
+                          True)
+
+        self.addAttribute('plotAnalyse_plotSubplots_xScale',
+                          'log',
+                          [('plotAnalyse', True)],
+                          'str',
+                          True)
+
+        self.addAttribute('plotAnalyse_plotSubplots_yScale',
+                          'log',
+                          [('plotAnalyse', True)],
+                          'str',
+                          True)
+
+        self.addAttribute('plotAnalyse_plotSubplots_grid',
+                          True,
+                          [('plotAnalyse', True)],
+                          'bool',
+                          True)
 
         self.addAttribute('plotFinalState',
-                          1,
+                          True,
                           [],
-                          False,
-                          False,
-                          int)
+                          'bool',
+                          True)
 
         self.addAttribute('plotFinalState_prefixFigName',
-                          'finalState',
-                          [('plotFinalState',1)],
-                          False,
-                          False,
-                          str)
+                          'finalState_',
+                          [('plotFinalState',True)],
+                          'str',
+                          True)
 
         self.addAttribute('plotFinalState_transparencyFunction',
                           'customTransparency',
-                          [('plotFinalState',1)],
-                          False,
-                          False,
-                          str)
+                          [('plotFinalState',True)],
+                          'str',
+                          True)
 
-        self.addAttribute('plotFinalState_Plotter',
+        self.addAttribute('plotFinalState_plotter',
                           'imshow',
-                          [('plotFinalState',1)],
-                          False,
-                          False,
-                          str)
+                          [('plotFinalState',True)],
+                          'str',
+                          True)
 
-        self.addAttribute('plotFinalState_Args',
-                          None,
-                          [('plotFinalState',1)],
-                          False,
-                          True,
-                          None)
+        self.addAttribute('plotFinalState_args',
+                          {},
+                          [('plotFinalState',True)],
+                          'dict',
+                          True)
 
-        self.addAttribute('plotFinalState_ArgsInit',
-                          None,
-                          [('plotFinalState',1)],
-                          False,
-                          True,
-                          None)
+        self.addAttribute('plotFinalState_argsInit',
+                          {},
+                          [('plotFinalState',True)],
+                          'dict',
+                          True)
 
-        self.addAttribute('plotFinalState_ArgsFinal',
-                          None,
-                          [('plotFinalState',1)],
-                          False,
-                          True,
-                          None)
+        self.addAttribute('plotFinalState_argsFinal',
+                          {},
+                          [('plotFinalState',True)],
+                          'dict',
+                          True)
 
         self.addAttribute('plotFinalState_colorBar',
-                          1,
-                          [('plotFinalState',1)],
-                          False,
-                          False,
-                          int)
+                          True,
+                          [('plotFinalState',True)],
+                          'bool',
+                          True)
 
         self.addAttribute('plotFinalState_cmapName',
                           'jet',
-                          [('plotFinalState_colorBar',1)],
-                          False,
-                          False,
-                          str)
+                          [('plotFinalState_colorBar',True)],
+                          'str',
+                          True)
 
         self.addAttribute('plotFinalState_timeTextPBar',
-                          1,
-                          [('plotFinalState',1)],
-                          False,
-                          False,
-                          int)
+                          True,
+                          [('plotFinalState',True)],
+                          'bool',
+                          True)
 
         self.addAttribute('plotFinalState_xLabel',
                           '',
-                          [('plotFinalState',1)],
-                          False,
-                          False,
-                          str)
+                          [('plotFinalState',True)],
+                          'str',
+                          False)
 
         self.addAttribute('plotFinalState_yLabel',
                           '',
-                          [('plotFinalState',1)],
-                          False,
-                          False,
-                          str)
+                          [('plotFinalState',True)],
+                          'str',
+                          False)
 
         self.addAttribute('plotFinalState_cLabel',
                           '',
-                          [('plotFinalState',1)],
-                          False,
-                          False,
-                          str)
+                          [('plotFinalState',True)],
+                          'str',
+                          False)
 
         self.addAttribute('plotFinalState_extendX',
                           0.0,
-                          [('plotFinalState',1)],
-                          False,
-                          False,
-                          float)
+                          [('plotFinalState',True)],
+                          'float',
+                          True)
 
         self.addAttribute('plotFinalState_extendY',
                           0.0,
-                          [('plotFinalState',1)],
-                          False,
-                          False,
-                          float)
+                          [('plotFinalState',True)],
+                          'float',
+                          True)
 
         self.addAttribute('plotFinalState_nbrXTicks',
-                          0,
-                          [('plotFinalState',1)],
-                          False,
-                          False,
-                          int)
+                          2,
+                          [('plotFinalState',True)],
+                          'int',
+                          True)
 
         self.addAttribute('plotFinalState_nbrYTicks',
-                          0,
-                          [('plotFinalState',1)],
-                          False,
-                          False,
-                          int)
+                          2,
+                          [('plotFinalState',True)],
+                          'int',
+                          True)
 
         self.addAttribute('plotFinalState_nbrCTicks',
-                          0,
-                          [('plotFinalState',1)],
-                          False,
-                          False,
-                          int)
+                          5,
+                          [('plotFinalState',True)],
+                          'int',
+                          True)
 
-        self.addAttribute('plotFinalState_xTicksRound',
+        self.addAttribute('plotFinalState_xTicksDecimals',
                           1,
-                          [('plotFinalState',1)],
-                          False,
-                          False,
-                          int)
+                          [('plotFinalState',True)],
+                          'int',
+                          True)
 
-        self.addAttribute('plotFinalState_yTicksRound',
+        self.addAttribute('plotFinalState_yTicksDecimals',
                           1,
-                          [('plotFinalState',1)],
-                          False,
-                          False,
-                          int)
+                          [('plotFinalState',True)],
+                          'int',
+                          True)
 
-        self.addAttribute('plotFinalState_cTicksRound',
-                          1,
-                          [('plotFinalState',1)],
-                          False,
-                          False,
-                          int)
+        self.addAttribute('plotFinalState_cTicksDecimals',
+                          2,
+                          [('plotFinalState',True)],
+                          'int',
+                          True)
 
         self.addAttribute('plotFinalState_order',
                           'horizontalFirst',
-                          [('plotFinalState',1)],
-                          False,
-                          False,
-                          str)
+                          [('plotFinalState',True)],
+                          'str',
+                          True)
 
         self.addAttribute('plotFinalState_extendDirection',
-                          'vertical',
-                          [('plotFinalState',1)],
-                          False,
-                          False,
-                          str)
+                          'horizontal',
+                          [('plotFinalState',True)],
+                          'str',
+                          True)

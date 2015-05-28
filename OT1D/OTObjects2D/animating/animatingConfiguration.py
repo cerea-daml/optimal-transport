@@ -38,246 +38,209 @@ class AnimatingConfiguration(DefaultConfiguration):
         self.addAttribute('EPSILON',
                           1.e-8,
                           [],
-                          False,
-                          False,
-                          float)
+                          'float',
+                          True)
 
         self.addAttribute('singleOrMulti',
                           0,
                           [],
-                          False,
-                          False,
-                          int)
+                          'int',
+                          True)
 
         self.addAttribute('figDir',
                           './figures/',
                           [],
-                          False,
-                          False,
-                          str)
+                          'str',
+                          True)
 
         self.addAttribute('writerName',
                           'ffmpeg',
                           [],
-                          False,
-                          False,
-                          str)
+                          'str',
+                          True)
 
         self.addAttribute('writerFPS',
                           5,
                           [],
-                          False,
-                          False,
-                          int)
+                          'int',
+                          False)
 
         self.addAttribute('writerCodec',
                           None,
                           [],
-                          False,
-                          False,
-                          str)
+                          'str',
+                          False)
 
         self.addAttribute('writerBitrate',
                           None,
                           [],
-                          False,
-                          False,
-                          int)
+                          'int',
+                          False)
 
         self.addAttribute('writerExtraArgs',
                           None,
                           [],
-                          True,
-                          False,
-                          str)
+                          'list',
+                          False)
 
         self.addAttribute('extension',
                           ['.mp4'],
                           [],
-                          True,
-                          False,
-                          str)
+                          'list',
+                          True)
 
         self.addAttribute('outputDir',
                           ['./output/'],
                           [],
-                          True,
-                          False,
-                          str)
+                          'list',
+                          True)
 
         self.addAttribute('label',
                           ['sim0'],
                           [],
-                          True,
-                          False,
-                          str)
-        
+                          'list',
+                          True)
+
         self.addAttribute('funcAnimArgs',
-                          None,
+                          {},
                           [],
-                          False,
-                          True,
-                          None)
+                          'dict',
+                          False)
 
         self.addAttribute('animFinalState',
-                          1,
+                          True,
                           [],
-                          False,
-                          False,
-                          int)
+                          'bool',
+                          True)
 
         self.addAttribute('animFinalState_prefixFigName',
-                          'finalState',
-                          [('animFinalState',1)],
-                          False,
-                          False,
-                          str)
+                          'finalState_',
+                          [('animFinalState', True)],
+                          'str',
+                          True)
 
         self.addAttribute('animFinalState_transparencyFunction',
                           'customTransparency',
-                          [('animFinalState',1)],
-                          False,
-                          False,
-                          str)
+                          [('animFinalState', True)],
+                          'str',
+                          True)
 
-        self.addAttribute('animFinalState_Plotter',
+        self.addAttribute('animFinalState_plotter',
                           'imshow',
-                          [('animFinalState',1)],
-                          False,
-                          False,
-                          str)
+                          [('animFinalState',True)],
+                          'str',
+                          True)
 
-        self.addAttribute('animFinalState_Args',
-                          None,
-                          [('animFinalState',1)],
-                          False,
-                          True,
-                          None)
+        self.addAttribute('animFinalState_args',
+                          {},
+                          [('animFinalState',True)],
+                          'dict',
+                          True)
 
-        self.addAttribute('animFinalState_ArgsInit',
-                          None,
-                          [('animFinalState',1)],
-                          False,
-                          True,
-                          None)
+        self.addAttribute('animFinalState_argsInit',
+                          {},
+                          [('animFinalState',True)],
+                          'dict',
+                          True)
 
-        self.addAttribute('animFinalState_ArgsFinal',
-                          None,
-                          [('animFinalState',1)],
-                          False,
-                          True,
-                          None)
+        self.addAttribute('animFinalState_argsFinal',
+                          {},
+                          [('animFinalState',True)],
+                          'dict',
+                          True)
 
         self.addAttribute('animFinalState_colorBar',
-                          1,
-                          [('animFinalState',1)],
-                          False,
-                          False,
-                          int)
+                          True,
+                          [('animFinalState',True)],
+                          'bool',
+                          True)
 
         self.addAttribute('animFinalState_cmapName',
                           'jet',
-                          [('animFinalState_colorBar',1)],
-                          False,
-                          False,
-                          str)
+                          [('animFinalState_colorBar',True)],
+                          'str',
+                          True)
 
         self.addAttribute('animFinalState_timeTextPBar',
-                          1,
-                          [('animFinalState',1)],
-                          False,
-                          False,
-                          int)
-
+                          True,
+                          [('animFinalState',True)],
+                          'str',
+                          True)
 
         self.addAttribute('animFinalState_xLabel',
                           '',
-                          [('animFinalState',1)],
-                          False,
-                          False,
-                          str)
+                          [('animFinalState',True)],
+                          'str',
+                          False)
 
         self.addAttribute('animFinalState_yLabel',
                           '',
-                          [('animFinalState',1)],
-                          False,
-                          False,
-                          str)
+                          [('animFinalState',True)],
+                          'str',
+                          False)
 
         self.addAttribute('animFinalState_cLabel',
                           '',
-                          [('animFinalState',1)],
-                          False,
-                          False,
-                          str)
+                          [('animFinalState',True)],
+                          'str',
+                          False)
 
         self.addAttribute('animFinalState_extendX',
                           0.0,
-                          [('animFinalState',1)],
-                          False,
-                          False,
-                          float)
+                          [('animFinalState',True)],
+                          'float',
+                          True)
 
         self.addAttribute('animFinalState_extendY',
                           0.0,
-                          [('animFinalState',1)],
-                          False,
-                          False,
-                          float)
+                          [('animFinalState',True)],
+                          'float',
+                          True)
 
         self.addAttribute('animFinalState_nbrXTicks',
-                          0,
-                          [('animFinalState',1)],
-                          False,
-                          False,
-                          int)
+                          2,
+                          [('animFinalState',True)],
+                          'int',
+                          True)
 
         self.addAttribute('animFinalState_nbrYTicks',
-                          0,
-                          [('animFinalState',1)],
-                          False,
-                          False,
-                          int)
+                          2,
+                          [('animFinalState',True)],
+                          'int',
+                          True)
 
         self.addAttribute('animFinalState_nbrCTicks',
-                          0,
-                          [('animFinalState',1)],
-                          False,
-                          False,
-                          int)
+                          5,
+                          [('animFinalState',True)],
+                          'int',
+                          True)
 
-        self.addAttribute('animFinalState_xTicksRound',
+        self.addAttribute('animFinalState_xTicksDecimals',
                           1,
-                          [('animFinalState',1)],
-                          False,
-                          False,
-                          int)
+                          [('animFinalState',True)],
+                          'int',
+                          True)
 
-
-        self.addAttribute('animFinalState_yTicksRound',
+        self.addAttribute('animFinalState_yTicksDecimals',
                           1,
-                          [('animFinalState',1)],
-                          False,
-                          False,
-                          int)
+                          [('animFinalState',True)],
+                          'int',
+                          True)
 
-        self.addAttribute('animFinalState_cTicksRound',
-                          1,
-                          [('animFinalState',1)],
-                          False,
-                          False,
-                          int)
+        self.addAttribute('animFinalState_cTicksDecimals',
+                          2,
+                          [('animFinalState',True)],
+                          'int',
+                          True)
 
         self.addAttribute('animFinalState_order',
                           'horizontalFirst',
-                          [('animFinalState',1)],
-                          False,
-                          False,
-                          str)
+                          [('animFinalState',True)],
+                          'str',
+                          True)
 
         self.addAttribute('animFinalState_extendDirection',
                           'vertical',
-                          [('animFinalState',1)],
-                          False,
-                          False,
-                          str)
+                          [('animFinalState',True)],
+                          'str',
+                          True)

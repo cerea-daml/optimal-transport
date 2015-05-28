@@ -38,9 +38,9 @@ def plotFinalStateMultiSim(outputDirList,
                            nbrXTicks,
                            nbrYTicks,
                            nbrCTicks,
-                           xTicksRound,
-                           yTicksRound,
-                           cticksRound,
+                           xTicksDecimals,
+                           yTicksDecimals,
+                           cticksDecimals,
                            order,
                            extendDirection,
                            extensionsList,
@@ -69,13 +69,13 @@ def plotFinalStateMultiSim(outputDirList,
             plotMatrix(ax, finit, plotter='contour', vmin=mini, vmax=maxi, **kwargsInit)
             plotMatrix(ax, ffinal, plotter='contour', vmin=mini, vmax=maxi, **kwargsFinal)
 
-            adaptAxesExtent(ax, xmin, xmax, ymin, ymax, extendX, extendY, nbrXTicks, nbrYTicks, xTicksRound, yTicksRound, EPSILON)
+            adaptAxesExtent(ax, xmin, xmax, ymin, ymax, extendX, extendY, nbrXTicks, nbrYTicks, xTicksDecimals, yTicksDecimals, EPSILON)
             addTitleLabelsGrid(ax, title=label, xLabel=xLabel, yLabel=yLabel, grid=False)
 
         gs.tight_layout(figure, rect=figureRect(colorBar, timeTextPBar))
 
         if colorBar:
-            addColorBar(plt, timeTextPBar, cmapName, mini, maxi, nbrCTicks, cticksRound, cLabel)
+            addColorBar(plt, timeTextPBar, cmapName, mini, maxi, nbrCTicks, cticksDecimals, cLabel)
 
         if timeTextPBar:
             addTimeTextPBar(plt, t, Pmax+1)
