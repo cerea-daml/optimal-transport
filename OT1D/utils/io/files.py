@@ -10,3 +10,6 @@ def fileFinalState(outputDir):
 
 def fileConfig(outputDir):
     return outputDir + 'config.bin'
+
+def fileResult(outputDir):
+    return outputDir + 'result.bin'

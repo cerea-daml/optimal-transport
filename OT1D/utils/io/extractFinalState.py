@@ -5,8 +5,9 @@
 import numpy   as np
 import cPickle as pck
 
-from files import fileFinalState
-from files import fileConfig
+from extractConfig import extractConfig
+from files         import fileFinalState
+#from files import fileConfig
 
 from ..interpolate.interpolate import interpolateTimeFinalStateMultiSim
 
@@ -38,19 +39,13 @@ def reverseTime(f):
 
 def extractFinalState(outputDir):
 
-    f              = open(fileFinalState(outputDir),'rb')
+    f              = open(fileFinalState(outputDir), 'rb')
     p              = pck.Unpickler(f)
     finalState     = p.load()
     f.close()
 
-    f              = open(fileConfig(outputDir),'rb')
-    p              = pck.Unpickler(f)
-    try:
-        while True:
-            config = p.load()
-    except:
-        f.close()
-
+    config         = extractConfig(outputDir)
+ 
     if config.swappedInitFinal:
         finit  = config.boundaries.temporalBoundaries.bt1
         ffinal = config.boundaries.temporalBoundaries.bt0
