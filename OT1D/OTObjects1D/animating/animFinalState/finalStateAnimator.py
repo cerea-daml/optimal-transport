@@ -20,8 +20,11 @@ class FinalStateAnimator:
         if not self.animatingConfig.animFinalState == 1:
             return
 
-        MovieWriter = makeMovieWriter(self.animatingConfig.writerName, self.animatingConfig.writerFPS, self.animatingConfig.writerCodec, 
-                                      self.animatingConfig.writerBitrate, self.animatingConfig.writerExtraArgs)
+        MovieWriter = makeMovieWriter(self.animatingConfig.writerName,
+                                      self.animatingConfig.writerFPS,
+                                      self.animatingConfig.writerCodec, 
+                                      self.animatingConfig.writerBitrate, 
+                                      self.animatingConfig.writerExtraArgs)
 
         if self.animatingConfig.animFinalState_transparencyFunction == 'defaultTransparency':
             transparencyFunction = defaultTransparency
@@ -40,19 +43,24 @@ class FinalStateAnimator:
         animation = makeAnimFinalStateMultiSim(outputDirList,
                                                labelList,
                                                transparencyFunction,
-                                               bool(self.animatingConfig.animFinalState_addLegend),
-                                               bool(self.animatingConfig.animFinalState_grid),
-                                               bool(self.animatingConfig.animFinalState_addTimeTextPbar),
+                                               self.animatingConfig.animFinalState_legend,
+                                               self.animatingConfig.animFinalState_grid,
+                                               self.animatingConfig.animFinalState_timeTextPBar,
                                                self.animatingConfig.animFinalState_xLabel,
                                                self.animatingConfig.animFinalState_yLabel,
+                                               self.animatingConfig.animFinalState_extendX,
+                                               self.animatingConfig.animFinalState_extendY,
                                                self.animatingConfig.animFinalState_nbrXTicks,
                                                self.animatingConfig.animFinalState_nbrYTicks,
-                                               self.animatingConfig.animFinalState_xTicksRound,
-                                               self.animatingConfig.animFinalState_yTicksRound,
+                                               self.animatingConfig.animFinalState_xTicksDecimals,
+                                               self.animatingConfig.animFinalState_yTicksDecimals,
                                                self.animatingConfig.animFinalState_order,
                                                self.animatingConfig.animFinalState_extendDirection,
                                                self.animatingConfig.funcAnimArgs,
                                                self.animatingConfig.EPSILON)
 
-        saveAnimation(animation, self.animatingConfig.figDir, self.animatingConfig.animFinalState_prefixFigName,
-                      self.animatingConfig.extension, MovieWriter)
+        saveAnimation(animation,
+                      self.animatingConfig.figDir,
+                      self.animatingConfig.animFinalState_prefixFigName,
+                      self.animatingConfig.extension, 
+                      MovieWriter)

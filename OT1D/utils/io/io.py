@@ -31,3 +31,25 @@ def fileNameSuffix(i,iMaxP1):
     while len(s) < nDigit:
         s = '0'+s
     return s
+
+def readLines(fileName, strip=True, removeBlancks=True, commentChar='#', includeEmptyLines=False):
+    f     = open(fileName, 'r')
+    lines = f.readlines()
+    f.close()
+
+    filteredLines = []
+
+    for line in lines:
+        l = line.replace('\n','')
+        if strip:
+            l = l.strip()
+        if removeBlancks:
+            l = l.replace(' ','')
+        if commentChar is not None:
+            l = l.split(commentChar)[0]
+        if l == '' and includeEmptyLines:
+            filteredLines.append(l)
+        if not l == '':
+            filteredLines.append(l)
+
+    return filteredLines

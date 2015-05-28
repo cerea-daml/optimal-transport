@@ -12,7 +12,7 @@ def positionsTimeTxtPbar():
 
     return (xTxt, yTxt, xPbarStart, xPbarEnd, yPbar)
 
-def figureRect(colorBar=True, timeTextPBar=True):
+def figureRect(colorBar, timeTextPBar):
     xStart = 0.0
     if colorBar:
         xEnd = 0.85
@@ -26,7 +26,7 @@ def figureRect(colorBar=True, timeTextPBar=True):
 
     return [xStart, yStart, xEnd, yEnd]
 
-def colorBarRect(timeTextPBar=True):
+def colorBarRect(timeTextPBar):
     xStart = 0.87
     xEnd   = 0.93
 

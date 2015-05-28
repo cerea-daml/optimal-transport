@@ -2,7 +2,7 @@
 # definePlotSubplots.py
 #######################
 
-def defaultPlotSubplots(iterOrTime = 'iterations', xScale='log', yScale='log', grid=True):
+def defaultPlotSubplots(iterOrTime, xScale, yScale, grid):
     columnsList         = [[[0]], 
                            [[1]], 
                            [[2]], 
@@ -32,7 +32,7 @@ def defaultPlotSubplots(iterOrTime = 'iterations', xScale='log', yScale='log', g
 
     return zip(columnsList, xAxisList, xScaleList, yScaleList, xLabelList, yLabelList, titleList, gridList, fileNameSuffixList)
 
-def customPlotSubplots(iterOrTime = 'iterations', xScale='log', yScale='log', grid=True):
+def customPlotSubplots(iterOrTime, xScale, yScale, grid):
     columnsList         = [[[0],[1]],
                            [[2]],
                            [[2],[2,3,4,5,6]],

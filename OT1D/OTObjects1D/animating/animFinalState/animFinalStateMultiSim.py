@@ -6,12 +6,9 @@
 #
 
 import numpy                as np
-import cPickle              as pck
 import matplotlib.pyplot    as plt
 
-from matplotlib           import gridspec
 from matplotlib.animation import FuncAnimation
-from scipy.interpolate    import interp1d
 
 from ....utils.io.extractFinalState import extractFinalStateMultiSim
 from ....utils.plotting.plot        import makeAxesGrid
@@ -27,15 +24,17 @@ from ....utils.plotting.positions   import figureRect
 def makeAnimFinalStateMultiSim(outputDirList,
                                labelList,
                                transparencyFunction,
-                               addLegend,
+                               legend,
                                grid,
-                               addTimeTextPbar,
+                               timeTextPBar,
                                xLabel,
                                yLabel,
+                               extendX,
+                               extendY,
                                nbrXTicks,
                                nbrYTicks,
-                               xTicksRound,
-                               yTicksRound,
+                               xTicksDecimals,
+                               yTicksDecimals,
                                order,
                                extendDirection,
                                kwargsFuncAnim,
@@ -60,13 +59,13 @@ def makeAnimFinalStateMultiSim(outputDirList,
         lineInit,    = plot(ax, finit, X, options[np.mod(1, nModOptions)], label='$f_{init}$', alpha=alphaInit)
         lineFinal,   = plot(ax, ffinal, X, options[np.mod(2, nModOptions)], label='$f_{final}$', alpha=alphaFinal)
         
-        adaptAxesExtent(ax, xmin, xmax, mini, maxi, 0.0, 0.05, nbrXTicks, nbrYTicks, xTicksRound, yTicksRound, EPSILON)
-        addTitleLabelsGrid(ax, title=label, xLabel=xLabel, yLabel=yLabel, grid=grid)
-        if addLegend:
-            tryAddCustomLegend(ax, makeRoom=True)
+        adaptAxesExtent(ax, xmin, xmax, mini, maxi, extendX, extendY, nbrXTicks, nbrYTicks, xTicksDecimals, yTicksDecimals, EPSILON)
+        addTitleLabelsGrid(ax, label, xLabel, yLabel, grid)
+        if legend:
+            tryAddCustomLegend(ax, True)
 
-    gs.tight_layout(figure, rect=figureRect(addColorBar=False, addTimeTextPBar=addTimeTextPbar))
-    if addTimeTextPbar:
+    gs.tight_layout(figure, rect=figureRect(False, timeTextPBar))
+    if timeTextPBar:
         (TTPBax, ret) = addTimeTextPBar(plt, 0, Pmax+1)
 
     def animate(t):
@@ -83,12 +82,12 @@ def makeAnimFinalStateMultiSim(outputDirList,
             lineFinal,   = plot(ax, ffinal, X, options[np.mod(2, nModOptions)], label='$f_{final}$', alpha=alphaFinal)
             ret.extend([lineInit,lineFinal,lineCurrent])
 
-            adaptAxesExtent(ax, xmin, xmax, mini, maxi, 0.0, 0.05, nbrXTicks, nbrYTicks, xTicksRound, yTicksRound, EPSILON)
-            addTitleLabelsGrid(ax, title=label, xLabel=xLabel, yLabel=yLabel, grid=grid)
-            if addLegend:
-                tryAddCustomLegend(ax, makeRoom=False)
+            adaptAxesExtent(ax, xmin, xmax, mini, maxi, extendX, extendY, nbrXTicks, nbrYTicks, xTicksDecimals, yTicksDecimals, EPSILON)
+            addTitleLabelsGrid(ax, label, xLabel, yLabel, grid)
+            if legend:
+                tryAddCustomLegend(ax, False)
 
-        if addTimeTextPbar:
+        if timeTextPBar:
             TTPBax.cla()
             ret.extend(plotTimeTextPBar(TTPBax, t, Pmax+1))
 

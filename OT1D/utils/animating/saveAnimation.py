@@ -6,7 +6,7 @@ from matplotlib.animation import AVConvWriter
 from matplotlib.animation import FFMpegWriter
 from matplotlib.animation import MencoderWriter
 
-def makeMovieWriter(writerName='ffmpeg', writerFPS=5, writerCodec=None, writerBitrate=None, writerExtraArgs=None):
+def makeMovieWriter(writerName, writerFPS, writerCodec, writerBitrate, writerExtraArgs):
     if writerName == 'avconv':
         return AVConvWriter(fps=writerFPS, codec=writerCodec, bitrate=writerBitrate, extra_args=writerExtraArgs, metadata=None)
     elif writerName == 'ffmpeg':

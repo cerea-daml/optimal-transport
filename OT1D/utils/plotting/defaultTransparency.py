@@ -7,9 +7,9 @@ def defaultTransparency(t):
 
 def fastVanishingTransparency(t):
     if t < 0.6:
-        return 0.
+        return 0.0
     else:
-        return 1. + (1./0.4)*(t-1.)
+        return 1. + ( 1.0 / 0.4 ) * ( t - 1.0 )
 
 def customTransparency(t):
-    return max(t,0.25)
+    return min(max(t, 0.25), 0.9)

@@ -29,7 +29,7 @@ def plottingOptionsMultiSim():
     (m, n) = options.shape
     return (options, m, n)
 
-def tryAddCustomLegend(ax, makeRoom=True):
+def tryAddCustomLegend(ax, makeRoom):
     if makeRoom:
         divider = make_axes_locatable(ax)
         lax     = divider.append_axes('right', '10%',frameon=False)
@@ -41,7 +41,7 @@ def tryAddCustomLegend(ax, makeRoom=True):
     except:
         ax.legend(fontsize='xx-small', loc='center right', bbox_to_anchor=(1.13, 0.5), fancybox=True)
 
-def makeGrid(nbrOfItems, extendDirection='vertical'):
+def makeGrid(nbrOfItems, extendDirection):
     nColumns = int(np.floor(np.sqrt(nbrOfItems)))
     nLines   = nColumns
 
@@ -56,7 +56,7 @@ def makeGrid(nbrOfItems, extendDirection='vertical'):
 
     return (nLines, nColumns)
 
-def makeAxesGrid(plt, nbrOfItems, order='horizontalFirst', extendDirection='vertical'):
+def makeAxesGrid(plt, nbrOfItems, order, extendDirection):
     (nLines, nColumns) = makeGrid(nbrOfItems, extendDirection)
     gs                 = gridspec.GridSpec(nLines, nColumns)
     axes               = []
@@ -73,17 +73,17 @@ def makeAxesGrid(plt, nbrOfItems, order='horizontalFirst', extendDirection='vert
 
     return (gs, axes)
 
-def addTitleLabelsGrid(ax, title=None, xLabel=None, yLabel=None, grid=False):
-    if title is not None:
+def addTitleLabelsGrid(ax, title, xLabel, yLabel, grid):
+    if bool(title):
         ax.set_title(title)
-    if xLabel is not None:
+    if bool(xLabel):
         ax.set_xlabel(xLabel)
-    if yLabel is not None:
+    if bool(yLabel):
         ax.set_ylabel(yLabel)
     if grid:
         ax.grid()
 
-def trySetScale(ax, xScale=None, yScale=None):
+def trySetScale(ax, xScale, yScale):
     if xScale is not None:
         try:
             ax.set_xscale(xScale)
@@ -127,15 +127,15 @@ def plotTimeTextPBar(ax, t, tMax):
     adaptAxesExtent(ax, 0.0, 1.0, -0.5, 0.5, 0.0, 0.0, 0, 0, 1, 1, 0.0)
     return ret
 
-def adaptAxesExtent(ax, xmin, xmax, ymin, ymax, extendX, extendY, nbrXTicks, nbrYTicks, xTicksRound, yTicksRound, EPSILON):    
+def adaptAxesExtent(ax, xmin, xmax, ymin, ymax, extendX, extendY, nbrXTicks, nbrYTicks, xTicksDecimals, yTicksDecimals, EPSILON):    
     xExtend = max(xmax - xmin, EPSILON)
     yExtend = max(ymax - ymin, EPSILON)
 
     ax.set_xlim(xmin-xExtend*extendX, xmax+xExtend*extendX)
     ax.set_ylim(ymin-yExtend*extendY, ymax+yExtend*extendY)
 
-    xTicks = np.linspace(xmin, xmax, nbrXTicks).round(decimals=xTicksRound).tolist()
-    yTicks = np.linspace(ymin, ymax, nbrYTicks).round(decimals=yTicksRound).tolist()
+    xTicks = np.linspace(xmin, xmax, nbrXTicks).round(decimals=xTicksDecimals).tolist()
+    yTicks = np.linspace(ymin, ymax, nbrYTicks).round(decimals=yTicksDecimals).tolist()
 
     ax.set_xticks(xTicks)
     ax.set_yticks(yTicks)

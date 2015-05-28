@@ -5,7 +5,6 @@
 from definePlotSubplots  import defaultPlotSubplots
 from definePlotSubplots  import customPlotSubplots
 
-from plotAnalyse         import plotAnalyse
 from plotAnalyseMultiSim import plotAnalyseMultiSim
 
 class AnalysePlotter:
@@ -17,17 +16,27 @@ class AnalysePlotter:
         if not self.plottingConfig.plotAnalyse == 1:
             return
 
-        if self.plottingConfig.plotSubplotsFunctionName == 'customPlotSubplots':
+        if self.plottingConfig.plotAnalyse_plotSubplotsFunction == 'customPlotSubplots':
             plotSubplotsFunction = customPlotSubplots
-        elif self.plottingConfig.plotSubplotsFunctionName == 'defaultPlotSubplots':
+        elif self.plottingConfig.plotAnalyse_plotSubplotsFunction == 'defaultPlotSubplots':
             plotSubplotsFunction = defaultPlotSubplots
 
-        plotSubplots = plotSubplotsFunction(**self.plottingConfig.plotSubplotsFunctionArgs)
+        plotSubplots = plotSubplotsFunction(self.plottingConfig.plotAnalyse_plotSubplots_iterOrTime,
+                                            self.plottingConfig.plotAnalyse_plotSubplots_xScale,
+                                            self.plottingConfig.plotAnalyse_plotSubplots_yScale,
+                                            self.plottingConfig.plotAnalyse_plotSubplots_grid)
 
+        
         if self.plottingConfig.singleOrMulti == 0:
-            plotAnalyse(self.plottingConfig.outputDir[0], self.plottingConfig.figDir, self.plottingConfig.prefixFigNameAnalyse, 
-                        plotSubplots, self.plottingConfig.extension)
-
+            outputDirList = self.plottingConfig.outputDir[0]
+            labelList     = self.plottingConfig.label[0]
         elif self.plottingConfig.singleOrMulti == 1:
-            plotAnalyseMultiSim(self.plottingConfig.outputDir, self.plottingConfig.figDir, self.plottingConfig.prefixFigNameAnalyse, 
-                                self.plottingConfig.label, plotSubplots, self.plottingConfig.extension)
+            outputDirList = self.plottingConfig.outputDir
+            labelList     = self.plottingConfig.label
+
+        plotAnalyseMultiSim(outputDirList,
+                            self.plottingConfig.figDir,
+                            self.plottingConfig.plotAnalyse_prefixFigName, 
+                            labelList,
+                            plotSubplots,
+                            self.plottingConfig.extension)

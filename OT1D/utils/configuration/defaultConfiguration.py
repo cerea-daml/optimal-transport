@@ -2,6 +2,24 @@
 # defaultConfiguration.py
 #########################
 
+from ..io.io import readLines
+
+def catListOfString(l):
+    res = ''
+    for s in l:
+        res += s
+    return res
+
+def cast(toType, s):
+    if toType == 'str':
+        return s
+    elif toType == 'float':
+        return float(s)
+    elif toType == 'int':
+        return int(s)
+    elif toType == 'bool':
+        return ( s == 'True' )
+
 class DefaultConfiguration(object):
 
     def __init__(self, configFile=None):
@@ -13,99 +31,86 @@ class DefaultConfiguration(object):
     def __repr__(self):
         return 'DefaultConfiguration class'
 
+    def replaceByDefaultValue(self, attr):
+        self.__setattr__(attr, self.defaultValues[attr])
+        if self.printWarning[attr]:
+            print('No valid element found for '+attr)
+            print('Replaced by default value : ')
+            print(self.defaultValues[attr])
+
+    def checkAttribute(self, attr):
+        if self.attributeType[attr] == 'dict':
+            if self.__getattribute__(attr) == {}:
+                self.replaceByDefaultValue(attr)
+        elif self.attributeType[attr] == 'list':
+            if self.__getattribute__(attr) == []:
+                self.replaceByDefaultValue(attr)
+        else:
+            if not self.__dict__.has_key(attr):
+                self.replaceByDefaultValue(attr)
+
     def checkAttributes(self):
         for attr in self.attributes:
-            if self.isSubAttribute[attr] == [] and not self.isDict[attr]:
-                if self.isList[attr]:
-                    if self.__getattribute__(attr) == []:
-                        print('No valid element found for list '+attr+' .')
-                        print('Filling by default value : '+str(self.defaultValues[attr])+' .')
-                        self.__setattr__(attr, self.defaultValues[attr])
-                elif not self.__dict__.has_key(attr):
-                    print('No valid value found for parameter '+attr+'.')
-                    print('Replacing by default value : '+str(self.defaultValues[attr])+' .')
-                    self.__setattr__(attr, self.defaultValues[attr])
+            if self.isSubAttribute[attr] == []:
+                self.checkAttribute(attr)
 
         for attr in self.attributes:
-            if len(self.isSubAttribute[attr]) > 0 and not self.isDict[attr]:
+            if len(self.isSubAttribute[attr]) > 0:
                 parentAttributesCompatible = True
                 for (parentAttr, parentValue) in self.isSubAttribute[attr]:
                     if not self.__getattribute__(parentAttr) == parentValue:
                         parentAttributesCompatible = False
                         break
                 if parentAttributesCompatible:
-
-                    if self.isList[attr]:
-                        if self.__getattribute__(attr) == []:# and self.defaultValues[attr] is not None:
-                            print('No valid element found for list '+attr+' .')
-                            print('Filling by default value : '+str(self.defaultValues[attr])+' .')
-                            self.__setattr__(attr, self.defaultValues[attr])
-                    elif not self.__dict__.has_key(attr):
-                        print('No valid value found for parameter '+attr+'.')
-                        print('Replacing by default value : '+str(self.defaultValues[attr])+' .')
-                        self.__setattr__(attr, self.defaultValues[attr])
+                    self.checkAttribute(attr)
 
     def fromfile(self, fileName):
-        try:
-            f = open(fileName,'r')
-            lines = f.readlines()
-            f.close()
-        except:
-            return
+        lines = readLines(fileName, strip=True, removeBlancks=True, commentChar='#', includeEmptyLines=False)
 
-        filteredLines = []
         for line in lines:
-            l = line.strip().replace(' ','').split('#')[0]
-            if not l == '':
-                filteredLines.append(l)
-
-        for line in filteredLines:
             try:
-                l         = line.split('=')
-                attrName  = l[0]
-                attrValue = l[1]
+            #if True:
+                members   = line.split('=')
+                attrName  = members.pop(0)
+                attrValue = catListOfString(members)
 
-                if not attrValue == '':
-                    for attr in self.attributes:
-                        if attrName == attr:
-                            if self.isList[attr]:
-                                self.__getattribute__(attr).append(self.attributeType[attr](attrValue))
-                            elif self.isDict[attr]:
-                                val   = attrValue.split(':')
-                                value = val[2]
-                                if val[1] == 'int':
-                                    value = int(value)
-                                elif val[1] == 'float':
-                                    value = float(value)
-                                elif val[1] == 'bool':
-                                    value = ( value == 'True' )
+                if not attrValue == '' and attrName in self.attributes:
+                    
+                    if self.attributeType[attrName] == 'dict':
+                        members = attrValue.split(':')
+                        key     = members.pop(0)
+                        if '&None&' in catListOfString(members):
+                            value = None
+                        else:
+                            value = cast(members.pop(0), catListOfString(members))
+                        self.__getattribute__(attrName)[key] = value
 
-                                self.__getattribute__(attr)[val[0]] = value
-                            else:
-                                self.__setattr__(attr, self.attributeType[attr](attrValue))
+                    elif self.attributeType[attrName] == 'list':
+                        members = attrValue.split(':')
+                        self.__getattribute__(attrName).append(cast(members.pop(0), catListOfString(members)))
+
+                    else:
+                        self.__setattr__(attrName, cast(self.attributeType[attrName], attrValue))
             except:
-                print('Could not interpret line :')
-                print(line)
+                print('Could not read line :'+line)
 
     def initListsAndDicts(self):
         for attr in self.attributes:
-            if self.isList[attr]:
+            if self.attributeType[attr] == 'list':                
                 self.__setattr__(attr, [])
-            elif self.isDict[attr]:
+            elif self.attributeType[attr] == 'dict':
                 self.__setattr__(attr, {})
 
     def defaultAttributes(self):
         self.attributes     = []
         self.defaultValues  = {}
         self.isSubAttribute = {}
-        self.isList         = {}
-        self.isDict         = {}
         self.attributeType  = {}
+        self.printWarning   = {}
 
-    def addAttribute(self, attrName, defaultVal, subAttr, isList, isDict, attrType):
+    def addAttribute(self, attrName, defaultVal, isSubAttr, attrType, printWarning):
         self.attributes.append(attrName)
         self.defaultValues[attrName]  = defaultVal
-        self.isSubAttribute[attrName] = subAttr
-        self.isList[attrName]         = isList
-        self.isDict[attrName]         = isDict
+        self.isSubAttribute[attrName] = isSubAttr
         self.attributeType[attrName]  = attrType
+        self.printWarning[attrName]   = printWarning

@@ -24,8 +24,8 @@ writerCodec     =
 writerBitrate   = 
 writerExtraArgs = 
 
-extension       = .mp4
-extension       = .avi
+extension       = str : .mp4
+extension       = str : .avi
 
 #__________________________________________________
 # FuncAnimation arguments
@@ -35,28 +35,28 @@ funcAnimArgs = blit : bool : true
 # Output directory and associated labels
 # For multiple simulations, just duplicate these lines
 # For single simulation, only the first line will be used 
-outputDir = ./
-label     = sim0
-outputDir = ./
-label     = sim1
+outputDir = str : ./
+label     = str : sim0
+outputDir = str : ./
+label     = str : sim1
 
 #__________________________________________________
 # Animate final state
-# 0 -> False
-# 1 -> True
-animFinalState = 1
+animFinalState = True
 
 # Options for animating final state
-animFinalState_prefixFigName        = finalState
+animFinalState_prefixFigName        = finalState_
 animFinalState_transparencyFunction = customTransparency
-animFinalState_addLegend            = 1
-animFinalState_grid                 = 1
-animFinalState_addTimeTextPbar      = 1
+animFinalState_legend               = True
+animFinalState_grid                 = True
+animFinalState_timeTextPBar         = True
 animFinalState_xLabel               = $x$
 animFinalState_yLabel               =
+animFinalState_extendX              = 0.0
+animFinalState_extendY              = 0.05
 animFinalState_nbrXTicks            = 5
 animFinalState_nbrYTicks            = 5
-animFinalState_xTicksRound          = 2
-animFinalState_yTicksRound          = 2
+animFinalState_xTicksDecimals       = 2
+animFinalState_yTicksDecimals       = 2
 animFinalState_order                = horizontalFirst
 animFinalState_extendDirection      = vertical

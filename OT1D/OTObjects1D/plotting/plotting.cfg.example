@@ -20,51 +20,49 @@ figDir = ./
 # Extension for figures
 # You may want to try more than one extension
 # in that case, just duplicate this line
-extension = .pdf
-extension = .eps
+extension = str : .pdf
+extension = str : .eps
 
 #__________________________________________________
 # Output directory and associated labels
 # For multiple simulations, just duplicate these lines
 # For single simulation, only the first line will be used 
-outputDir = ./
-label     = sim0
-outputDir = ./
-label     = sim1
+outputDir = str : ./
+label     = str : sim0
+outputDir = str : ./
+label     = str : sim1
 
 #__________________________________________________
 # Plot analyse
-# 0 -> False
-# 1 -> True
-plotAnalyse = 1
+plotAnalyse = True
 
 # Defining plotSubplots
-plotSubplotsFunctionName = customPlotSubplots
-prefixFigNameAnalyse     = analyse
+plotAnalyse_plotSubplotsFunction    = customPlotSubplots
+plotAnalyse_prefixFigName           = analyse_
 
 # Arguments for definining plotSubplots
-plotSubplotsFunctionArgs = iterOrTime : str  : iterations
-plotSubplotsFunctionArgs = xScale     : str  : log
-plotSubplotsFunctionArgs = yScale     : str  : log
-plotSubplotsFunctionArgs = grid       : bool : True
+plotAnalyse_plotSubplots_iterOrTime = iterations
+plotAnalyse_plotSubplots_xScale     = log
+plotAnalyse_plotSubplots_yScale     = log
+plotAnalyse_plotSubplots_grid       = True
 
 #__________________________________________________
 # Plot final state
-# 0 -> False
-# 1 -> True
-plotFinalState = 1
+plotFinalState = True
 
 # Options for plotting final state
-plotFinalState_prefixFigName        = finalState
+plotFinalState_prefixFigName        = finalState_
 plotFinalState_transparencyFunction = customTransparency
-plotFinalState_addLegend            = 1
-plotFinalState_grid                 = 1
-plotFinalState_addTimeTextPbar      = 1
+plotFinalState_legend               = True
+plotFinalState_grid                 = True
+plotFinalState_timeTextPBar         = True
 plotFinalState_xLabel               = $x$
 plotFinalState_yLabel               = 
+plotFinalState_extendX              = 0.0
+plotFinalState_extendY              = 0.05
 plotFinalState_nbrXTicks            = 5
 plotFinalState_nbrYTicks            = 5
-plotFinalState_xTicksRound          = 1
-plotFinalState_yTicksRound          = 1
+plotFinalState_xTicksDecimals       = 2
+plotFinalState_yTicksDecimals       = 2
 plotFinalState_order                = horizontalFirst
 plotFinalState_extendDirection      = vertical
