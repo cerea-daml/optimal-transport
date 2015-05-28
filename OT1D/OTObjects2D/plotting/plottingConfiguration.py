@@ -38,114 +38,233 @@ class PlottingConfiguration(DefaultConfiguration):
     def defaultAttributes(self):
         DefaultConfiguration.defaultAttributes(self)
 
-        self.attributes.append('EPSILON')
-        self.defaultValues['EPSILON']                   = 1.e-8
-        self.isSubAttribute['EPSILON']                  = []
-        self.isList['EPSILON']                          = False
-        self.isDict['EPSILON']                          = False
-        self.attributeType['EPSILON']                   = float
+        self.addAttribute('EPSILON',
+                          1.e-8,
+                          [],
+                          False,
+                          False,
+                          float)
 
-        self.attributes.append('singleOrMulti')
-        self.defaultValues['singleOrMulti']             = 0
-        self.isSubAttribute['singleOrMulti']            = []
-        self.isList['singleOrMulti']                    = False
-        self.isDict['singleOrMulti']                    = False
-        self.attributeType['singleOrMulti']             = int
+        self.addAttribute('singleOrMulti',
+                          0,
+                          [],
+                          False,
+                          False,
+                          int)
 
-        self.attributes.append('figDir')
-        self.defaultValues['figDir']                    = './figures/'
-        self.isSubAttribute['figDir']                   = []
-        self.isList['figDir']                           = False
-        self.isDict['figDir']                           = False
-        self.attributeType['figDir']                    = str
+        self.addAttribute('figDir',
+                          ['./figures/'],
+                          [],
+                          False,
+                          False,
+                          str)
 
-        self.attributes.append('extension')
-        self.defaultValues['extension']                 = ['.pdf']
-        self.isSubAttribute['extension']                = []
-        self.isList['extension']                        = True
-        self.isDict['extension']                        = False
-        self.attributeType['extension']                 = str
+        self.addAttribute('extension',
+                          ['.pdf'],
+                          [],
+                          True,
+                          False,
+                          str)
+        
+        self.addAttribute('outputDir',
+                          ['./output/'],
+                          [],
+                          True,
+                          False,
+                          str)
 
-        self.attributes.append('outputDir')
-        self.defaultValues['outputDir']                 = ['./output/']
-        self.isSubAttribute['outputDir']                = []
-        self.isList['outputDir']                        = True
-        self.isDict['outputDir']                        = False
-        self.attributeType['outputDir']                 = str
+        self.addAttribute('label',
+                          ['sim0'],
+                          [],
+                          True,
+                          False,
+                          str)
 
-        self.attributes.append('label')
-        self.defaultValues['label']                     = ['sim0']
-        self.isSubAttribute['label']                    = []
-        self.isList['label']                            = True
-        self.isDict['label']                            = False
-        self.attributeType['label']                     = str
+        self.addAttribute('plotAnalyse',
+                          1,
+                          [],
+                          False,
+                          False,
+                          int)
 
-        self.attributes.append('plotAnalyse')
-        self.defaultValues['plotAnalyse']               = 1
-        self.isSubAttribute['plotAnalyse']              = []
-        self.isList['plotAnalyse']                      = False
-        self.isDict['plotAnalyse']                      = False
-        self.attributeType['plotAnalyse']               = int
+        self.addAttribute('plotSubplotsFunctionName',
+                          'customPlotSubplots',
+                          [('plotAnalyse', 1)],
+                          False,
+                          False,
+                          str)
 
-        self.attributes.append('plotSubplotsFunctionName')
-        self.defaultValues['plotSubplotsFunctionName']  = 'customPlotSubplots' 
-        self.isSubAttribute['plotSubplotsFunctionName'] = [('plotAnalyse', 1)]
-        self.isList['plotSubplotsFunctionName']         = False
-        self.isDict['plotSubplotsFunctionName']         = False
-        self.attributeType['plotSubplotsFunctionName']  = str
+        self.addAttribute('prefixFigNameAnalyse',
+                          'analyse',
+                          [('plotAnalyse', 1)],
+                          False,
+                          False,
+                          str)
 
-        self.attributes.append('prefixFigNameAnalyse')
-        self.defaultValues['prefixFigNameAnalyse']      = 'analyse' 
-        self.isSubAttribute['prefixFigNameAnalyse']     = [('plotAnalyse', 1)]
-        self.isList['prefixFigNameAnalyse']             = False
-        self.isDict['prefixFigNameAnalyse']             = False
-        self.attributeType['prefixFigNameAnalyse']      = str
+        self.addAttribute('plotSubplotsFunctionArgs',
+                          None,
+                          [('plotAnalyse', 1)],
+                          False,
+                          True,
+                          None)
 
-        self.attributes.append('plotSubplotsFunctionArgs')
-        self.defaultValues['plotSubplotsFunctionArgs']  = None
-        self.isSubAttribute['plotSubplotsFunctionArgs'] = [('plotAnalyse', 1)]
-        self.isList['plotSubplotsFunctionArgs']         = False
-        self.isDict['plotSubplotsFunctionArgs']         = True
-        self.attributeType['plotSubplotsFunctionArgs']  = None
+        self.addAttribute('plotFinalState',
+                          1,
+                          [],
+                          False,
+                          False,
+                          int)
 
-        self.attributes.append('plotFinalState')
-        self.defaultValues['plotFinalState']            = 1
-        self.isSubAttribute['plotFinalState']           = []
-        self.isList['plotFinalState']                   = False
-        self.isDict['plotFinalState']                   = False
-        self.attributeType['plotFinalState']            = int
+        self.addAttribute('plotFinalState_prefixFigName',
+                          'finalState',
+                          [('plotFinalState',1)],
+                          False,
+                          False,
+                          str)
 
-        self.attributes.append('prefixFigNameFinalState')
-        self.defaultValues['prefixFigNameFinalState']   = 'finalState'
-        self.isSubAttribute['prefixFigNameFinalState']  = [('plotFinalState',1)]
-        self.isList['prefixFigNameFinalState']          = False
-        self.isDict['prefixFigNameFinalState']          = False
-        self.attributeType['prefixFigNameFinalState']   = str
+        self.addAttribute('plotFinalState_transparencyFunction',
+                          'customTransparency',
+                          [('plotFinalState',1)],
+                          False,
+                          False,
+                          str)
 
-        self.attributes.append('transparencyFunctionName')
-        self.defaultValues['transparencyFunctionName']  = 'customTransparency'
-        self.isSubAttribute['transparencyFunctionName'] = [('plotFinalState',1)]
-        self.isList['transparencyFunctionName']         = False
-        self.isDict['transparencyFunctionName']         = False
-        self.attributeType['transparencyFunctionName']  = str
+        self.addAttribute('plotFinalState_Plotter',
+                          'imshow',
+                          [('plotFinalState',1)],
+                          False,
+                          False,
+                          str)
 
-        self.attributes.append('plotFinalStatePlotter')
-        self.defaultValues['plotFinalStatePlotter']     = 'imshow'
-        self.isSubAttribute['plotFinalStatePlotter']    = [('plotFinalState',1)]
-        self.isList['plotFinalStatePlotter']            = False
-        self.isDict['plotFinalStatePlotter']            = False
-        self.attributeType['plotFinalStatePlotter']     = str
+        self.addAttribute('plotFinalState_Args',
+                          None,
+                          [('plotFinalState',1)],
+                          False,
+                          True,
+                          None)
 
-        self.attributes.append('plotFinalStateArgs')
-        self.defaultValues['plotFinalStateArgs']        = None 
-        self.isSubAttribute['plotFinalStateArgs']       = [('plotFinalState',1)]
-        self.isList['plotFinalStateArgs']               = False
-        self.isDict['plotFinalStateArgs']               = True
-        self.attributeType['plotFinalStateArgs']        = None
+        self.addAttribute('plotFinalState_ArgsInit',
+                          None,
+                          [('plotFinalState',1)],
+                          False,
+                          True,
+                          None)
 
-        self.attributes.append('plotFinalStateArgsInit')
-        self.defaultValues['plotFinalStateArgsInit']    = None
-        self.isSubAttribute['plotFinalStateArgsInit']   = [('plotFinalState',1)]
-        self.isList['plotFinalStateArgsInit']           = False
-        self.isDict['plotFinalStateArgsInit']           = True
-        self.attributeType['plotFinalStateArgsInit']    = None
+        self.addAttribute('plotFinalState_ArgsFinal',
+                          None,
+                          [('plotFinalState',1)],
+                          False,
+                          True,
+                          None)
+
+        self.addAttribute('plotFinalState_colorBar',
+                          1,
+                          [('plotFinalState',1)],
+                          False,
+                          False,
+                          int)
+
+        self.addAttribute('plotFinalState_cmapName',
+                          'jet',
+                          [('plotFinalState_colorBar',1)],
+                          False,
+                          False,
+                          str)
+
+        self.addAttribute('plotFinalState_timeTextPBar',
+                          1,
+                          [('plotFinalState',1)],
+                          False,
+                          False,
+                          int)
+
+        self.addAttribute('plotFinalState_xLabel',
+                          '',
+                          [('plotFinalState',1)],
+                          False,
+                          False,
+                          str)
+
+        self.addAttribute('plotFinalState_yLabel',
+                          '',
+                          [('plotFinalState',1)],
+                          False,
+                          False,
+                          str)
+
+        self.addAttribute('plotFinalState_cLabel',
+                          '',
+                          [('plotFinalState',1)],
+                          False,
+                          False,
+                          str)
+
+        self.addAttribute('plotFinalState_extendX',
+                          0.0,
+                          [('plotFinalState',1)],
+                          False,
+                          False,
+                          float)
+
+        self.addAttribute('plotFinalState_extendY',
+                          0.0,
+                          [('plotFinalState',1)],
+                          False,
+                          False,
+                          float)
+
+        self.addAttribute('plotFinalState_nbrXTicks',
+                          0,
+                          [('plotFinalState',1)],
+                          False,
+                          False,
+                          int)
+
+        self.addAttribute('plotFinalState_nbrYTicks',
+                          0,
+                          [('plotFinalState',1)],
+                          False,
+                          False,
+                          int)
+
+        self.addAttribute('plotFinalState_nbrCTicks',
+                          0,
+                          [('plotFinalState',1)],
+                          False,
+                          False,
+                          int)
+
+        self.addAttribute('plotFinalState_xTicksRound',
+                          1,
+                          [('plotFinalState',1)],
+                          False,
+                          False,
+                          int)
+
+        self.addAttribute('plotFinalState_yTicksRound',
+                          1,
+                          [('plotFinalState',1)],
+                          False,
+                          False,
+                          int)
+
+        self.addAttribute('plotFinalState_cTicksRound',
+                          1,
+                          [('plotFinalState',1)],
+                          False,
+                          False,
+                          int)
+
+        self.addAttribute('plotFinalState_order',
+                          'horizontalFirst',
+                          [('plotFinalState',1)],
+                          False,
+                          False,
+                          str)
+
+        self.addAttribute('plotFinalState_extendDirection',
+                          'vertical',
+                          [('plotFinalState',1)],
+                          False,
+                          False,
+                          str)

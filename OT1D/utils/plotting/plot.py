@@ -128,8 +128,8 @@ def plotTimeTextPBar(ax, t, tMax):
     return ret
 
 def adaptAxesExtent(ax, xmin, xmax, ymin, ymax, extendX, extendY, nbrXTicks, nbrYTicks, xTicksRound, yTicksRound, EPSILON):    
-    xExtend    = max(xmax - xmin, EPSILON)
-    yExtend    = max(ymax - ymin, EPSILON)
+    xExtend = max(xmax - xmin, EPSILON)
+    yExtend = max(ymax - ymin, EPSILON)
 
     ax.set_xlim(xmin-xExtend*extendX, xmax+xExtend*extendX)
     ax.set_ylim(ymin-yExtend*extendY, ymax+yExtend*extendY)

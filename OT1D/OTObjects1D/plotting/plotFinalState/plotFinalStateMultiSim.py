@@ -46,8 +46,8 @@ def plotFinalStateMultiSim(outputDirList,
     (options, nModOptions)                  = plottingOptions()
     (fs, finits, ffinals, mini, maxi, Pmax) = extractFinalStateMultiSim(outputDirList)
 
-    xmin   = 0.0
-    xmax   = 1.0
+    xmin = 0.0
+    xmax = 1.0
 
     for t in xrange(Pmax+2):
         alphaInit  = transparencyFunction(1.-float(t)/(Pmax+1))

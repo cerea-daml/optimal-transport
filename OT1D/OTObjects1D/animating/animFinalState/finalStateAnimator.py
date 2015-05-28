@@ -9,7 +9,6 @@ from ....utils.plotting.defaultTransparency import customTransparency
 from ....utils.animating.saveAnimation      import makeMovieWriter
 from ....utils.animating.saveAnimation      import saveAnimation
 
-#from animFinalState         import makeAnimFinalState
 from animFinalStateMultiSim                 import makeAnimFinalStateMultiSim
 
 class FinalStateAnimator:

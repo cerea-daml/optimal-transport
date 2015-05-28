@@ -19,4 +19,7 @@ def saveAnimation(anim, figDir, prefixFigName, extensionsList, writer):
     for extension in extensionsList:
         figName = figDir + prefixFigName + extension
         print('Saving '+figName+' ...')
-        anim.save(figName, writer=writer)
+        try:
+            anim.save(figName, writer=writer)
+        except:
+            print('Could not write '+figName+' ...')

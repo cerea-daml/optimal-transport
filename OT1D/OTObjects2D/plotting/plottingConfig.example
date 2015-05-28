@@ -55,17 +55,33 @@ plotSubplotsFunctionArgs = grid       : bool : True
 plotFinalState = 1
 
 # Options for plotting final state
-prefixFigNameFinalState  = finalState
-transparencyFunctionName = customTransparency 
+plotFinalState_prefixFigName        = finalState
+plotFinalState_transparencyFunction = customTransparency
+plotFinalState_Plotter              = imshow
+plotFinalState_Args                 = interpolation : str   : nearest
+plotFinalState_ArgsInit             = colors        : str   : k
+plotFinalState_ArgsInit             = linestyles    : str   : solid
+plotFinalState_ArgsInit             = linewidths    : float : 1.5 
+plotFinalState_ArgsFinal            = colors        : str   : k
+plotFinalState_ArgsFinal            = linestyles    : str   : solid
+plotFinalState_ArgsFinal            = linewidths    : float : 1.5 
+plotFinalState_colorBar             = 1
+plotFinalState_cmapName             = jet
+plotFinalState_timeTextPBar         = 1
+plotFinalState_xLabel               = $x$
+plotFinalState_yLabel               = $y$
+plotFinalState_cLabel               = $f$
+plotFinalState_extendX              = 0.0
+plotFinalState_extendY              = 0.0
+plotFinalState_nbrXTicks            = 2
+plotFinalState_nbrYTicks            = 2
+plotFinalState_nbrCTicks            = 5
+plotFinalState_xTicksRound          = 1
+plotFinalState_yTicksRound          = 1
+plotFinalState_cTicksRound          = 2
+plotFinalState_order                = horizontalFirst
+plotFinalState_extendDirection      = vertical
 
-plotFinalStatePlotter    = imshow
-plotFinalStateArgs       = interpolation : str   : nearest
 
-plotFinalStateArgsInit   = colors        : str   : k
-plotFinalStateArgsInit   = linestyles    : str   : solid
-plotFinalStateArgsInit   = linewidths    : float : 1.5 
 
-plotFinalStateArgsFinal  = colors        : str   : k
-plotFinalStateArgsFinal  = linestyles    : str   : solid
-plotFinalStateArgsFinal  = linewidths    : float : 1.5 
 

@@ -102,3 +102,10 @@ class DefaultConfiguration(object):
         self.isDict         = {}
         self.attributeType  = {}
 
+    def addAttribute(self, attrName, defaultVal, subAttr, isList, isDict, attrType):
+        self.attributes.append(attrName)
+        self.defaultValues[attrName]  = defaultVal
+        self.isSubAttribute[attrName] = subAttr
+        self.isList[attrName]         = isList
+        self.isDict[attrName]         = isDict
+        self.attributeType[attrName]  = attrType
