@@ -11,8 +11,8 @@
 #
 
 import cPickle as pck
-import time as tm
-import numpy as np
+import time    as tm
+import numpy   as np
 
 from ..OTObject import OTObject
 
@@ -44,7 +44,7 @@ class Algorithm( OTObject ):
 
             f = open(fileState, 'wb')
             p = pck.Pickler(f,protocol=-1)
-            p.dump(self.stateN.convergingStaggeredField())
+            p.dump(self.stateN)
             f.close()
 
             f   = open(fileTmap, 'wb')
@@ -104,7 +104,7 @@ class Algorithm( OTObject ):
                 try:
                     f = open(fileState, 'rb')
                     p = pck.Unpickler(f)
-                    self.setState( p.load() )
+                    self.setState(p.load(), copy=False)
                     f.close()
                     print ( 'State loaded from '+fileState )
                 except:
@@ -128,7 +128,7 @@ class Algorithm( OTObject ):
                     try:
                         f = open(fileState, 'rb')
                         p = pck.Unpickler(f)
-                        self.setState( p.load() )
+                        self.setState(p.load(), copy=False)
                         f.close()
                         print ( 'State loaded from '+fileState )
                     except:

@@ -5,13 +5,13 @@
 # defines an ADR algorithm for a given configuration
 #
 
-from ..algorithm import Algorithm
-from ...grid import grid
-from ...init.initialFields import initialStaggeredCenteredField
+from ..algorithm                  import Algorithm
+from ...grid                      import grid
+from ...init.initialFields        import initialStaggeredCenteredField
 from ...proximals.defineProximals import proximalForConfig
 
 from adrState import AdrState
-from adrStep import AdrStep
+from adrStep  import AdrStep
 from prox1Adr import Prox1Adr
 
 class AdrAlgorithm( Algorithm ):
@@ -29,13 +29,24 @@ class AdrAlgorithm( Algorithm ):
     def __repr__(self):
         return ( 'ADR algorithm' )
 
-    def setState(self, newState):
-        stagField = newState
-        centField = stagField.interpolation()
-        z = grid.StaggeredCenteredField( self.M , self.N , self.P ,
-                                         stagField, centField )
-        w = z.copy()
-        self.stateN = AdrState( self.M , self.N , self.P , z , w )
+    def setState(self, newState, copy=True):
+        if isinstance(newState, AdrState):
+            if copy:
+                self.stateN = newState.copy()
+            else:
+                self.stateN = newState
+        else:
+            if copy:
+                stagField = newState.convergingStaggeredField().copy()
+            else:
+                stagField = newState.convergingStaggeredField()
+
+            centField   = stagField.interpolation()
+            z           = grid.StaggeredCenteredField( self.M , self.N , self.P ,
+                                                       stagField, centField )
+            w           = z.copy()
+            self.stateN = AdrState( self.M , self.N , self.P , z , w )
+
         self.stateNP1 = self.stateN.copy()
 
     def initialize(self):

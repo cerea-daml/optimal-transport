@@ -41,7 +41,7 @@ def extractFinalState(outputDir):
 
     f              = open(fileFinalState(outputDir), 'rb')
     p              = pck.Unpickler(f)
-    finalState     = p.load()
+    finalState     = p.load().convergingStaggeredField()
     f.close()
 
     config         = extractConfig(outputDir)
