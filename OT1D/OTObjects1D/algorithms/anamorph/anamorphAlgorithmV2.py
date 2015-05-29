@@ -124,7 +124,16 @@ class AnamorphAlgorithm( OTObject ):
         CDFFinal  *= CDFInit[NN-1] / CDFFinal[NN-1]
 
         CDFFinalMap = interp1d(XI, CDFFinal)
-        iCDFInitMap = interp1d(CDFInit, XI)
+
+        CDFInitPP         = np.zeros(NN+2)
+        CDFInitPP[1:NN+1] = CDFInit[:]
+        CDFInitPP[0]      = CDFInit[0] - 1.
+        CDFInitPP[NN+1]   = CDFInit[NN-1] + 1.
+        XIPP              = np.zeros(NN+2)
+        XIPP[1:NN+1]      = XI[:]
+        XIPP[0]           = XI[0]
+        XIPP[NN+1]        = XI[NN-1]
+        iCDFInitMap = interp1d(CDFInitPP, XIPP)
 
         # T = CDFInit^(-1) o CDFFinal
         def Tmap(x):

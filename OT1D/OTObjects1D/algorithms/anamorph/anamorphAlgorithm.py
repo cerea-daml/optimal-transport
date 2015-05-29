@@ -6,7 +6,6 @@
 #
 
 import cPickle as pck
-import pickle 
 
 import time as tm
 import numpy as np
