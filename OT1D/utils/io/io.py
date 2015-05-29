@@ -45,7 +45,7 @@ def readLines(fileName, strip=True, removeBlancks=True, commentChar='#', include
             l = l.strip()
         if removeBlancks:
             l = l.replace(' ','')
-        if commentChar is not None:
+        if commentChar:
             l = l.split(commentChar)[0]
         if l == '' and includeEmptyLines:
             filteredLines.append(l)
