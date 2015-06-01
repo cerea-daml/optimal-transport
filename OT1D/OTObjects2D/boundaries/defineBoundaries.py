@@ -8,16 +8,16 @@
 import numpy as np
 from scipy.interpolate import interp1d
 
-from ...utils.io   import extensionOfFile
-from ...utils.io   import arrayFromFile
-from ..grid        import grid
+from ...utils.io.io import extensionOfFile
+from ...utils.io.io import arrayFromFile
+from ..grid         import grid
 
-from gaussian      import defaultBoundaryGaussian
-from gaussian      import defaultBoundaryGaussian2
-from gaussianSplit import defaultBoundaryGaussianSplit1
-from gaussianSplit import defaultBoundaryGaussianSplit2
-from gaussianSine  import defaultBoundaryGaussianSine
-from gaussianSine  import defaultBoundaryGaussianCosine
+from gaussian       import defaultBoundaryGaussian
+from gaussian       import defaultBoundaryGaussian2
+from gaussianSplit  import defaultBoundaryGaussianSplit1
+from gaussianSplit  import defaultBoundaryGaussianSplit2
+from gaussianSine   import defaultBoundaryGaussianSine
+from gaussianSine   import defaultBoundaryGaussianCosine
 
 def boundariesForConfig(config):
     # default configurations
@@ -90,10 +90,10 @@ def boundariesFromFile(config):
     except:
         raise IOError('Could not cast temporal boundaries into arrays')
 
-    if len(bt0.shape == 1):
+    if len(bt0.shape) == 1:
         bt0 = bt0.reshape((config.M+1,config.N+1))
 
-    if len(bt1.shape == 1):
+    if len(bt1.shape) == 1:
         bt1 = bt1.reshape((config.M+1,config.N+1))
 
     if ( not len(bt0.shape) == 2 or

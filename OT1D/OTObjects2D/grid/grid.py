@@ -1435,11 +1435,11 @@ class DivergenceTemporalBoundaries( OTObject ):
         OTObject.__init__( self ,
                            M , N , P )
         if divergence is None:
-            self.divergence = Divergence( N , P )
+            self.divergence = Divergence( M , N , P )
         else:
             self.divergence = divergence
         if temporalBoundaries is None:
-            self.temporalBoundaries = TemporalBoundaries( N , P )
+            self.temporalBoundaries = TemporalBoundaries( M , N , P )
         else:
             self.temporalBoundaries = temporalBoundaries
 
@@ -1889,12 +1889,12 @@ class CenteredFieldTemporalBoundaries( OTObject ):
         OTObject.__init__( self ,
                            M , N , P )
         if centeredField is None:
-            self.centeredField = CenteredField( N , P )
+            self.centeredField = CenteredField( M , N , P )
         else:
             self.centeredField = centeredField
 
         if temporalBoundaries is None:
-            self.temporalBoundaries = TemporalBoundaries( N , P )
+            self.temporalBoundaries = TemporalBoundaries( M , N , P )
         else:
             self.temporalBoundaries = temporalBoundaries
 

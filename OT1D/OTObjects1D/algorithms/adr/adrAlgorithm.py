@@ -29,13 +29,24 @@ class AdrAlgorithm( Algorithm ):
     def __repr__(self):
         return ( 'ADR algorithm' )
 
-    def setState(self, newState):
-        stagField = newState
-        centField = stagField.interpolation()
-        z = grid.StaggeredCenteredField( self.config.N , self.config.P ,
-                                         stagField, centField )
-        w = z.copy()
-        self.stateN = AdrState( self.config.N , self.config.P , z , w )
+    def setState(self, newState, copy=True):
+        if isinstance(newState, AdrState):
+            if copy:
+                self.stateN = newState.copy()
+            else:
+                self.stateN = newState
+        else:
+            if copy:
+                stagField = newState.convergingStaggeredField().copy()
+            else:
+                stagField = newState.convergingStaggeredField()
+
+            centField   = stagField.interpolation()
+            z           = grid.StaggeredCenteredField( self.N , self.P ,
+                                                     stagField, centField )
+
+            self.stateN = AdrState( self.N , self.P , z , z.copy() )
+
         self.stateNP1 = self.stateN.copy()
 
     def initialize(self):

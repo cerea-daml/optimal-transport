@@ -1,13 +1,11 @@
 #!/usr/bin/env python 
-import sys
-from OT1D.OTObjects1D.analyse.computeOperators import applyAllOperators
-from OT1D.OTObjects1D.configuration            import Configuration
 
-sys.argv.pop(0)
-arguments = dict()
-for arg in sys.argv:
-    members               = arg.split('=')
-    arguments[members[0]] = members[1]
+from OT1D.utils.sys.argv                       import extractArgv
+from OT1D.OTObjects1D.configuration            import Configuration
+from OT1D.OTObjects1D.analyse.computeOperators import applyAllOperators
+
+# Extract Arguments
+arguments      = extractArgv()
 
 try:
     configFile = arguments['CONFIG_FILE']
@@ -16,4 +14,5 @@ try:
 except:
     outputDir  = arguments['OUTPUT_DIR']
 
+# Analyse
 applyAllOperators(outputDir)

@@ -66,7 +66,7 @@ def applyOperators(listOfOperators1, listOfOperators2, outputDir, printDetails=F
     fileFinalState = outputDir + 'finalState.bin'
     f = open(fileFinalState, 'rb')
     p = pck.Unpickler(f)
-    finalState = p.load()
+    finalState = p.load().convergingStaggeredField()
     f.close()
 
     fileStates = outputDir + 'states.bin'

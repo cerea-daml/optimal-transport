@@ -1,0 +1,68 @@
+#__________________________________________________
+# Example of configuration file for plotting
+#__________________________________________________
+
+#__________________________________________________
+# Tolerance value for testings 
+EPSILON = 1.e-8
+
+#__________________________________________________
+# Plot single simulation or multiple simulations
+# 0 -> single sim
+# 1 -> multi  sim
+singleOrMulti = 0
+
+#__________________________________________________
+# Figures output directory
+figDir = ./
+
+#__________________________________________________
+# Extension for figures
+# You may want to try more than one extension
+# in that case, just duplicate this line
+extension = str : .pdf
+extension = str : .eps
+
+#__________________________________________________
+# Output directory and associated labels
+# For multiple simulations, just duplicate these lines
+# For single simulation, only the first line will be used 
+outputDir = str : ./
+label     = str : sim0
+outputDir = str : ./
+label     = str : sim1
+
+#__________________________________________________
+# Plot analyse
+plotAnalyse = True
+
+# Defining plotSubplots
+plotAnalyse_plotSubplotsFunction    = customPlotSubplots
+plotAnalyse_prefixFigName           = analyse_
+
+# Arguments for definining plotSubplots
+plotAnalyse_plotSubplots_iterOrTime = iterations
+plotAnalyse_plotSubplots_xScale     = log
+plotAnalyse_plotSubplots_yScale     = log
+plotAnalyse_plotSubplots_grid       = True
+
+#__________________________________________________
+# Plot final state
+plotFinalState = True
+
+# Options for plotting final state
+plotFinalState_prefixFigName        = finalState_
+plotFinalState_transparencyFunction = customTransparency
+plotFinalState_legend               = True
+plotFinalState_grid                 = True
+plotFinalState_timeTextPBar         = True
+plotFinalState_xLabel               = $x$
+plotFinalState_yLabel               = 
+plotFinalState_extendX              = 0.0
+plotFinalState_extendY              = 0.05
+plotFinalState_nbrXTicks            = 5
+plotFinalState_nbrYTicks            = 5
+plotFinalState_xTicksDecimals       = 2
+plotFinalState_yTicksDecimals       = 2
+plotFinalState_order                = horizontalFirst
+plotFinalState_extendDirection      = vertical
