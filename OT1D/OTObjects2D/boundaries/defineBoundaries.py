@@ -90,10 +90,10 @@ def boundariesFromFile(config):
     except:
         raise IOError('Could not cast temporal boundaries into arrays')
 
-    if len(bt0.shape == 1):
+    if len(bt0.shape) == 1:
         bt0 = bt0.reshape((config.M+1,config.N+1))
 
-    if len(bt1.shape == 1):
+    if len(bt1.shape) == 1:
         bt1 = bt1.reshape((config.M+1,config.N+1))
 
     if ( not len(bt0.shape) == 2 or
