@@ -1,24 +1,12 @@
-#########################
+#________________________
 # defaultConfiguration.py
-#########################
+#________________________
 
-from ..io.io import readLines
+from ..io.io        import readLines
+from ..types.cast   import castString
+from ..types.string import catListOfString
 
-def catListOfString(l):
-    res = ''
-    for s in l:
-        res += s
-    return res
-
-def cast(toType, s):
-    if toType == 'str':
-        return s
-    elif toType == 'float':
-        return float(s)
-    elif toType == 'int':
-        return int(s)
-    elif toType == 'bool':
-        return ( s == 'True' )
+#__________________________________________________
 
 class DefaultConfiguration(object):
 
@@ -28,8 +16,12 @@ class DefaultConfiguration(object):
         self.fromfile(configFile)
         self.checkAttributes()
 
+    #_________________________
+
     def __repr__(self):
         return 'DefaultConfiguration class'
+        
+    #_________________________
 
     def replaceByDefaultValue(self, attr):
         self.__setattr__(attr, self.defaultValues[attr])
@@ -37,6 +29,8 @@ class DefaultConfiguration(object):
             print('No valid element found for '+attr)
             print('Replaced by default value : ')
             print(self.defaultValues[attr])
+
+    #_________________________
 
     def checkAttribute(self, attr):
         if self.attributeType[attr] == 'dict':
@@ -48,6 +42,8 @@ class DefaultConfiguration(object):
         else:
             if not self.__dict__.has_key(attr):
                 self.replaceByDefaultValue(attr)
+    
+    #_________________________
 
     def checkAttributes(self):
         for attr in self.attributes:
@@ -64,12 +60,13 @@ class DefaultConfiguration(object):
                 if parentAttributesCompatible:
                     self.checkAttribute(attr)
 
+    #_________________________
+
     def fromfile(self, fileName):
         lines = readLines(fileName, strip=True, removeBlancks=True, commentChar='#', includeEmptyLines=False)
 
         for line in lines:
             try:
-            #if True:
                 members   = line.split('=')
                 attrName  = members.pop(0)
                 attrValue = catListOfString(members)
@@ -82,17 +79,19 @@ class DefaultConfiguration(object):
                         if '&None&' in catListOfString(members):
                             value = None
                         else:
-                            value = cast(members.pop(0), catListOfString(members))
+                            value = castString(members.pop(0), catListOfString(members))
                         self.__getattribute__(attrName)[key] = value
 
                     elif self.attributeType[attrName] == 'list':
                         members = attrValue.split(':')
-                        self.__getattribute__(attrName).append(cast(members.pop(0), catListOfString(members)))
+                        self.__getattribute__(attrName).append(castString(members.pop(0), catListOfString(members)))
 
                     else:
-                        self.__setattr__(attrName, cast(self.attributeType[attrName], attrValue))
+                        self.__setattr__(attrName, castString(self.attributeType[attrName], attrValue))
             except:
                 print('Could not read line :'+line)
+
+    #_________________________
 
     def initListsAndDicts(self):
         for attr in self.attributes:
@@ -101,6 +100,8 @@ class DefaultConfiguration(object):
             elif self.attributeType[attr] == 'dict':
                 self.__setattr__(attr, {})
 
+    #_________________________
+
     def defaultAttributes(self):
         self.attributes     = []
         self.defaultValues  = {}
@@ -108,9 +109,91 @@ class DefaultConfiguration(object):
         self.attributeType  = {}
         self.printWarning   = {}
 
-    def addAttribute(self, attrName, defaultVal, isSubAttr, attrType, printWarning):
+    #_________________________
+
+    def addAttribute(self, attrName, defaultVal=None, isSubAttr=[], attrType='str', printWarning=True):
         self.attributes.append(attrName)
         self.defaultValues[attrName]  = defaultVal
         self.isSubAttribute[attrName] = isSubAttr
         self.attributeType[attrName]  = attrType
         self.printWarning[attrName]   = printWarning
+
+    #_________________________
+
+    def writeConfig(self, fileName):
+        def writeElement(f, e):
+            if isinstance(e, str):
+                f.write(' str : '+e+'\n')
+            elif isinstance(e, int):
+                f.write(' int : '+str(e)+'\n')
+            elif isinstance(e, float):
+                f.write(' float : '+str(e)+'\n')
+            elif isinstance(e, bool):
+                f.write(' bool : '+str(e)+'\n')
+
+        f = open(fileName, 'w')
+        f.write('#'+self.__repr__()+'\n')
+
+        for attr in self.attributes:
+            try:
+                attrType = self.attributeType[attr]
+
+                if attrType == 'list':
+                    l = self.__getattribute__(attr)
+
+                    for e in l:
+                        f.write(attr+' =')
+                        writeElement(f, e)
+
+                elif attrType == 'dict':
+                    d = self.__getattribute__(attr)
+                    
+                    for key in d:
+                        e = d[key]
+                        f.write(attr+' = '+key+' :')
+                        writeElement(f, e)
+
+                else:
+                    f.write(attr+' = '+str(self.__getattribute__(attr))+'\n')
+            except:
+                pass
+
+
+        f.close()
+
+    #_________________________
+
+    def printConfig(self):
+        def printElement(e):
+            if isinstance(e, str):
+                return (' str : '+e)
+            elif isinstance(e, int):
+                return (' int : '+str(e))
+            elif isinstance(e, float):
+                return (' float : '+str(e))
+            elif isinstance(e, bool):
+                return (' bool : '+str(e))
+
+        for attr in self.attributes:
+            try:
+                attrType = self.attributeType[attr]
+
+                if attrType == 'list':
+                    l = self.__getattribute__(attr)
+
+                    for e in l:
+                        print(attr+' ='+printElement(e))
+
+                elif attrType == 'dict':
+                    d = self.__getattribute__(attr)
+
+                    for key in d:
+                        e = d[key]
+                        print(attr+' = '+key+' :'+printElement(e))
+        
+                else:
+                    print(attr+' = '+str(self.__getattribute__(attr)))
+
+            except:
+                pass
+#__________________________________________________
