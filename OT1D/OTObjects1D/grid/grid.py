@@ -611,6 +611,9 @@ class TemporalBoundaries( oto.OTObject ):
     def massDefault(self):
         return ( self.P * ( self.bt0.sum() - self.bt1.sum() ) )
 
+    def scalingMassDefault(self):
+        return ( self.P * ( self.bt0.sum() + self.bt1.sum() ) )
+
     def LInftyNorm(self):
         return np.max( [ abs(self.bt0).max() , abs(self.bt1).max() ] )
 
@@ -766,6 +769,9 @@ class SpatialBoundaries( oto.OTObject ):
     def massDefault(self):
         return ( self.N * ( self.bx0.sum() - self.bx1.sum() ) )
 
+    def scalingMassDefault(self):
+        return ( self.N * ( abs(self.bx0.sum()) + abs(self.bx1.sum()) ) )
+
     def LInftyNorm(self):
         return np.max( [ abs(self.bx0).max() , abs(self.bx1).max() ] )
 
@@ -913,6 +919,16 @@ class Boundaries( oto.OTObject ):
 
     def massDefault(self):
         return ( self.temporalBoundaries.massDefault() + self.spatialBoundaries.massDefault() )
+
+    def scalingMassDefault(self):
+        return ( self.temporalBoundaries.scalingMassDefault() + self.spatialBoundaries.scalingMassDefault() )
+
+    def relativeMassDefault(self):
+        scaling = self.scalingMassDefault()
+        if scaling == 0.0:
+            return 0.0
+        else:
+            return self.massDefault() / scaling
 
     def LInftyNorm(self):
         return np.max( [ self.temporalBoundaries.LInftyNorm() , self.spatialBoundaries.LInftyNorm() ] )
@@ -1094,8 +1110,15 @@ class DivergenceBoundaries( oto.OTObject ):
         return ( self.divergence.sum() +
                  self.boundaries.massDefault() )
 
+    def relativeMassDefault(self):
+        scaling = abs(self.divergence.sum()) + self.boundaries.scalingMassDefault()
+        if scaling == 0.0 :
+            return 0.0
+        else:
+            return self.massDefault() / scaling
+
     def correctMassDefault(self, EPS):
-        deltaM = self.massDefault()
+        deltaM = self.relativeMassDefault()
 
         if abs(deltaM) > EPS:
             nbrPts = ( (self.N+1.)*(self.P+1.) +
@@ -1108,7 +1131,7 @@ class DivergenceBoundaries( oto.OTObject ):
             self.boundaries.temporalBoundaries.bt0 -= deltaM / ( self.P * nbrPts )
             self.boundaries.temporalBoundaries.bt1 += deltaM / ( self.P * nbrPts )
 
-            deltaM = self.massDefault()
+            deltaM = self.relativeMassDefault()
         return deltaM
 
     def random( N , P ):

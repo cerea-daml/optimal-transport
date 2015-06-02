@@ -46,7 +46,7 @@ def boundariesForConfig(config):
         config.boundaries.spatialBoundaries = grid.SpatialBoundaries( config.N , config.P )
 
     if config.dynamics == 0 or config.dynamics == 1:
-        delta = config.boundaries.massDefault()
+        delta = config.boundaries.relativeMassDefault()
         if delta > config.EPSILON:
             print ('Changing dynamics because mass default is not compatible with dynamics=0.')
 
