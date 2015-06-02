@@ -13,7 +13,7 @@ class AnalysePlotter:
         self.plottingConfig = plottingConfig
 
     def plot(self):
-        if not self.plottingConfig.plotAnalyse == 1:
+        if self.plottingConfig.plotAnalyse:
             return
 
         if self.plottingConfig.plotAnalyse_plotSubplotsFunction == 'customPlotSubplots':
@@ -28,8 +28,8 @@ class AnalysePlotter:
 
         
         if self.plottingConfig.singleOrMulti == 0:
-            outputDirList = self.plottingConfig.outputDir[0]
-            labelList     = self.plottingConfig.label[0]
+            outputDirList = [self.plottingConfig.outputDir[0]]
+            labelList     = [self.plottingConfig.label[0]]
         elif self.plottingConfig.singleOrMulti == 1:
             outputDirList = self.plottingConfig.outputDir
             labelList     = self.plottingConfig.label

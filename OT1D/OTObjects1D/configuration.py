@@ -125,11 +125,11 @@ class Configuration(DefaultConfiguration):
         self.addAttribute('outputDir',
                           defaultVal='./output/')
 
-        self.addAttribute('M',
+        self.addAttribute('N',
                           defaultVal=32,
                           attrType='int')
 
-        self.addAttribute('N',
+        self.addAttribute('P',
                           defaultVal=32,
                           attrType='int')
 

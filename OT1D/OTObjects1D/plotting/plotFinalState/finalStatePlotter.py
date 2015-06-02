@@ -14,7 +14,7 @@ class FinalStatePlotter:
         self.plottingConfig = plottingConfig
 
     def plot(self):
-        if not self.plottingConfig.plotFinalState == 1:
+        if self.plottingConfig.plotFinalState:
             return
 
         if self.plottingConfig.plotFinalState_transparencyFunction == 'defaultTransparency':

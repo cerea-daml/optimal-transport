@@ -17,7 +17,7 @@ class FinalStateAnimator:
         self.animatingConfig = animatingConfig
 
     def animate(self):
-        if not self.animatingConfig.animFinalState == 1:
+        if not self.animatingConfig.animFinalState:
             return
 
         MovieWriter = makeMovieWriter(self.animatingConfig.writerName,
