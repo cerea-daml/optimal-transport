@@ -39,10 +39,12 @@ normType = 0
 
 #__________________________________________________
 # Files for boundaryType = 0
-filef0 = f0.bin
-filef1 = f1.bin
-filem0 = m0.bin
-filem1 = m1.bin
+filef0  = f0.bin
+filef1  = f1.bin
+filemx0 = mx0.bin
+filemx1 = mx1.bin
+filemy0 = my0.bin
+filemy1 = my1.bin
 
 #__________________________________________________
 # Algorithm parameters
