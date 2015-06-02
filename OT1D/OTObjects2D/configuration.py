@@ -192,8 +192,7 @@ class Configuration(DefaultConfiguration):
 
         self.addAttribute('initialInputDir',
                           defaultVal='./',
-                          isSubAttr=[('initial',1)],
-                          attrType='int')
+                          printWarning=False)
 
         self.addAttribute('gamma',
                           defaultVal=1./75.,

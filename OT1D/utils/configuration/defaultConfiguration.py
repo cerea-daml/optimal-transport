@@ -89,7 +89,7 @@ class DefaultConfiguration(object):
                     else:
                         self.__setattr__(attrName, castString(self.attributeType[attrName], attrValue))
             except:
-                print('Could not read line :'+line)
+                print('Could not read line : '+line)
 
     #_________________________
 

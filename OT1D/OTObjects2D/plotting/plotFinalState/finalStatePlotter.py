@@ -14,7 +14,7 @@ class FinalStatePlotter:
         self.plottingConfig = plottingConfig
 
     def plot(self):
-        if not self.plottingConfig.plotFinalState == 1:
+        if not self.plottingConfig.plotFinalState:
             return
 
         if self.plottingConfig.plotFinalState_transparencyFunction == 'defaultTransparency':
@@ -32,7 +32,7 @@ class FinalStatePlotter:
             labelList     = self.plottingConfig.label
 
         cmapName = 'jet'
-        if self.plottingConfig.plotFinalState_colorBar == 1:
+        if self.plottingConfig.plotFinalState_colorBar:
             cmapName = self.plottingConfig.plotFinalState_cmapName
 
         plotFinalStateMultiSim(outputDirList,
