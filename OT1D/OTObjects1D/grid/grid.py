@@ -347,12 +347,18 @@ class CenteredField( Field ):
 
         f      = self.f * ( self.f > 0 ) + 1.0 * ( self.f <= 0 )
         v      = self.m * ( self.f > 0 ) / f
+
+        xV     = np.linspace(0.0, 1.0, self.N+1)
+        tV     = np.linspace(0.0, 1.0, self.P+1)
+        XV,TV  = np.meshgrid(xV, tV, indexing='ij')
+        vmap   = interp2d(XV, TV, v, copy=False, bounds_error=False, fill_value=0.0)
+
+        T      = np.linspace(0.5/fineResolution, 1.0-0.5/fineResolution, fineResolution)
         Tarray = np.linspace(0.0, 1.0, fineResolution)
 
-        for j in xrange(self.P+1):
-            vmap    = interp1d(np.linspace(0.0, 1.0, self.N+1), v[:,j], copy=False, bounds_error=False, fill_value=0.0)
-            Tarray += vmap(Tarray) / self.P
-        
+        for t in T:
+            Tarray += vmap(Tarray, t) / fineResolution
+
         return (np.linspace(0.0, 1.0, fineResolution), Tarray)
 
     def __add__(self, other):
@@ -958,6 +964,10 @@ class Boundaries( oto.OTObject ):
             self.temporalBoundaries.bt1 *= ( mInit / mFinal )
 
         elif normType == 1:
+            # correct mass default by rescaling f0 --> only compatible with zero boundary conditions
+            self.temporalBoundaries.bt0 *= ( mFinal / mInit )
+
+        elif normType == 2:
             # mass exits leftward and rightward
             self.spatialBoundaries.bx0 += 0.5 * ( mFinal - mInit ) / ( self.N * ( self.P + 1 ) )
             self.spatialBoundaries.bx1 -= 0.5 * ( mFinal - mInit ) / ( self.N * ( self.P + 1 ) )
