@@ -13,7 +13,7 @@ class AnalysePlotter:
         self.plottingConfig = plottingConfig
 
     def plot(self):
-        if self.plottingConfig.plotAnalyse:
+        if not self.plottingConfig.plotAnalyse:
             return
 
         if self.plottingConfig.plotAnalyse_plotSubplotsFunction == 'customPlotSubplots':
