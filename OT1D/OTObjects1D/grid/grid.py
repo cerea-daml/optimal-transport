@@ -6,14 +6,15 @@
 #
 
 import numpy as np
-from .. import OTObject as oto
-from ...utils import cardan
+from ..OTOject import OTObject
+from ...utils  import cardan
 
 from scipy.interpolate import interp1d
+from scipy.interpolate import interp2d
 
 #__________________________________________________
 
-class Field( oto.OTObject ):
+class Field( OTObject ):
     '''
     Default class to handle a field (m,f)
     '''
@@ -21,7 +22,7 @@ class Field( oto.OTObject ):
     def __init__( self ,
                   N , P ,
                   m , f ):
-        oto.OTObject.__init__( self ,
+        OTObject.__init__( self ,
                                N , P )
         self.m = m
         self.f = f
@@ -351,13 +352,20 @@ class CenteredField( Field ):
         xV     = np.linspace(0.0, 1.0, self.N+1)
         tV     = np.linspace(0.0, 1.0, self.P+1)
         XV,TV  = np.meshgrid(xV, tV, indexing='ij')
-        vmap   = interp2d(XV, TV, v, copy=False, bounds_error=False, fill_value=0.0)
+        # not sure interp2d works... => MUST CHECK !!!
+        #vmap   = interp2d(XV, TV, v, copy=False, bounds_error=False, fill_value=0.0)
 
         T      = np.linspace(0.5/fineResolution, 1.0-0.5/fineResolution, fineResolution)
         Tarray = np.linspace(0.0, 1.0, fineResolution)
 
         for t in T:
-            Tarray += vmap(Tarray, t) / fineResolution
+            # for using with interp2d:
+            #Tarray += vmap(Tarray, t) / fineResolution
+            # otherwise, with interp1d:
+            jj      = t * self.P
+            j       = int(np.floor(jj))
+            vmap    = interp1d(xV, v[:,j] * (j+1.0-jj) + v[:,j+1] * (jj-j), copy=False, bounds_error=False, fill_value=0.0)
+            Tarray += vmap(Tarray) / fineResolution
 
         return (np.linspace(0.0, 1.0, fineResolution), Tarray)
 
@@ -426,7 +434,7 @@ class CenteredField( Field ):
 
 #__________________________________________________
 
-class Divergence( oto.OTObject ):
+class Divergence( OTObject ):
     '''
     class to handle the divergence of a field
     '''
@@ -434,7 +442,7 @@ class Divergence( oto.OTObject ):
                   N , P ,
                   div=None ):
 
-        oto.OTObject.__init__( self ,
+        OTObject.__init__( self ,
                                N , P )
 
         if div is None:
@@ -565,7 +573,7 @@ class Divergence( oto.OTObject ):
 
 #__________________________________________________
 
-class TemporalBoundaries( oto.OTObject ):
+class TemporalBoundaries( OTObject ):
     '''
     class to store the temporal boundaries of a field
     '''
@@ -573,7 +581,7 @@ class TemporalBoundaries( oto.OTObject ):
     def __init__( self ,
                   N , P ,
                   bt0=None , bt1=None ):
-        oto.OTObject.__init__( self ,
+        OTObject.__init__( self ,
                                N , P )
         if bt0 is None:
             self.bt0 = np.zeros(N+1)
@@ -733,7 +741,7 @@ class TemporalBoundaries( oto.OTObject ):
 
 #__________________________________________________
 
-class SpatialBoundaries( oto.OTObject ):
+class SpatialBoundaries( OTObject ):
     '''
     class to store the spatial boundaries of a field
     '''
@@ -741,7 +749,7 @@ class SpatialBoundaries( oto.OTObject ):
     def __init__( self ,
                   N , P ,
                   bx0=None , bx1=None ):
-        oto.OTObject.__init__( self ,
+        OTObject.__init__( self ,
                                N , P )
         if bx0 is None:
             self.bx0 = np.zeros(P+1)
@@ -886,7 +894,7 @@ class SpatialBoundaries( oto.OTObject ):
 
 #__________________________________________________
 
-class Boundaries( oto.OTObject ):
+class Boundaries( OTObject ):
     '''
     class to store the boundaries of a field
     '''
@@ -894,7 +902,7 @@ class Boundaries( oto.OTObject ):
     def __init__( self ,
                   N , P ,
                   temporalBoundaries=None , spatialBoundaries=None ):
-        oto.OTObject.__init__( self ,
+        OTObject.__init__( self ,
                            N , P )
         if temporalBoundaries is None:
             self.temporalBoundaries = TemporalBoundaries( N , P )
@@ -1077,7 +1085,7 @@ class Boundaries( oto.OTObject ):
 
 #__________________________________________________
 
-class DivergenceBoundaries( oto.OTObject ):
+class DivergenceBoundaries( OTObject ):
     '''
     class to store the divergence and boundary conditions of a field
     '''
@@ -1085,7 +1093,7 @@ class DivergenceBoundaries( oto.OTObject ):
     def __init__( self ,
                   N , P ,
                   divergence=None , boundaries=None ):
-        oto.OTObject.__init__( self ,
+        OTObject.__init__( self ,
                                N , P )
         if divergence is None:
             self.divergence = Divergence( N , P )
@@ -1273,7 +1281,7 @@ class DivergenceBoundaries( oto.OTObject ):
 
 #__________________________________________________
 
-class DivergenceTemporalBoundaries( oto.OTObject ):
+class DivergenceTemporalBoundaries( OTObject ):
     '''
     class to store the divergence and temporal boundary conditions of a field
     '''
@@ -1281,7 +1289,7 @@ class DivergenceTemporalBoundaries( oto.OTObject ):
     def __init__( self ,
                   N , P ,
                   divergence=None , temporalBoundaries=None ):
-        oto.OTObject.__init__( self ,
+        OTObject.__init__( self ,
                                N , P )
         if divergence is None:
             self.divergence = Divergence( N , P )
@@ -1421,7 +1429,7 @@ class DivergenceTemporalBoundaries( oto.OTObject ):
 
 #__________________________________________________
 
-class StaggeredCenteredField( oto.OTObject ):
+class StaggeredCenteredField( OTObject ):
     '''
     class to store a staggered and a centered field
     '''
@@ -1429,7 +1437,7 @@ class StaggeredCenteredField( oto.OTObject ):
     def __init__( self ,
                   N , P ,
                   staggeredField=None , centeredField=None ):
-        oto.OTObject.__init__( self ,
+        OTObject.__init__( self ,
                                N , P )
 
         if staggeredField is None:
@@ -1579,7 +1587,7 @@ class StaggeredCenteredField( oto.OTObject ):
 
 #__________________________________________________
 
-class CenteredFieldBoundaries( oto.OTObject ):
+class CenteredFieldBoundaries( OTObject ):
     '''
     class to store a centered field and boundary conditions
     '''
@@ -1588,7 +1596,7 @@ class CenteredFieldBoundaries( oto.OTObject ):
                   N , P ,
                   centeredField=None , boundaries=None ):
 
-        oto.OTObject.__init__( self ,
+        OTObject.__init__( self ,
                                N , P )
 
         if centeredField is None:
@@ -1729,7 +1737,7 @@ class CenteredFieldBoundaries( oto.OTObject ):
 
 #__________________________________________________
 
-class CenteredFieldTemporalBoundaries( oto.OTObject ):
+class CenteredFieldTemporalBoundaries( OTObject ):
     '''
     class to store a centered field and temporal boundary conditions
     '''
@@ -1737,7 +1745,7 @@ class CenteredFieldTemporalBoundaries( oto.OTObject ):
     def __init__( self ,
                   N , P ,
                   centeredField=None , temporalBoundaries=None ):
-        oto.OTObject.__init__( self ,
+        OTObject.__init__( self ,
                                N , P )
         if centeredField is None:
             self.centeredField = CenteredField( N , P )
