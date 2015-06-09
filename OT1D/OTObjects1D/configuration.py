@@ -9,7 +9,7 @@ from boundaries.defineBoundaries                import boundariesForConfig
 from algorithms.adr.adrAlgorithm                import AdrAlgorithm
 from algorithms.pd.pdAlgorithm                  import PdAlgorithm
 from algorithms.adr3.adr3Algorithm              import Adr3Algorithm
-from algorithms.anamorph.anamorphAlgorithmV3    import AnamorphAlgorithm
+from algorithms.anamorph.anamorphAlgorithm      import AnamorphAlgorithm
 from ..utils.configuration.defaultConfiguration import DefaultConfiguration
 
 #__________________________________________________
@@ -236,6 +236,11 @@ class Configuration(DefaultConfiguration):
         self.addAttribute('omega3',
                           defaultVal=0.33,
                           isSubAttr=[('algoName','adr3')],
+                          attrType='float')
+
+        self.addAttribute('PDFError',
+                          defaultVal=0.001,
+                          isSubAttr=[('algoName','anamorph')],
                           attrType='float')
 
 #__________________________________________________

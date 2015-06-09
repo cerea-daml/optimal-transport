@@ -1,18 +1,62 @@
-#########################
+#________________________
 # Class anamorphAlgorithm
-#########################
+#________________________
 #
 # defines the compute the anamorphose
 #
 
 import cPickle as pck
+import time    as tm
+import numpy   as np
 
-import time as tm
-import numpy as np
 from scipy.interpolate import interp1d
+from scipy.integrate   import cumtrapz
 
-from ...OTObject import OTObject
-from ...grid import grid
+from ...OTObject       import OTObject
+from ...grid           import grid
+from ....utils.io      import files
+
+#__________________________________________________
+
+def makeiT_t_map(t, CDFInit_map, iCDFFinal_map):
+    def T_t_map(x):
+        return ( ( 1.0 - t ) * x + t * iCDFFinal_map(CDFInit_map(x)) )
+    return T_t_map
+
+#__________________________________________________
+
+def makeInterpolatorPP(X, Y, copy=True):
+    if copy:
+        return makeInterpolatorPP(X.copy(), Y.copy(), copy=False)
+
+    XPP       = np.zeros(X.size+2)
+    XPP[1:-1] = X[:]
+    XPP[0]    = X[0] - 1.0
+    XPP[-1]   = X[-1] + 1.0
+
+    YPP       = np.zeros(Y.size+2)
+    YPP[1:-1] = Y[:]
+    YPP[0]    = Y[0] 
+    YPP[-1]   = Y[-1]
+
+    return interp1d(X, Y, copy=False, bounds_error=False, fill_value=0.0)
+
+#__________________________________________________
+
+class AnamorphState( OTObject ):
+    '''
+    class to store the state of an anamorphose Algorithm
+    '''
+
+    def __init__(self, state):
+        self.state = state
+
+    #_________________________
+
+    def convergingStaggeredField(self):
+        return self.state
+
+#__________________________________________________
 
 class AnamorphAlgorithm( OTObject ):
     '''
@@ -23,25 +67,30 @@ class AnamorphAlgorithm( OTObject ):
         self.config = config
         OTObject.__init__(self, config.N , config.P)
         self.state = None
+
+    #_________________________
         
     def __repr__(self):
         return ( 'Anamorphose Algorithm' )
 
+    #_________________________
+
     def saveState(self):
-        fileConfig   = self.config.outputDir + 'config.bin'
-        fileState    = self.config.outputDir + 'finalState.bin'
-        fileRunCount = self.config.outputDir + 'runCount.bin'
-        fileTmap     = self.config.outputDir + 'Tmap.npy'
+        fileConfig     = files.fileConfig(self.config.outputDir)
+        fileState      = files.fileFinalState(self.config.outputDir)
+        fileRunCount   = files.fileRunCount(self.config.outputDir)
+        fileTmap       = files.fileTMap(self.config.outputDir)
 
         try:
-            f = open(fileConfig, 'ab')
-            p = pck.Pickler(f,protocol=-1)
+            f          = open(fileConfig, 'ab')
+            p          = pck.Pickler(f,protocol=-1)
             p.dump(self.config)
             f.close()
 
-            f = open(fileState, 'wb')
-            p = pck.Pickler(f,protocol=-1)
-            p.dump(self.state)
+            f          = open(fileState, 'wb')
+            p          = pck.Pickler(f,protocol=-1)
+            finalState = AnamorphState(self.state)
+            p.dump(finalState)
             f.close()
 
             try:
@@ -74,13 +123,15 @@ class AnamorphAlgorithm( OTObject ):
             print('WARNING : could not write output files')
             print('__________________________________________________')
 
+    #_________________________
+
     def run(self):
         self.config.iterTarget = 1
-        fileCurrentState = self.config.outputDir + 'states.bin'
-        fileTmap         = self.config.outputDir + 'Tmap.npy'    
+        fileCurrentState = files.fileStates(self.config.outputDir)
+        fileTmap         = files.fileTMap(self.config.outputDir)
 
-        f = open(fileCurrentState, 'ab')
-        p = pck.Pickler(f,protocol=-1)
+        f                = open(fileCurrentState, 'ab')
+        p                = pck.Pickler(f,protocol=-1)
 
         print('__________________________________________________')
         print('Starting algorithm...')
@@ -89,107 +140,84 @@ class AnamorphAlgorithm( OTObject ):
         print('__________________________________________________')
         timeStart = tm.time()
 
-        # Computing CDF for initial and final states
-        N = self.config.N
-        P = self.config.P
+        # catch boundary conditions
+        f0        = self.config.boundaries.temporalBoundaries.bt0.copy()
+        f1        = self.config.boundaries.temporalBoundaries.bt1.copy()
 
-        fInitPP         = np.zeros(N+3)
-        fInitPP[1:N+2]  = self.config.boundaries.temporalBoundaries.bt0[:]
-        fFinalPP        = np.zeros(N+3)
-        fFinalPP[1:N+2] = self.config.boundaries.temporalBoundaries.bt1[:]
+        # apply a non-zero filter to boundary conditions
+        meanMass  = f0.mean()
+        minValue  = meanMass * self.config.PDFError
 
-        CDFInit  = np.zeros(N+3)
-        CDFFinal = np.zeros(N+3)
+        f0        = np.maximum(f0, minValue)
+        f1        = np.maximum(f1, minValue)
 
-        CDFInit[1:N+3]  = 0.5 * ( fInitPP[0:N+2]  + fInitPP[1:N+3]  )
-        CDFFinal[1:N+3] = 0.5 * ( fFinalPP[0:N+2] + fFinalPP[1:N+3] )
+        # interpolates boundary conditions
+        X         = np.linspace(0.0, 1.0, self.N+1)
+        f0_map    = interp1d(X.copy(), f0, copy=False, bounds_error=False, fill_value=0.0)
+        f1_map    = interp1d(X       , f1, copy=False, bounds_error=False, fill_value=0.0)
 
-        NZmin = 1.0
-        for i in xrange(N+3):
-            if CDFInit[i] > 0:
-                NZmin = min(NZmin, CDFInit[i])
-            if CDFFinal[i] > 0:
-                NZmin = min(NZmin, CDFFinal[i])
 
-        # Small corrections to insure that CDF's are strictly growing
-        error           = 0.001
-        CDFInit[1:N+3]  = np.maximum(CDFInit[1:N+3], error*NZmin/N)
-        CDFFinal[1:N+3] = np.maximum(CDFFinal[1:N+3], error*NZmin/N)
+        X_fine    = np.linspace(0.0, 1.0, self.config.fineResolution)
+        f0_fine   = f0_map(X_fine)
+        f1_fine   = f1_map(X_fine)
 
-        CDFInit         = CDFInit.cumsum()
-        CDFFinal        = CDFFinal.cumsum()
+        # Computing CDF by integration
+        CDF0      = cumtrapz(f0_fine, X_fine, initial=0.)
+        CDF1      = cumtrapz(f1_fine, X_fine, initial=0.)
 
-        # Correct potential mass default generated by the corrections
-        CDFFinal *= CDFInit[N+2] / CDFFinal[N+2]
-                                
-        # Computes maps associated to the CDF arrays by interpolating
-        XCDF        = np.zeros(N+3)
-        XCDF[1:N+2] = np.linspace( 0.0 , 1.0 , N+1 )
-        XCDF[0]     = - XCDF[2]
-        XCDF[N+2]   = 1. + XCDF[2]
+        # Rescale CDF1 since
+        # mass default could have been produced by the non-zero filter 
+        CDF1     *= CDF0[-1] / CDF1[-1]
 
-        FInitMap    = interp1d( XCDF , fInitPP  )
-        CDFFinalMap = interp1d( XCDF , CDFFinal )
-        iCDFInitMap = interp1d( CDFInit , XCDF  )
+        CDF0_map  = makeInterpolatorPP(X_fine, CDF0, copy=True)
+        CDF1_map  = makeInterpolatorPP(X_fine, CDF1, copy=True)
 
-        # T = CDFInit^(-1) o CDFFinal
-        def Tmap(x):
-            return iCDFInitMap( CDFFinalMap( x ) )
+        iCDF0_map = makeInterpolatorPP(CDF0, X_fine, copy=True)
+        iCDF1_map = makeInterpolatorPP(CDF1, X_fine, copy=True)
 
-        # Computes the derivative of T by finate differences
-        # on a finer grid (to try and avoid infinite derivative)
-        # result is stored in partialXTarray
-        NN         = self.config.fineResolution
-        XT         = np.zeros(NN+3)
-        XT[1:NN+2] = np.linspace( 0.0 , 1.0 , NN+1 )
-        XT[0]      = - XT[2]
-        XT[NN+2]   = 1. + XT[2]
+        # Optimal transport map
+        def T_map(x):
+            return iCDF0_map(CDF1_map(x))
 
-        Tarray     = Tmap(XT)
+        def iT_map(x):
+            return iCDF1_map(CDF0_map(x))
 
-        partialXTarray = NN * ( Tarray[1:] - Tarray[:NN+2] ) 
-        Xpartial       = 0.5 * ( XT[1:] + XT[:NN+2] )
+        # Interpolates solution on a staggered grid
+        XS        = np.linspace(0.0, 1.0, self.N+1)
+        TS        = np.zeros(self.P+2)
+        TS[1:-1]  = np.linspace(0.5/self.P, 1.-0.5/self.P, self.P)
+        TS[-1]    = 1.
 
-        # Computes maps associated to the derivative of T by interpolating         
-        partialXTmap = interp1d( Xpartial , partialXTarray )
+        fu        = np.zeros(shape=(self.N+1, self.P+2))
 
-        # Approximate solution of the optimal transport
-        def func(x,t):
-            return ( FInitMap( ( 1. - t ) * x + t * Tmap(x) ) *
-                     abs( ( 1. - t ) + t * partialXTmap(x) ) )
-
-        # Storing solution in a staggered grid
-        fu = np.zeros(shape=(N+1,P+2))
-        X  = np.linspace( 0.0 , 1.0 , N+1 )
-        T  = np.zeros(P+2)
-
-        T[1:P+1] = np.linspace( 0.5/P , 1.0-0.5/P , P )
-        T[0]     = 0.
-        T[P+1]   = 1.
-
-        for i in xrange(N+1):
-            for j in xrange(P+2):
-                fu[i,j] = func( X[i] , T[j] )
+        for j in xrange(self.P+2):
+            t        = TS[j]
+            T_t_map  = makeiT_t_map(t, CDF0_map, iCDF1_map)
+            T_t_fine = T_t_map(X_fine)
+            
+            iT_t_map = makeInterpolatorPP(T_t_fine, X_fine, copy=True)
+            
+            fu[:, j] = ( ( f0_map(iT_t_map(XS)) ) /
+                         ( ( 1.0 - t ) + t * ( ( f0_map(iT_t_map(XS)) ) /
+                                               ( f1_map(iT_map(iT_t_map(XS))) ) ) ) )
 
         # Now computes m to complete the solution of the optimal transport
         # We have df/dt + dm/dx = 0
-        partialTfu  = fu[:,1:P+2].copy()
-        partialTfu -= fu[:,0:P+1]
-        partialTfu *= P
+        dfu_dt       = self.P * ( fu[:,1:] - fu[:,:-1] )
 
         # Corrects boundary condition
         # this produce non zero divergence to the results
         # it could be appropriate to apply proxCdivb after this algorithm
-        divError = partialTfu.sum(axis=0)
-        partialTfu -= divError / ( N + 1. )
+        divError     = dfu_dt.sum(axis=0)
+        dfu_dt      -= divError / ( self.N + 1.0 )
         
         # Computes mu = - int( partialTfu , x )
-        mu = np.zeros(shape=(N+2,P+1))
-        mu[1:N+2,:] = - partialTfu[:,:] / N
-        mu = mu.cumsum(axis=0)
+        mu           = np.zeros(shape=(self.N+2, self.P+1))
+        mu[1:,:]     = - dfu_dt[:,:] / self.N
+        mu           = mu.cumsum(axis=0)
 
         # Stores the whole solution in a StaggeredField
-        self.state = grid.StaggeredField( N , P , mu , fu )
+        self.state   = grid.StaggeredField( self.N , self.P , mu , fu )
 
         self.config.iterCount = 1
         self.config.iterTarget = 1
@@ -200,22 +228,32 @@ class AnamorphAlgorithm( OTObject ):
         timeAlgo = tm.time() - timeStart
         f.close()
 
-        finalJ = self.state.interpolation().functionalJ()
-        finalDiv = self.state.divergence().LInftyNorm()
+        # Computing final J
+        iCDF0_fine   = iCDF0_map(X_fine)
+        iCDF1_fine   = iCDF1_map(X_fine)
 
-        timeAlgo = tm.time() - timeStart
+        finalJ_th    = cumtrapz(np.power(iCDF0_fine-iCDF1_fine, 2), X_fine, initial=0.0)[-1]
+        finalJ_th   *= self.P * self.N
+        finalJ_st    = self.state.interpolation().functionalJ()
+        finalDiv     = self.state.divergence().LInftyNorm()
+
+        timeAlgo     = tm.time() - timeStart
         print('__________________________________________________')
         print('Algorithm finished')
-        print('J          = '+str(finalJ))
+        print('J (th)     = '+str(finalJ_th))
+        print('J          = '+str(finalJ_st))
         print('div        = '+str(finalDiv))
         print('Time taken : '+str(timeAlgo))
         print('__________________________________________________')
 
         # Saves Tmap
-        f = open(fileTmap, 'wb')
-        np.save(f, XT[1:NN+2])
-        np.save(f, Tarray[1:NN+2])
+        T_fine       = T_map(X_fine)
+        f            = open(fileTmap, 'wb')
+        np.save(f, X_fine)
+        np.save(f, T_fine)
         f.close()
         
         self.saveState()
-        return finalJ
+        return finalJ_th
+
+#__________________________________________________

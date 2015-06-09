@@ -68,6 +68,9 @@ omega1 = 0.33
 omega2 = 0.33
 omega3 = 0.34
 
+# for anamorph
+PDFError = 0.001
+
 #__________________________________________________
 # Initial condition
 # 0 -> default initial condition
