@@ -6,11 +6,11 @@
 #
 
 import numpy as np
-from ..OTOject import OTObject
-from ...utils  import cardan
+from ..OTObject import OTObject
+from ...utils   import cardan
 
 from scipy.interpolate import interp1d
-from scipy.interpolate import interp2d
+#from scipy.interpolate import interp2d
 
 #__________________________________________________
 
@@ -351,10 +351,9 @@ class CenteredField( Field ):
 
         xV     = np.linspace(0.0, 1.0, self.N+1)
         tV     = np.linspace(0.0, 1.0, self.P+1)
-        XV,TV  = np.meshgrid(xV, tV, indexing='ij')
-        # not sure interp2d works... => MUST CHECK !!!
+        # not sure interp2d works... => MUST CHECK !!! => Apparently it doesn't work this way...
+        #XV,TV  = np.meshgrid(xV, tV, indexing='ij')
         #vmap   = interp2d(XV, TV, v, copy=False, bounds_error=False, fill_value=0.0)
-
         T      = np.linspace(0.5/fineResolution, 1.0-0.5/fineResolution, fineResolution)
         Tarray = np.linspace(0.0, 1.0, fineResolution)
 

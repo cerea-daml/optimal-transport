@@ -47,8 +47,8 @@ class Algorithm( OTObject ):
             p.dump(self.stateN)
             f.close()
 
-            f   = open(fileTmap, 'wb')
-            X,T = self.stateN.convergingStaggeredField().interpolation().Tmap(self.config.fineResolution)
+            f      = open(fileTmap, 'wb')
+            (X, T) = self.stateN.convergingStaggeredField().interpolation().Tmap(self.config.fineResolution)
             np.save(f, X)
             np.save(f, T)
             f.close()
