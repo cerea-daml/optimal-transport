@@ -13,3 +13,12 @@ def fileConfig(outputDir):
 
 def fileResult(outputDir):
     return outputDir + 'result.bin'
+
+def fileTMap(outputDir):
+    return outputDir + 'Tmap.npy'
+
+def fileRunCount(outputDir):
+    return outputDir + 'runCount.bin'
+
+def fileStates(outputDir):
+    return outputDir + 'states.bin'

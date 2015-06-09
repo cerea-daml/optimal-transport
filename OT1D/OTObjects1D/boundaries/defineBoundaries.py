@@ -18,6 +18,8 @@ from gaussianSplit  import defaultBoundaryGaussianSplit1
 from gaussianSplit  import defaultBoundaryGaussianSplit2
 from gaussianSine   import defaultBoundaryGaussianSine
 from gaussianSine   import defaultBoundaryGaussianCosine
+from custom         import customBoundary
+from custom         import customBoundaryRev
 
 def boundariesForConfig(config):
     # default configurations
@@ -33,6 +35,10 @@ def boundariesForConfig(config):
         config.boundaries = defaultBoundaryGaussianSine( config.N , config.P )
     elif config.boundaryType == 6:
         config.boundaries = defaultBoundaryGaussianCosine( config.N , config.P )
+    elif config.boundaryType == 7:
+        config.boundaries = customBoundary( config.N, config.P )
+    elif config.boundaryType == 8:
+        config.boundaries = customBoundaryRev( config.N, config.P )
 
     # from file
     elif config.boundaryType == 0:

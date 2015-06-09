@@ -9,7 +9,7 @@ from boundaries.defineBoundaries                import boundariesForConfig
 from algorithms.adr.adrAlgorithm                import AdrAlgorithm
 from algorithms.pd.pdAlgorithm                  import PdAlgorithm
 from algorithms.adr3.adr3Algorithm              import Adr3Algorithm
-from algorithms.anamorph.anamorphAlgorithmV2    import AnamorphAlgorithm
+from algorithms.anamorph.anamorphAlgorithmV3    import AnamorphAlgorithm
 from ..utils.configuration.defaultConfiguration import DefaultConfiguration
 
 #__________________________________________________
