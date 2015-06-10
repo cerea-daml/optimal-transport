@@ -28,7 +28,7 @@ def plotMatrix(ax, matrix, plotter, xmin=0.0, xmax=1.0, ymin=0.0, ymax=1.0, cmap
 
 def fillKwargs(plotter, xmin, xmax, ymin, ymax, cmapName, **kwargs):
 
-    if plotter == 'imshow':
+    if plotter == 'imshow' or plotter == 'contourf':
 
         cmap   = colormap(cmapName)
         if kwargs.has_key('vmin') and kwargs.has_key('vmax'):
