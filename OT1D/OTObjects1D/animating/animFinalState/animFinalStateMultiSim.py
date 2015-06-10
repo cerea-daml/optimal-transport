@@ -1,6 +1,6 @@
-###########################
+#__________________________
 # animFinalStateMultiSim.py
-###########################
+#__________________________
 #
 # util to animate the final state for multiple simulations 
 #
@@ -11,15 +11,17 @@ import matplotlib.pyplot    as plt
 from matplotlib.animation import FuncAnimation
 
 from ....utils.io.extractFinalState import extractFinalStateMultiSim
-from ....utils.plotting.plot        import makeAxesGrid
+from ....utils.plotting.plotting    import makeAxesGrid
 from ....utils.plotting.plot        import plot
-from ....utils.plotting.plot        import plottingOptions
+from ....utils.plotting.plotting    import plottingOptions
 from ....utils.plotting.plot        import addTitleLabelsGrid
 from ....utils.plotting.plot        import tryAddCustomLegend
 from ....utils.plotting.plot        import addTimeTextPBar
 from ....utils.plotting.plot        import plotTimeTextPBar
-from ....utils.plotting.plot        import adaptAxesExtent
+from ....utils.plotting.plotting    import adaptAxesExtent
 from ....utils.plotting.positions   import figureRect
+
+#__________________________________________________
 
 def makeAnimFinalStateMultiSim(outputDirList,
                                labelList,
@@ -99,3 +101,5 @@ def makeAnimFinalStateMultiSim(outputDirList,
     frames = np.arange(Pmax+2)    
     print('Making animation ...')
     return FuncAnimation(figure, animate, frames, init_func=init, **kwargsFuncAnim)
+
+#__________________________________________________

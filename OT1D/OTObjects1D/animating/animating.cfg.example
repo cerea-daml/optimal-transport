@@ -8,9 +8,7 @@ EPSILON = 1.e-8
 
 #__________________________________________________
 # Plot single simulation or multiple simulations
-# 0 -> single sim
-# 1 -> multi  sim
-singleOrMulti = 0
+singleOrMulti = single
 
 #__________________________________________________
 # Figures output directory
@@ -24,8 +22,8 @@ writerCodec     =
 writerBitrate   = 
 writerExtraArgs = 
 
-extension       = str : .mp4
-extension       = str : .avi
+extensions      = str : .mp4
+extensions      = str : .avi
 
 #__________________________________________________
 # FuncAnimation arguments
@@ -35,10 +33,10 @@ funcAnimArgs = blit : bool : true
 # Output directory and associated labels
 # For multiple simulations, just duplicate these lines
 # For single simulation, only the first line will be used 
-outputDir = str : ./
-label     = str : sim0
-outputDir = str : ./
-label     = str : sim1
+outputDirList = str : ./
+labelList     = str : sim0
+outputDirList = str : ./
+labelList     = str : sim1
 
 #__________________________________________________
 # Animate final state
@@ -60,3 +58,5 @@ animFinalState_xTicksDecimals       = 2
 animFinalState_yTicksDecimals       = 2
 animFinalState_order                = horizontalFirst
 animFinalState_extendDirection      = vertical
+
+#__________________________________________________

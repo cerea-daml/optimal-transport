@@ -1,57 +1,67 @@
-##############################
+#_____________________________
 # Class AnimatingConfiguration
-##############################
+#_____________________________
 #
 # Defines everything necessary for animating the result of an OT algorithm from a config file
 #
 
-from animator import Animator
-
+from animator                                    import Animator
 from ...utils.io.io                              import fileNameSuffix
 from ...utils.configuration.defaultConfiguration import DefaultConfiguration
+
+#__________________________________________________
 
 class AnimatingConfiguration(DefaultConfiguration):
 
     def __init__(self, animatingConfigFile=None):
         DefaultConfiguration.__init__(self, animatingConfigFile)
 
+        i    = len(self.labelList)
+        iMax = len(self.outputDirList)
+
+        while i < iMax:
+            self.labelList.append('sim'+fileNameSuffix(i, iMax))
+            i += 1
+
+    #_________________________
+
     def __repr__(self):
         return 'AnimatingConfiguration for a 1D OT algoritm'
+
+    #_________________________
 
     def animator(self):
         return Animator(self)
 
-    def ckeckAttributes(self):
-        DefaultConfiguration.ckeckAttributes(self)
-
-        if self.singleOrMulti == 1:
-            i    = len(self.label)
-            iMax = len(self.outputDir)
-
-            while i < iMax:
-                self.label.append('sim'+fileNameSuffix(i, iMax))
-                i += 1
+    #_________________________
 
     def defaultAttributes(self):
         DefaultConfiguration.defaultAttributes(self)
 
         self.addAttribute('EPSILON',
-                          1.e-8,
-                          [],
-                          'float',
-                          True)
+                          defaultVal=1.e-8,
+                          isSubAttr=[],
+                          attrType='float')
 
         self.addAttribute('singleOrMulti',
-                          0,
-                          [],
-                          'int',
-                          True)
+                          defaultVal='multi')
 
         self.addAttribute('figDir',
-                          './figures/',
-                          [],
-                          'str',
-                          True)
+                          defaultVal='./figures/')
+
+        self.addAttribute('extensions',
+                          defaultVal=['.mp4'],
+                          attrType='list')
+
+        self.addAttribute('outputDirList',
+                          defaultVal=['./output/'],
+                          attrType='list')
+
+        self.addAttribute('labelList',
+                          defaultVal=['sim0'],
+                          attrType='list')
+
+        #_______________
 
         self.addAttribute('writerName',
                           'ffmpeg',
@@ -83,29 +93,13 @@ class AnimatingConfiguration(DefaultConfiguration):
                           'list',
                           False)
 
-        self.addAttribute('extension',
-                          ['.mp4'],
-                          [],
-                          'list',
-                          True)
-
-        self.addAttribute('outputDir',
-                          ['./output/'],
-                          [],
-                          'list',
-                          True)
-
-        self.addAttribute('label',
-                          ['sim0'],
-                          [],
-                          'list',
-                          True)
-
         self.addAttribute('funcAnimArgs',
                           {},
                           [],
                           'dict',
                           False)
+
+        #_______________
 
         self.addAttribute('animFinalState',
                           True,
@@ -202,3 +196,4 @@ class AnimatingConfiguration(DefaultConfiguration):
                           'str',
                           True)
 
+#__________________________________________________
