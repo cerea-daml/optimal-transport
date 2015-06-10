@@ -2,7 +2,7 @@
 # Class anamorphAlgorithm
 #________________________
 #
-# defines the compute the anamorphose
+# defines the algorithm compute the anamorphose
 #
 
 import cPickle as pck
@@ -39,7 +39,7 @@ def makeInterpolatorPP(X, Y, copy=True):
     YPP[0]    = Y[0] 
     YPP[-1]   = Y[-1]
 
-    return interp1d(X, Y, copy=False, bounds_error=False, fill_value=0.0)
+    return interp1d(XPP, YPP, copy=False, bounds_error=False, fill_value=0.0)
 
 #__________________________________________________
 
@@ -155,7 +155,6 @@ class AnamorphAlgorithm( OTObject ):
         X         = np.linspace(0.0, 1.0, self.N+1)
         f0_map    = interp1d(X.copy(), f0, copy=False, bounds_error=False, fill_value=0.0)
         f1_map    = interp1d(X       , f1, copy=False, bounds_error=False, fill_value=0.0)
-
 
         X_fine    = np.linspace(0.0, 1.0, self.config.fineResolution)
         f0_fine   = f0_map(X_fine)

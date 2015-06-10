@@ -1,22 +1,66 @@
-#########################
+#________________________
 # Class anamorphAlgorithm
-#########################
+#________________________
 #
-# defines the compute the anamorphose
-#
-# alternative version... seems to be less accurate to compute partialXTmap
+# defines the algorithm to compute the anamorphose
+# 
+# version with som testings...
 #
 
 import cPickle as pck
-import pickle 
+import time    as tm
+import numpy   as np
 
-import time as tm
-import numpy as np
 from scipy.interpolate import interp1d
 from scipy.integrate   import cumtrapz
 
-from ...OTObject import OTObject
-from ...grid import grid
+from ...OTObject       import OTObject
+from ...grid           import grid
+from ....utils.io      import files
+
+import matplotlib.pyplot as plt
+
+#__________________________________________________
+
+def makeiT_t_map(t, CDFInit_map, iCDFFinal_map):
+    def T_t_map(x):
+        return ( ( 1.0 - t ) * x + t * iCDFFinal_map(CDFInit_map(x)) )
+    return T_t_map
+
+#__________________________________________________
+
+def makeInterpolatorPP(X, Y, copy=True):
+    if copy:
+        return makeInterpolatorPP(X.copy(), Y.copy(), copy=False)
+
+    XPP       = np.zeros(X.size+2)
+    XPP[1:-1] = X[:]
+    XPP[0]    = X[0] - 1.0
+    XPP[-1]   = X[-1] + 1.0
+
+    YPP       = np.zeros(Y.size+2)
+    YPP[1:-1] = Y[:]
+    YPP[0]    = Y[0] 
+    YPP[-1]   = Y[-1]
+
+    return interp1d(XPP, YPP, copy=False, bounds_error=False, fill_value=0.0)
+
+#__________________________________________________
+
+class AnamorphState( OTObject ):
+    '''
+    class to store the state of an anamorphose Algorithm
+    '''
+
+    def __init__(self, state):
+        self.state = state
+
+    #_________________________
+
+    def convergingStaggeredField(self):
+        return self.state
+
+#__________________________________________________
 
 class AnamorphAlgorithm( OTObject ):
     '''
@@ -27,25 +71,30 @@ class AnamorphAlgorithm( OTObject ):
         self.config = config
         OTObject.__init__(self, config.N , config.P)
         self.state = None
+
+    #_________________________
         
     def __repr__(self):
         return ( 'Anamorphose Algorithm' )
 
+    #_________________________
+
     def saveState(self):
-        fileConfig   = self.config.outputDir + 'config.bin'
-        fileState    = self.config.outputDir + 'finalState.bin'
-        fileRunCount = self.config.outputDir + 'runCount.bin'
-        fileTmap     = self.config.outputDir + 'Tmap.npy'
+        fileConfig     = files.fileConfig(self.config.outputDir)
+        fileState      = files.fileFinalState(self.config.outputDir)
+        fileRunCount   = files.fileRunCount(self.config.outputDir)
+        fileTmap       = files.fileTMap(self.config.outputDir)
 
         try:
-            f = open(fileConfig, 'ab')
-            p = pck.Pickler(f,protocol=-1)
+            f          = open(fileConfig, 'ab')
+            p          = pck.Pickler(f,protocol=-1)
             p.dump(self.config)
             f.close()
 
-            f = open(fileState, 'wb')
-            p = pck.Pickler(f,protocol=-1)
-            p.dump(self.state)
+            f          = open(fileState, 'wb')
+            p          = pck.Pickler(f,protocol=-1)
+            finalState = AnamorphState(self.state)
+            p.dump(finalState)
             f.close()
 
             try:
@@ -78,13 +127,15 @@ class AnamorphAlgorithm( OTObject ):
             print('WARNING : could not write output files')
             print('__________________________________________________')
 
+    #_________________________
+
     def run(self):
         self.config.iterTarget = 1
-        fileCurrentState = self.config.outputDir + 'states.bin'
-        fileTmap         = self.config.outputDir + 'Tmap.npy'
-    
-        f = open(fileCurrentState, 'ab')
-        p = pck.Pickler(f,protocol=-1)
+        fileCurrentState = files.fileStates(self.config.outputDir)
+        fileTmap         = files.fileTMap(self.config.outputDir)
+
+        f                = open(fileCurrentState, 'ab')
+        p                = pck.Pickler(f,protocol=-1)
 
         print('__________________________________________________')
         print('Starting algorithm...')
@@ -93,105 +144,113 @@ class AnamorphAlgorithm( OTObject ):
         print('__________________________________________________')
         timeStart = tm.time()
 
-        # Computing CDF for initial and final states
-        N = self.config.N
-        P = self.config.P
+        # catch boundary conditions
+        f0        = self.config.boundaries.temporalBoundaries.bt0.copy()
+        f1        = self.config.boundaries.temporalBoundaries.bt1.copy()
 
-        fInit  = self.config.boundaries.temporalBoundaries.bt0
-        fFinal = self.config.boundaries.temporalBoundaries.bt1
+        # apply a non-zero filter to boundary conditions
+        meanMass  = f0.mean()
+        minValue  = meanMass * self.config.PDFError
 
-        X          = np.linspace(0.0, 1.0, N+1)
-        FInitMap   = interp1d(X, fInit)
-        FFinalMap  = interp1d(X, fFinal)
+        f0        = np.maximum(f0, minValue)
+        f1        = np.maximum(f1, minValue)
 
-        NN         = self.config.fineResolution
-        XI         = np.linspace(0.0, 1.0, NN)
-        FInitFine  = FInitMap(XI)
-        FFinalFine = FFinalMap(XI)
+        # interpolates boundary conditions
+        X         = np.linspace(0.0, 1.0, self.N+1)
+        f0_map    = interp1d(X.copy(), f0, copy=False, bounds_error=False, fill_value=0.0)
+        f1_map    = interp1d(X       , f1, copy=False, bounds_error=False, fill_value=0.0)
 
-        NZmin      = min( ( FInitFine * ( FInitFine > 0 ) +
-                            FInitFine.max() * ( FInitFine <=0 ) ).min() ,
-                          ( FFinalFine * ( FFinalFine > 0 ) +
-                            FFinalFine.max() * ( FFinalFine <=0 ) ).min() )
+        X_fine    = np.linspace(0.0, 1.0, self.config.fineResolution)
+        f0_fine   = f0_map(X_fine)
+        f1_fine   = f1_map(X_fine)
 
-        tolerance  = 0.01
-        FInitFine  = np.maximum(FInitFine,  tolerance*NZmin/NN)
-        FFinalFine = np.maximum(FFinalFine, tolerance*NZmin/NN)
+        # Computing CDF by integration
+        CDF0      = cumtrapz(f0_fine, X_fine, initial=0.)
+        CDF1      = cumtrapz(f1_fine, X_fine, initial=0.)
 
-        CDFInit    = cumtrapz(FInitFine, XI, initial=0.)
-        CDFFinal   = cumtrapz(FFinalFine, XI, initial=0.)
+#-----------------------------------------
+        plt.figure()
+        plt.plot(X_fine, CDF0, label='$F_0$')
+        plt.plot(X_fine, CDF1, label='$F_1$')
+        plt.legend(loc='best')
+        plt.savefig('CDF.pdf')
+#-----------------------------------------
 
-        CDFFinal  *= CDFInit[NN-1] / CDFFinal[NN-1]
+        # Rescale CDF1 since
+        # mass default could have been produced by the non-zero filter 
+        CDF1     *= CDF0[-1] / CDF1[-1]
 
-        CDFFinalMap = interp1d(XI, CDFFinal)
+        CDF0_map  = makeInterpolatorPP(X_fine, CDF0, copy=True)
+        CDF1_map  = makeInterpolatorPP(X_fine, CDF1, copy=True)
 
-        CDFInitPP         = np.zeros(NN+2)
-        CDFInitPP[1:NN+1] = CDFInit[:]
-        CDFInitPP[0]      = CDFInit[0] - 1.
-        CDFInitPP[NN+1]   = CDFInit[NN-1] + 1.
-        XIPP              = np.zeros(NN+2)
-        XIPP[1:NN+1]      = XI[:]
-        XIPP[0]           = XI[0]
-        XIPP[NN+1]        = XI[NN-1]
-        iCDFInitMap = interp1d(CDFInitPP, XIPP)
+        iCDF0_map = makeInterpolatorPP(CDF0, X_fine, copy=True)
+        iCDF1_map = makeInterpolatorPP(CDF1, X_fine, copy=True)
 
-        # T = CDFInit^(-1) o CDFFinal
-        def Tmap(x):
-            return iCDFInitMap( CDFFinalMap( x ) )
+#-----------------------------------------
+        plt.clf()
 
-        # Computes the derivative of T by finate differences
-        # on a finer grid (to try and avoid infinite derivative)
-        # result is stored in partialXTarray
-        Tarray               = Tmap(XI)
+        X_finePP = np.linspace(-0.1, 1.1, 1000)
 
-        partialXTarray       = np.zeros(NN+1)
-        partialXTarray[1:NN] = NN * ( Tarray[1:] - Tarray[:NN-1] )
-        partialXTarray[0]    = partialXTarray[1]
-        partialXTarray[NN]   = partialXTarray[NN-1]
+        test_CDF0_array = CDF0_map(X_finePP)
+        test_CDF1_array = CDF1_map(X_finePP)
 
-        Xpartial             = np.zeros(NN+1)
-        Xpartial[1:NN]       = 0.5 * ( XI[1:] + XI[:NN-1] )
-        Xpartial[NN]         = 1.0
+        test_iCDF0_array = iCDF0_map(X_finePP)
+        test_iCDF1_array = iCDF1_map(X_finePP)
 
-        # avoid extremal values of partialXTarray
-        partialXTarray       = np.minimum(10*partialXTarray.mean(), partialXTarray)
+        plt.plot(X_finePP, test_CDF0_array, label='$F_0$')
+        plt.plot(X_finePP, test_CDF1_array, label='$F_1$')
+        #plt.plot(X_finePP, test_iCDF0_array, label='$F_0^{-1}$')
+        #plt.plot(X_finePP, test_iCDF1_array, label='$F_1^{-1}$')
 
-        # Computes maps associated to the derivative of T by interpolating
-        partialXTmap = interp1d(Xpartial, partialXTarray)
+        plt.ylim(-0.1,0.4)
+        plt.legend(loc='best')
+        plt.savefig('iCDF.pdf')
+#-----------------------------------------
 
-        # Approximate solution of the optimal transport
-        def func(x,t):
-            return ( FInitMap( ( 1. - t ) * x + t * Tmap(x) ) *
-                     abs( ( 1. - t ) + t * partialXTmap(x) ) )
 
-        # Storing solution in a staggered grid
-        x        = np.linspace(0.0, 1.0, N+1)
-        t        = np.zeros(P+2)
-        t[1:P+1] =  np.linspace(0.5/P, 1.-0.5/P, P)
-        t[P+1]   = 1.
+        # Optimal transport map
+        def T_map(x):
+            return iCDF0_map(CDF1_map(x))
 
-        X, T     = np.meshgrid(x,t,indexing='ij')
-        fu       = func(X, T)
+        def iT_map(x):
+            return iCDF1_map(CDF0_map(x))
+
+        # Interpolates solution on a staggered grid
+        XS        = np.linspace(0.0, 1.0, self.N+1)
+        TS        = np.zeros(self.P+2)
+        TS[1:-1]  = np.linspace(0.5/self.P, 1.-0.5/self.P, self.P)
+        TS[-1]    = 1.
+
+        fu        = np.zeros(shape=(self.N+1, self.P+2))
+
+        for j in xrange(self.P+2):
+            t        = TS[j]
+            T_t_map  = makeiT_t_map(t, CDF0_map, iCDF1_map)
+            T_t_fine = T_t_map(X_fine)
+            
+            iT_t_map = makeInterpolatorPP(T_t_fine, X_fine, copy=True)
+            
+            fu[:, j] = ( ( f0_map(iT_t_map(XS)) ) /
+                         ( ( 1.0 - t ) + t * ( ( f0_map(iT_t_map(XS)) ) /
+                                               ( f1_map(iT_map(iT_t_map(XS))) ) ) ) )
 
         # Now computes m to complete the solution of the optimal transport
         # We have df/dt + dm/dx = 0
-        partialTfu  = fu[:,1:P+2].copy()
-        partialTfu -= fu[:,0:P+1]
-        partialTfu *= P
+        dfu_dt       = self.P * ( fu[:,1:] - fu[:,:-1] )
 
         # Corrects boundary condition
         # this produce non zero divergence to the results
         # it could be appropriate to apply proxCdivb after this algorithm
-        divError = partialTfu.sum(axis=0)
-        partialTfu -= divError / ( N + 1. )
+        divError     = dfu_dt.sum(axis=0)
+        dfu_dt      -= divError / ( self.N + 1.0 )
         
         # Computes mu = - int( partialTfu , x )
-        mu = np.zeros(shape=(N+2,P+1))
-        mu[1:N+2,:] = - partialTfu[:,:] / N
-        mu = mu.cumsum(axis=0)
+        mu           = np.zeros(shape=(self.N+2, self.P+1))
+        mu[1:,:]     = - dfu_dt[:,:] / self.N
+        mu           = mu.cumsum(axis=0)
 
         # Stores the whole solution in a StaggeredField
-        self.state = grid.StaggeredField( N , P , mu , fu )
+        self.state   = grid.StaggeredField( self.N , self.P , mu , fu )
 
         self.config.iterCount = 1
         self.config.iterTarget = 1
@@ -202,22 +261,32 @@ class AnamorphAlgorithm( OTObject ):
         timeAlgo = tm.time() - timeStart
         f.close()
 
-        finalJ = self.state.interpolation().functionalJ()
-        finalDiv = self.state.divergence().LInftyNorm()
+        # Computing final J
+        iCDF0_fine   = iCDF0_map(X_fine)
+        iCDF1_fine   = iCDF1_map(X_fine)
 
-        timeAlgo = tm.time() - timeStart
+        finalJ_th    = cumtrapz(np.power(iCDF0_fine-iCDF1_fine, 2), X_fine, initial=0.0)[-1]
+        finalJ_th   *= self.P * self.N
+        finalJ_st    = self.state.interpolation().functionalJ()
+        finalDiv     = self.state.divergence().LInftyNorm()
+
+        timeAlgo     = tm.time() - timeStart
         print('__________________________________________________')
         print('Algorithm finished')
-        print('J          = '+str(finalJ))
+        print('J (th)     = '+str(finalJ_th))
+        print('J          = '+str(finalJ_st))
         print('div        = '+str(finalDiv))
         print('Time taken : '+str(timeAlgo))
         print('__________________________________________________')
 
         # Saves Tmap
-        f = open(fileTmap, 'wb')
-        np.save(f, XI)
-        np.save(f, Tarray)
+        T_fine       = T_map(X_fine)
+        f            = open(fileTmap, 'wb')
+        np.save(f, X_fine)
+        np.save(f, T_fine)
         f.close()
         
         self.saveState()
-        return finalJ
+        return finalJ_th
+
+#__________________________________________________
