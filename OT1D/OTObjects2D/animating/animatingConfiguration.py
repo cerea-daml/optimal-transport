@@ -1,57 +1,67 @@
-##############################
+#_____________________________
 # Class AnimatingConfiguration
-##############################
+#_____________________________
 #
 # Defines everything necessary for animating the result of an OT algorithm from a config file
 #
 
-from animator import Animator
-
+from animator                                    import Animator
 from ...utils.io.io                              import fileNameSuffix
 from ...utils.configuration.defaultConfiguration import DefaultConfiguration
+
+#__________________________________________________
 
 class AnimatingConfiguration(DefaultConfiguration):
 
     def __init__(self, animatingConfigFile=None):
         DefaultConfiguration.__init__(self, animatingConfigFile)
 
+        i    = len(self.labelList)
+        iMax = len(self.outputDirList)
+
+        while i < iMax:
+            self.labelList.append('sim'+fileNameSuffix(i, iMax))
+            i += 1
+
+    #_________________________
+
     def __repr__(self):
         return 'AnimatingConfiguration for a 2D OT algoritm'
+
+    #_________________________
 
     def animator(self):
         return Animator(self)
 
-    def ckeckAttributes(self):
-        DefaultConfiguration.ckeckAttributes(self)
-
-        if self.singleOrMulti == 1:
-            i    = len(self.label)
-            iMax = len(self.outputDir)
-
-            while i < iMax:
-                self.label.append('sim'+fileNameSuffix(i, iMax))
-                i += 1
+    #_________________________
 
     def defaultAttributes(self):
         DefaultConfiguration.defaultAttributes(self)
 
         self.addAttribute('EPSILON',
-                          1.e-8,
-                          [],
-                          'float',
-                          True)
+                          defaultVal=1.e-8,
+                          isSubAttr=[],
+                          attrType='float')
 
         self.addAttribute('singleOrMulti',
-                          0,
-                          [],
-                          'int',
-                          True)
+                          defaultVal='multi')
 
         self.addAttribute('figDir',
-                          './figures/',
-                          [],
-                          'str',
-                          True)
+                          defaultVal='./figures/')
+
+        self.addAttribute('extensions',
+                          defaultVal=['.mp4'],
+                          attrType='list')
+
+        self.addAttribute('outputDirList',
+                          defaultVal=['./output/'],
+                          attrType='list')
+
+        self.addAttribute('labelList',
+                          defaultVal=['sim0'],
+                          attrType='list')
+
+        #_______________
 
         self.addAttribute('writerName',
                           'ffmpeg',
@@ -83,29 +93,13 @@ class AnimatingConfiguration(DefaultConfiguration):
                           'list',
                           False)
 
-        self.addAttribute('extension',
-                          ['.mp4'],
-                          [],
-                          'list',
-                          True)
-
-        self.addAttribute('outputDir',
-                          ['./output/'],
-                          [],
-                          'list',
-                          True)
-
-        self.addAttribute('label',
-                          ['sim0'],
-                          [],
-                          'list',
-                          True)
-
         self.addAttribute('funcAnimArgs',
                           {},
                           [],
                           'dict',
                           False)
+
+        #_______________
 
         self.addAttribute('animFinalState',
                           True,
@@ -157,7 +151,7 @@ class AnimatingConfiguration(DefaultConfiguration):
 
         self.addAttribute('animFinalState_cmapName',
                           'jet',
-                          [('animFinalState_colorBar',True)],
+                          [('animFinalState',True)],
                           'str',
                           True)
 
@@ -244,3 +238,102 @@ class AnimatingConfiguration(DefaultConfiguration):
                           [('animFinalState',True)],
                           'str',
                           True)
+
+        #_______________
+
+        self.addAttribute('trianimFinalState',
+                          defaultVal=True,
+                          attrType='bool')
+
+        self.addAttribute('trianimFinalState_prefixFigName',
+                          defaultVal='finalState_tri_',
+                          isSubAttr=[('trianimFinalState',True)])
+
+        self.addAttribute('trianimFinalState_plotter',
+                          defaultVal='imshow',
+                          isSubAttr=[('trianimFinalState',True)])
+
+        self.addAttribute('trianimFinalState_args',
+                          defaultVal={},
+                          isSubAttr=[('trianimFinalState',True)],
+                          attrType='dict')
+
+        self.addAttribute('trianimFinalState_colorBar',
+                          defaultVal=True,
+                          isSubAttr=[('trianimFinalState',True)],
+                          attrType='bool')
+
+        self.addAttribute('trianimFinalState_cmapName',
+                          defaultVal='jet',
+                          isSubAttr=[('trianimFinalState',True)])
+
+        self.addAttribute('trianimFinalState_timeTextPBar',
+                          defaultVal=True,
+                          isSubAttr=[('trianimFinalState',True)],
+                          attrType='bool')
+
+        self.addAttribute('trianimFinalState_xLabel',
+                          defaultVal='',
+                          isSubAttr=[('trianimFinalState',True)])
+
+        self.addAttribute('trianimFinalState_yLabel',
+                          defaultVal='',
+                          isSubAttr=[('trianimFinalState',True)])
+
+        self.addAttribute('trianimFinalState_cLabel',
+                          defaultVal='',
+                          isSubAttr=[('trianimFinalState',True)])
+
+        self.addAttribute('trianimFinalState_extendX',
+                          defaultVal=0.0,
+                          isSubAttr=[('trianimFinalState',True)],
+                          attrType='float')
+
+        self.addAttribute('trianimFinalState_extendY',
+                          defaultVal=0.0,
+                          isSubAttr=[('trianimFinalState',True)],
+                          attrType='float')
+
+        self.addAttribute('trianimFinalState_nbrXTicks',
+                          defaultVal=2,
+                          isSubAttr=[('trianimFinalState',True)],
+                          attrType='int')
+
+        self.addAttribute('trianimFinalState_nbrYTicks',
+                          defaultVal=2,
+                          isSubAttr=[('trianimFinalState',True)],
+                          attrType='int')
+
+        self.addAttribute('trianimFinalState_nbrCTicks',
+                          defaultVal=5,
+                          isSubAttr=[('trianimFinalState',True)],
+                          attrType='int')
+
+        self.addAttribute('trianimFinalState_xTicksDecimals',
+                          defaultVal=1,
+                          isSubAttr=[('trianimFinalState',True)],
+                          attrType='int')
+
+        self.addAttribute('trianimFinalState_yTicksDecimals',
+                          defaultVal=1,
+                          isSubAttr=[('trianimFinalState',True)],
+                          attrType='int')
+
+        self.addAttribute('trianimFinalState_cTicksDecimals',
+                          defaultVal=2,
+                          isSubAttr=[('trianimFinalState',True)],
+                          attrType='int')
+
+        self.addAttribute('trianimFinalState_order',
+                          defaultVal='horizontalFirst',
+                          isSubAttr=[('trianimFinalState',True)])
+
+        self.addAttribute('trianimFinalState_extendDirection',
+                          defaultVal='vertical',
+                          isSubAttr=[('trianimFinalState',True)])
+
+        self.addAttribute('trianimFinalState_extendDirectionTrianim',
+                          defaultVal='horizontal',
+                          isSubAttr=[('trianimFinalState',True)])
+
+#__________________________________________________

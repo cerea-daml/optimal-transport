@@ -1,78 +1,78 @@
-#######################
+#______________________
 # finalStateAnimator.py
-#######################
+#______________________
 
-from ....utils.plotting.defaultTransparency import defaultTransparency
-from ....utils.plotting.defaultTransparency import fastVanishingTransparency
-from ....utils.plotting.defaultTransparency import customTransparency
-
+from ....utils.plotting.defaultTransparency import getTransparencyFunction
+from ....utils.plotting.plotting            import makeOutputDirLabelPrefixFigNameList
 from ....utils.animating.saveAnimation      import makeMovieWriter
 from ....utils.animating.saveAnimation      import saveAnimation
-
 from animFinalStateMultiSim                 import makeAnimFinalStateMultiSim
+
+#__________________________________________________
 
 class FinalStateAnimator:
 
-    def __init__(self, animatingConfig):
-        self.animatingConfig = animatingConfig
+    def __init__(self, config):
+        self.config = config
+
+    #_________________________
 
     def animate(self):
-        if not self.animatingConfig.animFinalState == 1:
+        if not self.config.animFinalState:
             return
 
-        MovieWriter = makeMovieWriter(self.animatingConfig.writerName, 
-                                      self.animatingConfig.writerFPS,
-                                      self.animatingConfig.writerCodec, 
-                                      self.animatingConfig.writerBitrate, 
-                                      self.animatingConfig.writerExtraArgs)
+        MovieWriter = makeMovieWriter(self.config.writerName, 
+                                      self.config.writerFPS,
+                                      self.config.writerCodec, 
+                                      self.config.writerBitrate, 
+                                      self.config.writerExtraArgs)
 
-        if self.animatingConfig.animFinalState_transparencyFunction == 'defaultTransparency':
-            transparencyFunction = defaultTransparency
-        elif self.animatingConfig.animFinalState_transparencyFunction == 'fastVanishingTransparency':
-            transparencyFunction = fastVanishingTransparency
-        elif self.animatingConfig.animFinalState_transparencyFunction == 'customTransparency':
-            transparencyFunction = customTransparency
+        transparencyFunction = getTransparencyFunction(self.config.animFinalState_transparencyFunction)
 
-        if self.animatingConfig.singleOrMulti == 0:
-            outputDirList = [self.animatingConfig.outputDir[0]]
-            labelList     = [self.animatingConfig.label[0]]
-        elif self.animatingConfig.singleOrMulti == 1:
-            outputDirList = self.animatingConfig.outputDir
-            labelList     = self.animatingConfig.label
+        ( outputDirListList,
+          labelListList,
+          prefixFigNameList) = makeOutputDirLabelPrefixFigNameList(self.config.singleOrMulti,
+                                                                   self.config.outputDirList,
+                                                                   self.config.labelList,
+                                                                   self.config.animFinalState_prefixFigName)
 
-        cmapName = 'jet'
-        if self.animatingConfig.animFinalState_colorBar == 1:
-            cmapName = self.animatingConfig.animFinalState_cmapName
+        for (outputDirList,
+             labelList,
+             prefixFigName) in zip(outputDirListList,
+                                   labelListList,
+                                   prefixFigNameList):
+        
+            animation = makeAnimFinalStateMultiSim(self.config.funcAnimArgs,
+                                                   outputDirList,
+                                                   self.config.figDir,
+                                                   labelList,
+                                                   transparencyFunction,
+                                                   self.config.animFinalState_plotter,
+                                                   self.config.animFinalState_args,
+                                                   self.config.animFinalState_argsInit,
+                                                   self.config.animFinalState_argsFinal,
+                                                   self.config.animFinalState_colorBar,
+                                                   self.config.animFinalState_cmapName,
+                                                   self.config.animFinalState_timeTextPBar,
+                                                   self.config.animFinalState_xLabel,
+                                                   self.config.animFinalState_yLabel,
+                                                   self.config.animFinalState_cLabel,
+                                                   self.config.animFinalState_extendX,
+                                                   self.config.animFinalState_extendY,
+                                                   self.config.animFinalState_nbrXTicks,
+                                                   self.config.animFinalState_nbrYTicks,
+                                                   self.config.animFinalState_nbrCTicks,
+                                                   self.config.animFinalState_xTicksDecimals,
+                                                   self.config.animFinalState_yTicksDecimals,
+                                                   self.config.animFinalState_cTicksDecimals,
+                                                   self.config.animFinalState_order,
+                                                   self.config.animFinalState_extendDirection,
+                                                   self.config.EPSILON)
 
-        animation = makeAnimFinalStateMultiSim(self.animatingConfig.funcAnimArgs,
-                                               outputDirList,
-                                               self.animatingConfig.figDir,
-                                               labelList,
-                                               transparencyFunction,
-                                               self.animatingConfig.animFinalState_plotter,
-                                               self.animatingConfig.animFinalState_args,
-                                               self.animatingConfig.animFinalState_argsInit,
-                                               self.animatingConfig.animFinalState_argsFinal,
-                                               self.animatingConfig.animFinalState_colorBar,
-                                               cmapName,
-                                               self.animatingConfig.animFinalState_timeTextPBar,
-                                               self.animatingConfig.animFinalState_xLabel,
-                                               self.animatingConfig.animFinalState_yLabel,
-                                               self.animatingConfig.animFinalState_cLabel,
-                                               self.animatingConfig.animFinalState_extendX,
-                                               self.animatingConfig.animFinalState_extendY,
-                                               self.animatingConfig.animFinalState_nbrXTicks,
-                                               self.animatingConfig.animFinalState_nbrYTicks,
-                                               self.animatingConfig.animFinalState_nbrCTicks,
-                                               self.animatingConfig.animFinalState_xTicksDecimals,
-                                               self.animatingConfig.animFinalState_yTicksDecimals,
-                                               self.animatingConfig.animFinalState_cTicksDecimals,
-                                               self.animatingConfig.animFinalState_order,
-                                               self.animatingConfig.animFinalState_extendDirection,
-                                               self.animatingConfig.EPSILON)
+            saveAnimation(animation, 
+                          self.config.figDir, 
+                          prefixFigName, 
+                          self.config.extensions, 
+                          MovieWriter)
 
-        saveAnimation(animation, 
-                      self.animatingConfig.figDir, 
-                      self.animatingConfig.animFinalState_prefixFigName, 
-                      self.animatingConfig.extension, 
-                      MovieWriter)
+#__________________________________________________

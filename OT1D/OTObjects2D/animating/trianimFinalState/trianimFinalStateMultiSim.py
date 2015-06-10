@@ -1,6 +1,6 @@
-#__________________________
-# animFinalStateMultiSim.py
-#__________________________
+#_____________________________
+# trianimFinalStateMultiSim.py
+#_____________________________
 #
 # util to plot the final state for multiple simulations 
 #
@@ -14,7 +14,7 @@ from ....utils.io.io                import fileNameSuffix
 from ....utils.io.extractFinalState import extractFinalStateMultiSim
 from ....utils.plotting.positions   import figureRect
 from ....utils.plotting.positions   import xylims2d
-from ....utils.plotting.plotting    import makeAxesGrid
+from ....utils.plotting.plotting    import makeAxesGridTriplot
 from ....utils.plotting.plotting    import adaptAxesExtent
 from ....utils.plotting.plot        import addTitleLabelsGrid
 from ....utils.plotting.plot        import addTimeTextPBar
@@ -24,32 +24,30 @@ from ....utils.plotting.plotMatrix  import plotMatrix
 
 #__________________________________________________ 
 
-def makeAnimFinalStateMultiSim(kwargsFuncAnim,
-                               outputDirList,
-                               figDir,
-                               labelList,
-                               transparencyFunction,
-                               plotter,
-                               kwargs,
-                               kwargsInit,
-                               kwargsFinal,
-                               colorBar,
-                               cmapName,
-                               timeTextPBar,
-                               xLabel,
-                               yLabel,
-                               cLabel,
-                               extendX,
-                               extendY,
-                               nbrXTicks,
-                               nbrYTicks,
-                               nbrCTicks,
-                               xTicksDecimals,
-                               yTicksDecimals,
-                               cticksDecimals,
-                               order,
-                               extendDirection,
-                               EPSILON):
+def makeTrianimFinalStateMultiSim(kwargsFuncAnim,
+                                  outputDirList,
+                                  figDir,
+                                  labelList,
+                                  plotter,
+                                  kwargs,
+                                  colorBar,
+                                  cmapName,
+                                  timeTextPBar,
+                                  xLabel,
+                                  yLabel,
+                                  cLabel,
+                                  extendX,
+                                  extendY,
+                                  nbrXTicks,
+                                  nbrYTicks,
+                                  nbrCTicks,
+                                  xTicksDecimals,
+                                  yTicksDecimals,
+                                  cticksDecimals,
+                                  order,
+                                  extendDirection,
+                                  extendDirectionTriplot,
+                                  EPSILON):
 
     (fs, finits, ffinals, mini, maxi, Pmax) = extractFinalStateMultiSim(outputDirList)
     (xmin, xmax, ymin, ymax)                = xylims2d()
@@ -57,12 +55,10 @@ def makeAnimFinalStateMultiSim(kwargsFuncAnim,
     figure = plt.figure()
     plt.clf()
 
-    (gs, axes) = makeAxesGrid(plt, len(outputDirList), order=order, extendDirection=extendDirection)
+    (gs, axes, axesInit, axesFinal) = makeAxesGridTriplot(plt, len(outputDirList), order, extendDirection, extendDirectionTriplot)
 
-    alphaInit  = transparencyFunction(1.-float(0)/(Pmax+1.))
-    alphaFinal = transparencyFunction(float(0)/(Pmax+1.))
+    for (f, finit, ffinal, label, ax, axInit, axFinal) in zip(fs, finits, ffinals, labelList, axes, axesInit, axesFinal):
 
-    for (f, finit, ffinal, label, ax) in zip(fs, finits, ffinals, labelList, axes):
         imC = plotMatrix(ax,
                          f[:,:,0],
                          plotter=plotter,
@@ -74,29 +70,36 @@ def makeAnimFinalStateMultiSim(kwargsFuncAnim,
                          vmin=mini,
                          vmax=maxi,
                          **kwargs)
-        imI = plotMatrix(ax,
+        imI = plotMatrix(axInit,
                          finit,
-                         plotter='contour',
+                         plotter=plotter,
                          xmin=xmin,
                          xmax=xmax,
                          ymin=ymin,
                          ymax=ymax,
+                         cmapName=cmapName,
                          vmin=mini,
                          vmax=maxi,
-                         **kwargsInit)
-        imF = plotMatrix(ax,
+                         **kwargs)
+        imF = plotMatrix(axFinal,
                          ffinal,
-                         plotter='contour',
+                         plotter=plotter,
                          xmin=xmin,
                          xmax=xmax,
                          ymin=ymin,
                          ymax=ymax,
+                         cmapName=cmapName,
                          vmin=mini,
                          vmax=maxi,
-                         **kwargsFinal)
+                         **kwargs)
 
         adaptAxesExtent(ax, xmin, xmax, ymin, ymax, extendX, extendY, nbrXTicks, nbrYTicks, xTicksDecimals, yTicksDecimals, EPSILON)
         addTitleLabelsGrid(ax, title=label, xLabel=xLabel, yLabel=yLabel, grid=False)
+        adaptAxesExtent(axInit, xmin, xmax, ymin, ymax, extendX, extendY, nbrXTicks, nbrYTicks, xTicksDecimals, yTicksDecimals, EPSILON)
+        addTitleLabelsGrid(axInit, title=label+', init', xLabel=xLabel, yLabel=yLabel, grid=False)
+        adaptAxesExtent(axFinal, xmin, xmax, ymin, ymax, extendX, extendY, nbrXTicks, nbrYTicks, xTicksDecimals, yTicksDecimals, EPSILON)
+        addTitleLabelsGrid(axFinal, title=label+', final', xLabel=xLabel, yLabel=yLabel, grid=False)
+
 
     gs.tight_layout(figure, rect=figureRect(colorBar, timeTextPBar))
     if colorBar:
@@ -107,10 +110,8 @@ def makeAnimFinalStateMultiSim(kwargsFuncAnim,
 
     def animate(t):
         ret = []
-        kwargsInit['alpha']  = transparencyFunction(1.-float(t)/(Pmax+1.))
-        kwargsFinal['alpha'] = transparencyFunction(float(t)/(Pmax+1.))
 
-        for (f, finit, ffinal, label, ax) in zip(fs, finits, ffinals, labelList, axes):
+        for (f, finit, ffinal, label, ax, axInit, axFinal) in zip(fs, finits, ffinals, labelList, axes, axesInit, axesFinal):
             ax.cla()
             imC = plotMatrix(ax,
                              f[:,:,t],
@@ -123,30 +124,36 @@ def makeAnimFinalStateMultiSim(kwargsFuncAnim,
                              vmin=mini,
                              vmax=maxi,
                              **kwargs)
-            imI = plotMatrix(ax,
+            imI = plotMatrix(axInit,
                              finit,
-                             plotter='contour',
+                             plotter=plotter,
                              xmin=xmin,
                              xmax=xmax,
                              ymin=ymin,
                              ymax=ymax,
+                             cmapName=cmapName,
                              vmin=mini,
                              vmax=maxi,
-                             **kwargsInit)
-            imF = plotMatrix(ax,
+                             **kwargs)
+            imF = plotMatrix(axFinal,
                              ffinal,
-                             plotter='contour',
+                             plotter=plotter,
                              xmin=xmin,
                              xmax=xmax,
                              ymin=ymin,
                              ymax=ymax,
+                             cmapName=cmapName,
                              vmin=mini,
                              vmax=maxi,
-                             **kwargsFinal)
+                             **kwargs)
             ret.extend([imC,imI,imF])
 
             adaptAxesExtent(ax, xmin, xmax, ymin, ymax, extendX, extendY, nbrXTicks, nbrYTicks, xTicksDecimals, yTicksDecimals, EPSILON)
             addTitleLabelsGrid(ax, title=label, xLabel=xLabel, yLabel=yLabel, grid=False)
+            adaptAxesExtent(axInit, xmin, xmax, ymin, ymax, extendX, extendY, nbrXTicks, nbrYTicks, xTicksDecimals, yTicksDecimals, EPSILON)
+            addTitleLabelsGrid(axInit, title=label+', init', xLabel=xLabel, yLabel=yLabel, grid=False)
+            adaptAxesExtent(axFinal, xmin, xmax, ymin, ymax, extendX, extendY, nbrXTicks, nbrYTicks, xTicksDecimals, yTicksDecimals, EPSILON)
+            addTitleLabelsGrid(axFinal, title=label+', final', xLabel=xLabel, yLabel=yLabel, grid=False)
 
         if timeTextPBar:
             TTPBax.cla()

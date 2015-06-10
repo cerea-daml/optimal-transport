@@ -8,9 +8,7 @@ EPSILON = 1.e-8
 
 #__________________________________________________
 # Animate single simulation or multiple simulations
-# 0 -> single sim
-# 1 -> multi  sim
-singleOrMulti = 0
+singleOrMulti = single
 
 #__________________________________________________
 # Figures output directory
@@ -24,8 +22,8 @@ writerCodec     =
 writerBitrate   = 
 writerExtraArgs = 
 
-extension       = str : .mp4
-extension       = str : .avi
+extensions      = str : .mp4
+extensions      = str : .avi
 
 #__________________________________________________
 # FuncAnimation arguments
@@ -35,10 +33,10 @@ funcAnimArgs = blit : bool : true
 # Output directory and associated labels
 # For multiple simulations, just duplicate these lines
 # For single simulation, only the first line will be used 
-outputDir = str : ./
-label     = str : sim0
-outputDir = str : ./
-label     = str : sim1
+outputDirList = str : ./
+labelList     = str : sim0
+outputDirList = str : ./
+labelList     = str : sim1
 
 #__________________________________________________
 # Animate final state
@@ -69,3 +67,31 @@ animFinalState_yTicksDecimals       = 1
 animFinalState_cTicksDecimals       = 2
 animFinalState_order                = horizontalFirst
 animFinalState_extendDirection      = horizontal
+
+#__________________________________________________
+# Trianim final state
+trianimFinalState = True
+
+# Options for trianimating final state
+trianimFinalState_prefixFigName          = finalState_tri_
+trianimFinalState_plotter                = imshow
+trianimFinalState_args                   = interpolation : str   : nearest
+trianimFinalState_colorBar               = True
+trianimFinalState_cmapName               = jet
+trianimFinalState_timeTextPBar           = True
+trianimFinalState_xLabel                 = $x$
+trianimFinalState_yLabel                 = $y$
+trianimFinalState_cLabel                 = $f$
+trianimFinalState_extendX                = 0.0
+trianimFinalState_extendY                = 0.0
+trianimFinalState_nbrXTicks              = 2
+trianimFinalState_nbrYTicks              = 2
+trianimFinalState_nbrCTicks              = 5
+trianimFinalState_xTicksDecimals         = 1
+trianimFinalState_yTicksDecimals         = 1
+trianimFinalState_cTicksDecimals         = 2
+trianimFinalState_order                  = horizontalFirst
+trianimFinalState_extendDirection        = vertical
+trianimFinalState_extendDirectionTrianim = horizontal
+
+#__________________________________________________
