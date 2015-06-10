@@ -1,6 +1,6 @@
-###############
+#______________
 # plotMatrix.py
-###############
+#______________
 
 import numpy      as np
 import matplotlib as mpl
@@ -10,8 +10,10 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 from cmap                    import colormap
 from positions               import colorBarRect
 
-def plotMatrix(ax, matrix, plotter, **kwargs):
-    kwargs = fillKwargs(plotter, **kwargs)
+#__________________________________________________
+
+def plotMatrix(ax, matrix, plotter, xmin=0.0, xmax=1.0, ymin=0.0, ymax=1.0, cmapName='jet', **kwargs):
+    kwargs = fillKwargs(plotter, xmin, xmax, ymin, ymax, cmapName, **kwargs)
 
     if plotter == 'imshow':
         return ax.imshow(matrix, **kwargs)
@@ -22,11 +24,30 @@ def plotMatrix(ax, matrix, plotter, **kwargs):
     elif plotter == 'contourf':
         return ax.contourf(matrix, **kwargs)
 
-def fillKwargs(plotter, **kwargs):
+#__________________________________________________
+
+def fillKwargs(plotter, xmin, xmax, ymin, ymax, cmapName, **kwargs):
+
+    if plotter == 'imshow':
+
+        cmap   = colormap(cmapName)
+        if kwargs.has_key('vmin') and kwargs.has_key('vmax'):
+            norm = mpl.colors.Normalize(vmin=kwargs['vmin'], vmax=kwargs['vmax'], clip=False)
+            kwargs['norm'] = norm
+
+        kwargs['cmap'] = cmap
+
+    else:
+        kwargs['cmap'] = None
+        try:
+            del kwargs['norm']
+        except:
+            pass
+
     if not kwargs.has_key('origin'):
         kwargs['origin'] = 'lower'
     if not kwargs.has_key('extent'):
-        kwargs['extent'] = [0.,1.,0.,1.]
+        kwargs['extent'] = [xmin, xmax, ymin, ymax]
 
     if plotter == 'imshow':
         if not kwargs.has_key('interpolation'):
@@ -36,10 +57,10 @@ def fillKwargs(plotter, **kwargs):
             kwargs['colors'] = 'k'
         if not kwargs.has_key('linestyles'):
             kwargs['linestyles'] = 'solid'
-        #if not kwargs.has_key('linewidths'):
-        #    kwargs['linewidths'] = 1.5
 
     return kwargs
+
+#__________________________________________________
 
 def addColorBar(plt, timeTextPBar, cmapName, mini, maxi, nbrTicks, ticksDecimals, label):
     rect = colorBarRect(timeTextPBar)
@@ -49,7 +70,9 @@ def addColorBar(plt, timeTextPBar, cmapName, mini, maxi, nbrTicks, ticksDecimals
     cbar.set_label(label, labelpad=-80)
     return (cax, cbar)
 
-def plotColorBar(cax, cmapName, mini, maxi, nbrTicks, ticksDecimals, label):
+#__________________________________________________
+
+def plotColorBar(cax, cmapName, mini, maxi, nbrTicks, ticksDecimals, label, orientation='vertical'):
     cmap  = colormap(cmapName)
     norm  = mpl.colors.Normalize(vmin=mini, vmax=maxi, clip=False)
 
@@ -58,4 +81,9 @@ def plotColorBar(cax, cmapName, mini, maxi, nbrTicks, ticksDecimals, label):
     else:
         ticks = np.linspace(mini, maxi, nbrTicks).round(decimals=ticksDecimals).tolist()
 
-    return mpl.colorbar.ColorbarBase(cax, cmap=cmap, norm=norm, ticks=ticks, label=label, orientation='vertical')
+    cbar = mpl.colorbar.ColorbarBase(cax, cmap=cmap, norm=norm, ticks=ticks, label=label, orientation=orientation)
+    cbar.solids.set_rasterized(True)
+    cbar.solids.set_edgecolor('face')
+    return cbar
+
+#__________________________________________________

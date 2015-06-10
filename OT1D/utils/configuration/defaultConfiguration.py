@@ -155,9 +155,9 @@ class DefaultConfiguration(object):
 
                 else:
                     f.write(attr+' = '+str(self.__getattribute__(attr))+'\n')
+
             except:
                 pass
-
 
         f.close()
 

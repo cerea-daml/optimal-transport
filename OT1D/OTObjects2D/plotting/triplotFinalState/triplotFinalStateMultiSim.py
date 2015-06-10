@@ -1,6 +1,6 @@
-#__________________________
-# plotFinalStateMultiSim.py
-#__________________________
+#_____________________________
+# triplotFinalStateMultiSim.py
+#_____________________________
 #
 # util to plot the final state for multiple simulations 
 #
@@ -11,7 +11,7 @@ from ....utils.io.io                import fileNameSuffix
 from ....utils.io.extractFinalState import extractFinalStateMultiSim
 from ....utils.plotting.positions   import figureRect
 from ....utils.plotting.positions   import xylims2d
-from ....utils.plotting.plotting    import makeAxesGrid
+from ....utils.plotting.plotting    import makeAxesGridTriplot
 from ....utils.plotting.plotting    import adaptAxesExtent
 from ....utils.plotting.plot        import addTitleLabelsGrid
 from ....utils.plotting.plot        import addTimeTextPBar
@@ -21,47 +21,43 @@ from ....utils.plotting.saveFig     import saveFig
 
 #__________________________________________________
 
-def plotFinalStateMultiSim(outputDirList,
-                           figDir,
-                           prefixFigName,
-                           labelList,
-                           transparencyFunction,
-                           plotter,
-                           kwargs,
-                           kwargsInit,
-                           kwargsFinal,
-                           colorBar,
-                           cmapName,
-                           timeTextPBar,
-                           xLabel,
-                           yLabel,
-                           cLabel,
-                           extendX,
-                           extendY,
-                           nbrXTicks,
-                           nbrYTicks,
-                           nbrCTicks,
-                           xTicksDecimals,
-                           yTicksDecimals,
-                           cticksDecimals,
-                           order,
-                           extendDirection,
-                           extensionsList,
-                           EPSILON):
+def triplotFinalStateMultiSim(outputDirList,
+                              figDir,
+                              prefixFigName,
+                              labelList,
+                              plotter,
+                              kwargs,
+                              colorBar,
+                              cmapName,
+                              timeTextPBar,
+                              xLabel,
+                              yLabel,
+                              cLabel,
+                              extendX,
+                              extendY,
+                              nbrXTicks,
+                              nbrYTicks,
+                              nbrCTicks,
+                              xTicksDecimals,
+                              yTicksDecimals,
+                              cticksDecimals,
+                              order,
+                              extendDirection,
+                              extendDirectionTriplot,
+                              extensionsList,
+                              EPSILON):
 
     (fs, finits, ffinals, mini, maxi, Pmax) = extractFinalStateMultiSim(outputDirList)
     (xmin, xmax, ymin, ymax)                = xylims2d()
 
     for t in xrange(Pmax+2):
-        kwargsInit['alpha']  = transparencyFunction(1.-float(t)/(Pmax+1.))
-        kwargsFinal['alpha'] = transparencyFunction(float(t)/(Pmax+1.))
 
         figure     = plt.figure()
         plt.clf()
 
-        (gs, axes) = makeAxesGrid(plt, len(outputDirList), order=order, extendDirection=extendDirection)
+        (gs, axes, axesInit, axesFinal) = makeAxesGridTriplot(plt, len(outputDirList), order, extendDirection, extendDirectionTriplot)
 
-        for (f, finit, ffinal, label, ax) in zip(fs, finits, ffinals, labelList, axes):
+        for (f, finit, ffinal, label, ax, axInit, axFinal) in zip(fs, finits, ffinals, labelList, axes, axesInit, axesFinal):
 
             plotMatrix(ax,
                        f[:,:,t],
@@ -74,29 +70,37 @@ def plotFinalStateMultiSim(outputDirList,
                        vmin=mini,
                        vmax=maxi,
                        **kwargs)
-            plotMatrix(ax,
+            plotMatrix(axInit,
                        finit,
-                       plotter='contour',
+                       plotter=plotter,
                        xmin=xmin,
                        xmax=xmax,
                        ymin=ymin,
                        ymax=ymax,
+                       cmapName=cmapName,
                        vmin=mini,
                        vmax=maxi,
-                       **kwargsInit)
-            plotMatrix(ax,
+                       **kwargs)
+            plotMatrix(axFinal,
                        ffinal,
-                       plotter='contour',
+                       plotter=plotter,
                        xmin=xmin,
                        xmax=xmax,
                        ymin=ymin,
                        ymax=ymax,
+                       cmapName=cmapName,
                        vmin=mini,
                        vmax=maxi,
-                       **kwargsFinal)
+                       **kwargs)
 
             adaptAxesExtent(ax, xmin, xmax, ymin, ymax, extendX, extendY, nbrXTicks, nbrYTicks, xTicksDecimals, yTicksDecimals, EPSILON)
             addTitleLabelsGrid(ax, title=label, xLabel=xLabel, yLabel=yLabel, grid=False)
+
+            adaptAxesExtent(axInit, xmin, xmax, ymin, ymax, extendX, extendY, nbrXTicks, nbrYTicks, xTicksDecimals, yTicksDecimals, EPSILON)
+            addTitleLabelsGrid(axInit, title=label+', init', xLabel=xLabel, yLabel=yLabel, grid=False)
+
+            adaptAxesExtent(axFinal, xmin, xmax, ymin, ymax, extendX, extendY, nbrXTicks, nbrYTicks, xTicksDecimals, yTicksDecimals, EPSILON)
+            addTitleLabelsGrid(axFinal, title=label+', final', xLabel=xLabel, yLabel=yLabel, grid=False)
 
         gs.tight_layout(figure, rect=figureRect(colorBar, timeTextPBar))
 

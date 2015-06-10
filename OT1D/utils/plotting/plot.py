@@ -1,6 +1,6 @@
-#########
+#________
 # plot.py
-#########
+#________
 
 import numpy as np
 
@@ -8,26 +8,11 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 from matplotlib              import gridspec
 
 from ..io.io                 import fileNameSuffix
-
 from positions               import timeTextPBarRect
 from positions               import positionsTimeTxtPbar
+from plotting                import adaptAxesExtent
 
-def plottingOptions():
-    options = np.array(['b-', 'g-', 'r-', 'm-', 'y-', 'c-', 'k-',
-                        'b--','g--','r--','m--','y--','c--','k--',
-                        'b:', 'g:', 'r:', 'm:', 'y:', 'c:', 'k:',
-                        'b-.','g-.','r-.','m-.','y-.','c-.','k-.'])
-    n       = len(options)
-    return (options, n)
-
-def plottingOptionsMultiSim():
-    options = np.array([['b-', 'g-', 'r-', 'm-', 'y-', 'c-', 'k-'],
-                        ['b--','g--','r--','m--','y--','c--','k--'],
-                        ['b:', 'g:', 'r:', 'm:', 'y:', 'c:', 'k:' ],
-                        ['b-.','g-.','r-.','m-.','y-.','c-.','k-.']])
-
-    (m, n) = options.shape
-    return (options, m, n)
+#__________________________________________________
 
 def tryAddCustomLegend(ax, makeRoom):
     if makeRoom:
@@ -41,37 +26,7 @@ def tryAddCustomLegend(ax, makeRoom):
     except:
         ax.legend(fontsize='xx-small', loc='center right', bbox_to_anchor=(1.13, 0.5), fancybox=True)
 
-def makeGrid(nbrOfItems, extendDirection):
-    nColumns = int(np.floor(np.sqrt(nbrOfItems)))
-    nLines   = nColumns
-
-    while nColumns*nLines < nbrOfItems:
-        if extendDirection == 'vertical':
-            nLines += 1
-        elif extendDirection == 'horizontal':
-            nColumns += 1
-        else:
-            nLines += 1
-            nColumns += 1
-
-    return (nLines, nColumns)
-
-def makeAxesGrid(plt, nbrOfItems, order, extendDirection):
-    (nLines, nColumns) = makeGrid(nbrOfItems, extendDirection)
-    gs                 = gridspec.GridSpec(nLines, nColumns)
-    axes               = []
-
-    for j in xrange(nbrOfItems):
-        if order == 'horizontalFirst':
-            modulo = nColumns
-        elif order == 'verticalFirst':
-            modulo = nLines
-
-        nc = int(np.mod(j, modulo))
-        nl = int((j-nc)/modulo)
-        axes.append(plt.subplot(gs[nl,nc]))
-
-    return (gs, axes)
+#__________________________________________________
 
 def addTitleLabelsGrid(ax, title, xLabel, yLabel, grid):
     if bool(title):
@@ -82,6 +37,8 @@ def addTitleLabelsGrid(ax, title, xLabel, yLabel, grid):
         ax.set_ylabel(yLabel)
     if grid:
         ax.grid()
+
+#__________________________________________________
 
 def trySetScale(ax, xScale, yScale):
     if xScale is not None:
@@ -96,21 +53,15 @@ def trySetScale(ax, xScale, yScale):
         except:
             pass
 
-def plot(ax, Y, X=None, opt=None, **kwargs):
-    args = []
-    if X is not None:
-        args.append(X)
-    args.append(Y)
-    if opt is not None:
-        args.append(opt)
-
-    return ax.plot(*tuple(args), **kwargs)
+#__________________________________________________
 
 def addTimeTextPBar(plt, t, tMax):
     rect     = timeTextPBarRect()
     gsTTPB   = gridspec.GridSpec(1, 1, left=rect[0], bottom=rect[1], right=rect[2], top=rect[3])
     ax       = plt.subplot(gsTTPB[0, 0], frameon=False)
     return (ax, plotTimeTextPBar(ax, t, tMax))
+
+#__________________________________________________
 
 def plotTimeTextPBar(ax, t, tMax):
     (xTxt, yTxt, xPbarStart, xPbarEnd, yPbar) = positionsTimeTxtPbar()
@@ -127,15 +78,16 @@ def plotTimeTextPBar(ax, t, tMax):
     adaptAxesExtent(ax, 0.0, 1.0, -0.5, 0.5, 0.0, 0.0, 0, 0, 1, 1, 0.0)
     return ret
 
-def adaptAxesExtent(ax, xmin, xmax, ymin, ymax, extendX, extendY, nbrXTicks, nbrYTicks, xTicksDecimals, yTicksDecimals, EPSILON):    
-    xExtend = max(xmax - xmin, EPSILON)
-    yExtend = max(ymax - ymin, EPSILON)
+#__________________________________________________
 
-    ax.set_xlim(xmin-xExtend*extendX, xmax+xExtend*extendX)
-    ax.set_ylim(ymin-yExtend*extendY, ymax+yExtend*extendY)
+def plot(ax, Y, X=None, opt=None, **kwargs):
+    args = []
+    if X is not None:
+        args.append(X)
+    args.append(Y)
+    if opt is not None:
+        args.append(opt)
 
-    xTicks = np.linspace(xmin, xmax, nbrXTicks).round(decimals=xTicksDecimals).tolist()
-    yTicks = np.linspace(ymin, ymax, nbrYTicks).round(decimals=yTicksDecimals).tolist()
+    return ax.plot(*tuple(args), **kwargs)
 
-    ax.set_xticks(xTicks)
-    ax.set_yticks(yTicks)
+#__________________________________________________

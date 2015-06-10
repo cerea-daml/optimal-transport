@@ -1,6 +1,8 @@
-############
+#___________
 # saveFig.py
-############
+#___________
+
+#__________________________________________________
 
 def saveFig(plt, figName, extensionsList):
     for ext in extensionsList:
@@ -9,3 +11,5 @@ def saveFig(plt, figName, extensionsList):
             plt.savefig(figName+ext)
         except:
             print('Could not write file '+figName+ext+' ...')
+
+#__________________________________________________

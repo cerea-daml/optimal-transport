@@ -8,9 +8,7 @@ EPSILON = 1.e-8
 
 #__________________________________________________
 # Plot single simulation or multiple simulations
-# 0 -> single sim
-# 1 -> multi  sim
-singleOrMulti = 0
+singleOrMulti = single
 
 #__________________________________________________
 # Figures output directory
@@ -20,17 +18,17 @@ figDir = ./
 # Extension for figures
 # You may want to try more than one extension
 # in that case, just duplicate this line
-extension = str : .pdf
-extension = str : .eps
+extensions = str : .pdf
+extensions = str : .eps
 
 #__________________________________________________
 # Output directory and associated labels
 # For multiple simulations, just duplicate these lines
 # For single simulation, only the first line will be used 
-outputDir = str : ./
-label     = str : sim0
-outputDir = str : ./
-label     = str : sim1
+outputDirList = str : ./
+labelList     = str : sim0
+outputDirList = str : ./
+labelList     = str : sim1
 
 #__________________________________________________
 # Plot analyse
@@ -75,3 +73,31 @@ plotFinalState_yTicksDecimals       = 1
 plotFinalState_cTicksDecimals       = 2
 plotFinalState_order                = horizontalFirst
 plotFinalState_extendDirection      = horizontal
+
+#__________________________________________________
+# Triplot final state
+triplotFinalState = True
+
+# Options for triplotting final state
+triplotFinalState_prefixFigName          = finalState_
+triplotFinalState_plotter                = imshow
+triplotFinalState_args                   = interpolation : str   : nearest
+triplotFinalState_colorBar               = True
+triplotFinalState_cmapName               = jet
+triplotFinalState_timeTextPBar           = True
+triplotFinalState_xLabel                 = $x$
+triplotFinalState_yLabel                 = $y$
+triplotFinalState_cLabel                 = $f$
+triplotFinalState_extendX                = 0.0
+triplotFinalState_extendY                = 0.0
+triplotFinalState_nbrXTicks              = 2
+triplotFinalState_nbrYTicks              = 2
+triplotFinalState_nbrCTicks              = 5
+triplotFinalState_xTicksDecimals         = 1
+triplotFinalState_yTicksDecimals         = 1
+triplotFinalState_cTicksDecimals         = 2
+triplotFinalState_order                  = horizontalFirst
+triplotFinalState_extendDirection        = vertical
+triplotFinalState_extendDirectionTriplot = horizontal
+
+#__________________________________________________

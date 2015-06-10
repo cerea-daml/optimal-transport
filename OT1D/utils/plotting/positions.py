@@ -1,6 +1,18 @@
-##############
+#_____________
 # positions.py
-##############
+#_____________
+
+#__________________________________________________
+
+def xylims2d():
+    xmin = 0.0
+    xmax = 1.0
+    ymin = 0.0
+    ymax = 1.0
+
+    return (xmin, xmax, ymin, ymax)
+
+#__________________________________________________
 
 def positionsTimeTxtPbar():
     xTxt = 0.0
@@ -11,6 +23,8 @@ def positionsTimeTxtPbar():
     yPbar      = 0.0
 
     return (xTxt, yTxt, xPbarStart, xPbarEnd, yPbar)
+
+#__________________________________________________
 
 def figureRect(colorBar, timeTextPBar):
     xStart = 0.0
@@ -26,6 +40,8 @@ def figureRect(colorBar, timeTextPBar):
 
     return [xStart, yStart, xEnd, yEnd]
 
+#__________________________________________________
+
 def colorBarRect(timeTextPBar):
     xStart = 0.87
     xEnd   = 0.93
@@ -38,6 +54,8 @@ def colorBarRect(timeTextPBar):
 
     return [xStart, yStart, xEnd, yEnd]
 
+#__________________________________________________
+
 def timeTextPBarRect():
     xStart = 0.07
     xEnd   = 0.93
@@ -45,3 +63,5 @@ def timeTextPBarRect():
     yEnd   = 0.10
 
     return [xStart, yStart, xEnd, yEnd]
+
+#__________________________________________________
