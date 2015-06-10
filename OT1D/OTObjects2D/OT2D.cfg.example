@@ -34,7 +34,8 @@ boundaryType = 1
 # normalization
 # -1 -> no normalization
 #  0 -> correct mass default by rescaling f1
-#  1 -> correct mass default by making mass exiting leftward and rightward
+#  1 -> correct mass default by rescaling f0 (for 0 spatial boundary conditions)
+#  2 -> correct mass default by making mass exiting leftward and rightward
 normType = 0
 
 #__________________________________________________

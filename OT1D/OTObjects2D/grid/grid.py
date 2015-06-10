@@ -1130,6 +1130,10 @@ class Boundaries( OTObject ):
             self.temporalBoundaries.bt1 *= ( mInit / mFinal )
 
         elif normType == 1:
+            # correct mass default by rescaling f0 --> only compatible with zero boundary conditions !
+            self.temporalBoundaries.bt0 *= ( mFinal / mInit )
+
+        elif normType == 2:
             # mass exits on the boundaries
             self.spatialBoundaries.bx0 += 0.25 * ( mFinal - mInit ) / ( self.M * ( self.N + 1 ) * ( self.P + 1 ) )
             self.spatialBoundaries.bx1 -= 0.25 * ( mFinal - mInit ) / ( self.M * ( self.N + 1 ) * ( self.P + 1 ) )

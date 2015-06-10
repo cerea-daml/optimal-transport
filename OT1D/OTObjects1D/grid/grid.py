@@ -971,7 +971,7 @@ class Boundaries( OTObject ):
             self.temporalBoundaries.bt1 *= ( mInit / mFinal )
 
         elif normType == 1:
-            # correct mass default by rescaling f0 --> only compatible with zero boundary conditions
+            # correct mass default by rescaling f0 --> only compatible with zero boundary conditions !
             self.temporalBoundaries.bt0 *= ( mFinal / mInit )
 
         elif normType == 2:
