@@ -1,6 +1,16 @@
-#######################
+#______________________
 # definePlotSubplots.py
-#######################
+#______________________
+
+#__________________________________________________
+
+def definePlotSubplots(function, iterOrTime, xScale, yScale, grid):
+    if 'customPlotSubplots':
+        return customPlotSubplots(iterOrTime, xScale, yScale, grid)
+    elif 'defaultPlotSubplots':
+        return defaultPlotSubplots(iterOrTime, xScale, yScale, grid)
+
+#__________________________________________________
 
 def defaultPlotSubplots(iterOrTime, xScale, yScale, grid):
     columnsList         = [[[0]], 
@@ -32,6 +42,8 @@ def defaultPlotSubplots(iterOrTime, xScale, yScale, grid):
 
     return zip(columnsList, xAxisList, xScaleList, yScaleList, xLabelList, yLabelList, titleList, gridList, fileNameSuffixList)
 
+#__________________________________________________
+
 def customPlotSubplots(iterOrTime, xScale, yScale, grid):
     columnsList         = [[[0],[1]],
                            [[2]],
@@ -61,3 +73,6 @@ def customPlotSubplots(iterOrTime, xScale, yScale, grid):
                            'Convergence']
 
     return zip(columnsList, xAxisList, xScaleList, yScaleList, xLabelList, yLabelList, titleList, gridList, fileNameSuffixList)
+
+#__________________________________________________
+

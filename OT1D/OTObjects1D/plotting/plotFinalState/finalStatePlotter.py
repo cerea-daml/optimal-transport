@@ -1,53 +1,58 @@
-######################
+#_____________________
 # finalStatePlotter.py
-######################
+#_____________________
 
-from ....utils.plotting.defaultTransparency import defaultTransparency
-from ....utils.plotting.defaultTransparency import fastVanishingTransparency
-from ....utils.plotting.defaultTransparency import customTransparency
-
+from ....utils.plotting.defaultTransparency import getTransparencyFunction
+from ....utils.plotting.plotting            import makeOutputDirLabelPrefixFigNameList
 from plotFinalStateMultiSim                 import plotFinalStateMultiSim
+
+#__________________________________________________
 
 class FinalStatePlotter:
 
-    def __init__(self, plottingConfig):
-        self.plottingConfig = plottingConfig
+    def __init__(self, config):
+        self.config = config
+
+    #_________________________
 
     def plot(self):
-        if not self.plottingConfig.plotFinalState:
+        if not self.config.plotFinalState:
             return
 
-        if self.plottingConfig.plotFinalState_transparencyFunction == 'defaultTransparency':
-            transparencyFunction = defaultTransparency
-        elif self.plottingConfig.plotFinalState_transparencyFunction == 'fastVanishingTransparency':
-            transparencyFunction = fastVanishingTransparency
-        elif self.plottingConfig.plotFinalState_transparencyFunction == 'customTransparency':
-            transparencyFunction = customTransparency
+        transparencyFunction = getTransparencyFunction(self.config.plotFinalState_transparencyFunction)
 
-        if self.plottingConfig.singleOrMulti == 0:
-            outputDirList = [self.plottingConfig.outputDir[0]]
-            labelList     = [self.plottingConfig.label[0]]
-        elif self.plottingConfig.singleOrMulti == 1:
-            outputDirList = self.plottingConfig.outputDir
-            labelList     = self.plottingConfig.label
+        ( outputDirListList,
+          labelListList,
+          prefixFigNameList) = makeOutputDirLabelPrefixFigNameList(self.config.singleOrMulti,
+                                                                   self.config.outputDirList,
+                                                                   self.config.labelList,
+                                                                   self.config.plotFinalState_prefixFigName)
 
-        plotFinalStateMultiSim(outputDirList, 
-                               self.plottingConfig.figDir, 
-                               self.plottingConfig.plotFinalState_prefixFigName,
-                               labelList, 
-                               transparencyFunction, 
-                               self.plottingConfig.plotFinalState_legend,
-                               self.plottingConfig.plotFinalState_grid,
-                               self.plottingConfig.plotFinalState_timeTextPBar,
-                               self.plottingConfig.plotFinalState_xLabel, 
-                               self.plottingConfig.plotFinalState_yLabel,
-                               self.plottingConfig.plotFinalState_extendX,
-                               self.plottingConfig.plotFinalState_extendY,
-                               self.plottingConfig.plotFinalState_nbrXTicks,
-                               self.plottingConfig.plotFinalState_nbrYTicks,
-                               self.plottingConfig.plotFinalState_xTicksDecimals,
-                               self.plottingConfig.plotFinalState_yTicksDecimals,
-                               self.plottingConfig.plotFinalState_order,
-                               self.plottingConfig.plotFinalState_extendDirection,
-                               self.plottingConfig.extension, 
-                               self.plottingConfig.EPSILON)
+        for (outputDirList,
+             labelList,
+             prefixFigName) in zip(outputDirListList,
+                                   labelListList,
+                                   prefixFigNameList):
+            
+            plotFinalStateMultiSim(outputDirList, 
+                                   self.config.figDir, 
+                                   prefixFigName,
+                                   labelList, 
+                                   transparencyFunction, 
+                                   self.config.plotFinalState_legend,
+                                   self.config.plotFinalState_grid,
+                                   self.config.plotFinalState_timeTextPBar,
+                                   self.config.plotFinalState_xLabel, 
+                                   self.config.plotFinalState_yLabel,
+                                   self.config.plotFinalState_extendX,
+                                   self.config.plotFinalState_extendY,
+                                   self.config.plotFinalState_nbrXTicks,
+                                   self.config.plotFinalState_nbrYTicks,
+                                   self.config.plotFinalState_xTicksDecimals,
+                                   self.config.plotFinalState_yTicksDecimals,
+                                   self.config.plotFinalState_order,
+                                   self.config.plotFinalState_extendDirection,
+                                   self.config.extensions, 
+                                   self.config.EPSILON)
+
+#__________________________________________________

@@ -1,6 +1,6 @@
-###########################
+#__________________________
 # plotFinalStateMultiSim.py
-###########################
+#__________________________
 #
 # util to plot the final state for multiple simulations 
 #
@@ -10,15 +10,17 @@ import matplotlib.pyplot as plt
 
 from ....utils.io.io                import fileNameSuffix
 from ....utils.io.extractFinalState import extractFinalStateMultiSim
-from ....utils.plotting.plot        import makeAxesGrid
+from ....utils.plotting.plotting    import makeAxesGrid
 from ....utils.plotting.plot        import plot
-from ....utils.plotting.plot        import plottingOptions
+from ....utils.plotting.plotting    import plottingOptions
 from ....utils.plotting.plot        import addTitleLabelsGrid
 from ....utils.plotting.plot        import tryAddCustomLegend
 from ....utils.plotting.plot        import addTimeTextPBar
-from ....utils.plotting.plot        import adaptAxesExtent
+from ....utils.plotting.plotting    import adaptAxesExtent
 from ....utils.plotting.saveFig     import saveFig
 from ....utils.plotting.positions   import figureRect
+
+#__________________________________________________
 
 def plotFinalStateMultiSim(outputDirList,
                            figDir,
@@ -77,3 +79,4 @@ def plotFinalStateMultiSim(outputDirList,
         saveFig(plt, figName, extensionsList)
         plt.close()
 
+#__________________________________________________

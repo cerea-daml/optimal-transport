@@ -1,42 +1,50 @@
-###################
+#__________________
 # analysePlotter.py
-###################
+#__________________
 
-from definePlotSubplots  import defaultPlotSubplots
-from definePlotSubplots  import customPlotSubplots
+from definePlotSubplots          import definePlotSubplots
+from plotAnalyseMultiSim         import plotAnalyseMultiSim
+from ....utils.plotting.plotting import makeOutputDirLabelPrefixFigNameList
 
-from plotAnalyseMultiSim import plotAnalyseMultiSim
+#__________________________________________________
 
 class AnalysePlotter:
 
-    def __init__(self, plottingConfig):
-        self.plottingConfig = plottingConfig
+    def __init__(self, config):
+        self.config = config
+
+    #_________________________
 
     def plot(self):
-        if not self.plottingConfig.plotAnalyse:
+        if not self.config.plotAnalyse:
             return
 
-        if self.plottingConfig.plotAnalyse_plotSubplotsFunction == 'customPlotSubplots':
-            plotSubplotsFunction = customPlotSubplots
-        elif self.plottingConfig.plotAnalyse_plotSubplotsFunction == 'defaultPlotSubplots':
-            plotSubplotsFunction = defaultPlotSubplots
+        plotSubplots = definePlotSubplots(self.config.plotAnalyse_plotSubplotsFunction,
+                                          self.config.plotAnalyse_plotSubplots_iterOrTime,
+                                          self.config.plotAnalyse_plotSubplots_xScale,
+                                          self.config.plotAnalyse_plotSubplots_yScale,
+                                          self.config.plotAnalyse_plotSubplots_grid)
 
-        plotSubplots = plotSubplotsFunction(self.plottingConfig.plotAnalyse_plotSubplots_iterOrTime,
-                                            self.plottingConfig.plotAnalyse_plotSubplots_xScale,
-                                            self.plottingConfig.plotAnalyse_plotSubplots_yScale,
-                                            self.plottingConfig.plotAnalyse_plotSubplots_grid)
 
-        
-        if self.plottingConfig.singleOrMulti == 0:
-            outputDirList = [self.plottingConfig.outputDir[0]]
-            labelList     = [self.plottingConfig.label[0]]
-        elif self.plottingConfig.singleOrMulti == 1:
-            outputDirList = self.plottingConfig.outputDir
-            labelList     = self.plottingConfig.label
+        ( outputDirListList,
+          labelListList,
+          prefixFigNameList) = makeOutputDirLabelPrefixFigNameList(self.config.singleOrMulti,
+                                                                   self.config.outputDirList,
+                                                                   self.config.labelList,
+                                                                   self.config.plotAnalyse_prefixFigName)
 
-        plotAnalyseMultiSim(outputDirList,
-                            self.plottingConfig.figDir,
-                            self.plottingConfig.plotAnalyse_prefixFigName, 
-                            labelList,
-                            plotSubplots,
-                            self.plottingConfig.extension)
+
+        for (outputDirList,
+             labelList,
+             prefixFigName) in zip(outputDirListList,
+                                   labelListList,
+                                   prefixFigNameList):
+
+            plotAnalyseMultiSim(outputDirList,
+                                self.config.figDir,
+                                prefixFigName, 
+                                labelList,
+                                plotSubplots,
+                                self.config.extensions)
+
+#__________________________________________________

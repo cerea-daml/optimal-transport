@@ -1,117 +1,98 @@
-#############################
+#____________________________
 # Class PlottingConfiguration
-#############################
+#____________________________
 #
 # Defines everything necessary for plotting the result of an OT algorithm from a config file
 #
 
-from plotter import Plotter
-
+from plotter                                     import Plotter
 from ...utils.io.io                              import fileNameSuffix
 from ...utils.configuration.defaultConfiguration import DefaultConfiguration
+
+#__________________________________________________
 
 class PlottingConfiguration(DefaultConfiguration):
 
     def __init__(self, plottingConfigFile=None):
         DefaultConfiguration.__init__(self, plottingConfigFile)
 
+        i    = len(self.labelList)
+        iMax = len(self.outputDirList)
+
+        while i < iMax:
+            self.labelList.append('sim'+fileNameSuffix(i, iMax))
+            i += 1
+
+    #_________________________
+
     def __repr__(self):
         return 'PlottingConfiguration for a 1D OT algoritm'
+
+    #_________________________
 
     def plotter(self):
         return Plotter(self)
 
-    def checkAttributes(self):
-        DefaultConfiguration.checkAttributes(self)
-
-        if self.singleOrMulti == 1:
-            i    = len(self.label)
-            iMax = len(self.outputDir)
-
-            while i < iMax:
-                self.label.append('sim'+fileNameSuffix(i, iMax))
-                i += 1
+    #_________________________
 
     def defaultAttributes(self):
         DefaultConfiguration.defaultAttributes(self)
 
         self.addAttribute('EPSILON',
-                          1.e-8, 
-                          [],
-                          'float',
-                          True)
+                          defaultVal=1.e-8,
+                          isSubAttr=[],
+                          attrType='float')
 
         self.addAttribute('singleOrMulti',
-                          0,
-                          [],
-                          'int',
-                          True)
+                          defaultVal='multi')
 
         self.addAttribute('figDir',
-                          './figures/',
-                          [],
-                          'str',
-                          True)
+                          defaultVal='./figures/')
 
-        self.addAttribute('extension',
-                          ['.pdf'], 
-                          [],
-                          'list',
-                          True)
+        self.addAttribute('extensions',
+                          defaultVal=['.pdf'],
+                          attrType='list')
 
-        self.addAttribute('outputDir',
-                          ['./output/'], 
-                          [],
-                          'list',
-                          True)
+        self.addAttribute('outputDirList',
+                          defaultVal=['./output/'],
+                          attrType='list')
 
-        self.addAttribute('label',
-                          ['sim0'], 
-                          [],
-                          'list',
-                          True)
+        self.addAttribute('labelList',
+                          defaultVal=['sim0'],
+                          attrType='list')
+
+        #_______________
 
         self.addAttribute('plotAnalyse',
-                          True, 
-                          [],
-                          'bool',
-                          True)
+                          defaultVal=True,
+                          attrType='bool')
 
         self.addAttribute('plotAnalyse_plotSubplotsFunction',
-                          'customPlotSubplots', 
-                          [('plotAnalyse', True)],
-                          'str',
-                          True)
+                          defaultVal='customPlotSubplots',
+                          isSubAttr=[('plotAnalyse', True)])
 
         self.addAttribute('plotAnalyse_prefixFigName',
-                          'analyse_', 
-                          [('plotAnalyse', True)],
-                          'str',
-                          True)
+                          defaultVal='analyse_',
+                          isSubAttr=[('plotAnalyse', True)])
 
         self.addAttribute('plotAnalyse_plotSubplots_iterOrTime',
-                          'iterations', 
-                          [('plotAnalyse', True)],
-                          'str',
-                          True)
+                          defaultVal='iterations',
+                          isSubAttr=[('plotAnalyse', True)])
 
         self.addAttribute('plotAnalyse_plotSubplots_xScale',
-                          'log', 
-                          [('plotAnalyse', True)],
-                          'str',
-                          True)
+                          defaultVal='log',
+                          isSubAttr=[('plotAnalyse', True)])
 
         self.addAttribute('plotAnalyse_plotSubplots_yScale',
-                          'log', 
-                          [('plotAnalyse', True)],
-                          'str',
-                          True)
+                          defaultVal='log',
+                          isSubAttr=[('plotAnalyse', True)])
 
         self.addAttribute('plotAnalyse_plotSubplots_grid',
-                          True, 
-                          [('plotAnalyse', True)],
-                          'bool',
-                          True)
+                          defaultVal=True,
+                          isSubAttr=[('plotAnalyse', True)],
+                          attrType='bool')
+
+        #_______________
 
         self.addAttribute('plotFinalState',
                           True, 
@@ -208,3 +189,5 @@ class PlottingConfiguration(DefaultConfiguration):
                           [('plotFinalState', True)],
                           'str',
                           True)
+
+#__________________________________________________

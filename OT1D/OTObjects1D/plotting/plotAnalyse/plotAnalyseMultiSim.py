@@ -9,9 +9,9 @@ import numpy             as np
 import matplotlib.pyplot as plt
 
 from ....utils.plotting.plot     import plot
-from ....utils.plotting.plot     import plottingOptionsMultiSim
+from ....utils.plotting.plotting import plottingOptionsMultiSim
 from ....utils.plotting.plot     import tryAddCustomLegend
-from ....utils.plotting.plot     import makeAxesGrid
+from ....utils.plotting.plotting import makeAxesGrid
 from ....utils.plotting.plot     import addTitleLabelsGrid
 from ....utils.plotting.plot     import trySetScale
 from ....utils.plotting.saveFig  import saveFig
