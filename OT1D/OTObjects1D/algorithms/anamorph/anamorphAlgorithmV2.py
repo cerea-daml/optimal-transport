@@ -11,12 +11,13 @@ import cPickle as pck
 import time    as tm
 import numpy   as np
 
-from scipy.interpolate import interp1d
-from scipy.integrate   import cumtrapz
+from scipy.interpolate                 import interp1d
+from scipy.integrate                   import cumtrapz
 
-from ...OTObject       import OTObject
-from ...grid           import grid
-from ....utils.io      import files
+from ...OTObject                       import OTObject
+from ...grid                           import grid
+from ....utils.io                      import files
+from ....utils.interpolate.interpolate import makeInterpolatorPP
 
 import matplotlib.pyplot as plt
 
@@ -26,24 +27,6 @@ def makeiT_t_map(t, CDFInit_map, iCDFFinal_map):
     def T_t_map(x):
         return ( ( 1.0 - t ) * x + t * iCDFFinal_map(CDFInit_map(x)) )
     return T_t_map
-
-#__________________________________________________
-
-def makeInterpolatorPP(X, Y, copy=True):
-    if copy:
-        return makeInterpolatorPP(X.copy(), Y.copy(), copy=False)
-
-    XPP       = np.zeros(X.size+2)
-    XPP[1:-1] = X[:]
-    XPP[0]    = X[0] - 1.0
-    XPP[-1]   = X[-1] + 1.0
-
-    YPP       = np.zeros(Y.size+2)
-    YPP[1:-1] = Y[:]
-    YPP[0]    = Y[0] 
-    YPP[-1]   = Y[-1]
-
-    return interp1d(XPP, YPP, copy=False, bounds_error=False, fill_value=0.0)
 
 #__________________________________________________
 

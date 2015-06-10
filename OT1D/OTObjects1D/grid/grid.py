@@ -6,11 +6,12 @@
 #
 
 import numpy as np
-from ..OTObject import OTObject
-from ...utils   import cardan
 
-from scipy.interpolate import interp1d
-#from scipy.interpolate import interp2d
+from scipy.interpolate                import interp1d
+
+from ..OTObject                       import OTObject
+from ...utils                         import cardan
+from ...utils.interpolate.interpolate import makeInterpolatorPP
 
 #__________________________________________________
 
@@ -346,27 +347,27 @@ class CenteredField( Field ):
         if fineResolution is None:
             fineResolution = self.N + 1
 
-        f      = self.f * ( self.f > 0 ) + 1.0 * ( self.f <= 0 )
-        v      = self.m * ( self.f > 0 ) / f
+        f       = self.f * ( self.f > 0 ) + 1.0 * ( self.f <= 0 )
+        v       = self.m * ( self.f > 0 ) / f
 
-        xV     = np.linspace(0.0, 1.0, self.N+1)
-        tV     = np.linspace(0.0, 1.0, self.P+1)
-        # not sure interp2d works... => MUST CHECK !!! => Apparently it doesn't work this way...
-        #XV,TV  = np.meshgrid(xV, tV, indexing='ij')
-        #vmap   = interp2d(XV, TV, v, copy=False, bounds_error=False, fill_value=0.0)
-        T      = np.linspace(0.5/fineResolution, 1.0-0.5/fineResolution, fineResolution)
-        Tarray = np.linspace(0.0, 1.0, fineResolution)
+        xV      = np.linspace(0.0, 1.0, self.N+1)
+        tV      = np.linspace(0.0, 1.0, self.P+1)
+
+        # First compute iT_map
+        T       = np.linspace(0.5/fineResolution, 1.0-0.5/fineResolution, fineResolution)
+        iTarray = np.linspace(0.0, 1.0, fineResolution)
 
         for t in T:
-            # for using with interp2d:
-            #Tarray += vmap(Tarray, t) / fineResolution
-            # otherwise, with interp1d:
-            jj      = t * self.P
-            j       = int(np.floor(jj))
-            vmap    = interp1d(xV, v[:,j] * (j+1.0-jj) + v[:,j+1] * (jj-j), copy=False, bounds_error=False, fill_value=0.0)
-            Tarray += vmap(Tarray) / fineResolution
+            jj       = t * self.P
+            j        = int(np.floor(jj))
+            vmap     = interp1d(xV, v[:,j] * (j+1.0-jj) + v[:,j+1] * (jj-j), copy=False, bounds_error=False, fill_value=0.0)
+            iTarray += vmap(iTarray) / fineResolution
 
-        return (np.linspace(0.0, 1.0, fineResolution), Tarray)
+        # Then inverse iT_map to get T_map
+        Tmap   = makeInterpolatorPP(iTarray, np.linspace(0.0, 1.0, fineResolution), copy=False)
+        X      = np.linspace(0.0, 1.0, fineResolution)
+        Tarray = Tmap(X)
+        return (X, Tarray)
 
     def __add__(self, other):
         if isinstance(other,CenteredField):
