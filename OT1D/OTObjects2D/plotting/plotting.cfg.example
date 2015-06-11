@@ -79,7 +79,7 @@ plotFinalState_extendDirection      = horizontal
 triplotFinalState = True
 
 # Options for triplotting final state
-triplotFinalState_prefixFigName          = finalState_
+triplotFinalState_prefixFigName          = finalState_tri_
 triplotFinalState_plotter                = imshow
 triplotFinalState_args                   = interpolation : str   : nearest
 triplotFinalState_colorBar               = True
