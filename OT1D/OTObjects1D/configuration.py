@@ -10,6 +10,7 @@ from algorithms.adr.adrAlgorithm                import AdrAlgorithm
 from algorithms.pd.pdAlgorithm                  import PdAlgorithm
 from algorithms.adr3.adr3Algorithm              import Adr3Algorithm
 from algorithms.anamorph.anamorphAlgorithm      import AnamorphAlgorithm
+from algorithms.project.projectAlgorithm        import ProjectAlgorithm
 from ..utils.configuration.defaultConfiguration import DefaultConfiguration
 
 #__________________________________________________
@@ -41,6 +42,8 @@ class Configuration(DefaultConfiguration):
             return Adr3Algorithm(self)
         elif self.algoName == 'anamorph':
             return AnamorphAlgorithm(self)
+        elif self.algoName == 'project':
+            return ProjectAlgorithm(self)
         else:
             return
 

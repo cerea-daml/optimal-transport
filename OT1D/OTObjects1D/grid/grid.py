@@ -1139,15 +1139,17 @@ class DivergenceBoundaries( OTObject ):
         deltaM = self.relativeMassDefault()
 
         if abs(deltaM) > EPS:
+            dm = self.massDefault()
+
             nbrPts = ( (self.N+1.)*(self.P+1.) +
                        2.*(self.P+1.) +
                        2.*(self.N+1.) )
 
-            self.divergence -= deltaM / nbrPts
-            self.boundaries.spatialBoundaries.bx0  -= deltaM / ( self.N * nbrPts )
-            self.boundaries.spatialBoundaries.bx1  += deltaM / ( self.N * nbrPts )
-            self.boundaries.temporalBoundaries.bt0 -= deltaM / ( self.P * nbrPts )
-            self.boundaries.temporalBoundaries.bt1 += deltaM / ( self.P * nbrPts )
+            self.divergence -= dm / nbrPts
+            self.boundaries.spatialBoundaries.bx0  -= dm / ( self.N * nbrPts )
+            self.boundaries.spatialBoundaries.bx1  += dm / ( self.N * nbrPts )
+            self.boundaries.temporalBoundaries.bt0 -= dm / ( self.P * nbrPts )
+            self.boundaries.temporalBoundaries.bt1 += dm / ( self.P * nbrPts )
 
             deltaM = self.relativeMassDefault()
         return deltaM
