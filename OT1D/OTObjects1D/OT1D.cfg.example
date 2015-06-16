@@ -37,6 +37,7 @@ boundaryType = 1
 #  0 -> correct mass default by rescaling f1
 #  1 -> correct mass default by rescaling f0 (for 0 spatial boundary conditions)
 #  2 -> correct mass default by making mass exiting leftward and rightward
+#  3 -> rescales f0 and f1 to have a unit of mass each (for 0 spatial boundary conditions)
 normType = 0
 
 #__________________________________________________

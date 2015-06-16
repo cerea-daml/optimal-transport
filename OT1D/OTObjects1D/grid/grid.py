@@ -972,13 +972,18 @@ class Boundaries( OTObject ):
             self.temporalBoundaries.bt1 *= ( mInit / mFinal )
 
         elif normType == 1:
-            # correct mass default by rescaling f0 --> only compatible with zero boundary conditions !
+            # correct mass default by rescaling f0 --> only compatible with zero spatial boundary conditions !
             self.temporalBoundaries.bt0 *= ( mFinal / mInit )
 
         elif normType == 2:
             # mass exits leftward and rightward
             self.spatialBoundaries.bx0 += 0.5 * ( mFinal - mInit ) / ( self.N * ( self.P + 1 ) )
             self.spatialBoundaries.bx1 -= 0.5 * ( mFinal - mInit ) / ( self.N * ( self.P + 1 ) )
+
+        elif normType == 3:
+            # only use this with zero spatial boundary conditions
+            self.temporalBoundaries.bt0 /= mInit
+            self.temporalBoundaries.bt1 /= mFinal
 
     def __add__(self, other):
         if isinstance(other,Boundaries):
