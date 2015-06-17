@@ -17,6 +17,7 @@ from ....utils.plotting.plot        import addTitleLabelsGrid
 from ....utils.plotting.plot        import addTimeTextPBar
 from ....utils.plotting.plotMatrix  import addColorBar
 from ....utils.plotting.plotMatrix  import plotMatrix
+from ....utils.plotting.plotMatrix  import filterKwargsMiniMaxiCmapName
 from ....utils.plotting.saveFig     import saveFig
 
 #__________________________________________________
@@ -51,6 +52,9 @@ def plotFinalStateMultiSim(outputDirList,
 
     (fs, finits, ffinals, mini, maxi, Pmax) = extractFinalStateMultiSim(outputDirList)
     (xmin, xmax, ymin, ymax)                = xylims2d()
+    (miniC, maxiC, cmapNameC, kwargs)       = filterKwargsMiniMaxiCmapName(mini, maxi, cmapName, **kwargs)
+    (miniI, maxiI, cmapNameI, kwargsInit)   = filterKwargsMiniMaxiCmapName(mini, maxi, cmapName, **kwargsInit)
+    (miniF, maxiF, cmapNameF, kwargsFinal)  = filterKwargsMiniMaxiCmapName(mini, maxi, cmapName, **kwargsFinal)
 
     for t in xrange(Pmax+2):
         kwargsInit['alpha']  = transparencyFunction(1.-float(t)/(Pmax+1.))
@@ -70,9 +74,9 @@ def plotFinalStateMultiSim(outputDirList,
                        xmax=xmax,
                        ymin=ymin,
                        ymax=ymax,
-                       cmapName=cmapName,
-                       vmin=mini,
-                       vmax=maxi,
+                       cmapName=cmapNameC,
+                       vmin=miniC,
+                       vmax=maxiC,
                        **kwargs)
             plotMatrix(ax,
                        finit,
@@ -81,8 +85,8 @@ def plotFinalStateMultiSim(outputDirList,
                        xmax=xmax,
                        ymin=ymin,
                        ymax=ymax,
-                       vmin=mini,
-                       vmax=maxi,
+                       vmin=miniI,
+                       vmax=maxiI,
                        **kwargsInit)
             plotMatrix(ax,
                        ffinal,
@@ -91,8 +95,8 @@ def plotFinalStateMultiSim(outputDirList,
                        xmax=xmax,
                        ymin=ymin,
                        ymax=ymax,
-                       vmin=mini,
-                       vmax=maxi,
+                       vmin=miniF,
+                       vmax=maxiF,
                        **kwargsFinal)
 
             adaptAxesExtent(ax, xmin, xmax, ymin, ymax, extendX, extendY, nbrXTicks, nbrYTicks, xTicksDecimals, yTicksDecimals, EPSILON)
@@ -101,7 +105,7 @@ def plotFinalStateMultiSim(outputDirList,
         gs.tight_layout(figure, rect=figureRect(colorBar, timeTextPBar))
 
         if colorBar:
-            addColorBar(plt, timeTextPBar, cmapName, mini, maxi, nbrCTicks, cticksDecimals, cLabel)
+            addColorBar(plt, timeTextPBar, cmapNameC, miniC, maxiC, nbrCTicks, cticksDecimals, cLabel)
 
         if timeTextPBar:
             addTimeTextPBar(plt, t, Pmax+1)
