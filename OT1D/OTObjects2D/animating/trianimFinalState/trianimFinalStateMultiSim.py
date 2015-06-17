@@ -21,6 +21,7 @@ from ....utils.plotting.plot        import addTimeTextPBar
 from ....utils.plotting.plot        import plotTimeTextPBar
 from ....utils.plotting.plotMatrix  import addColorBar
 from ....utils.plotting.plotMatrix  import plotMatrix
+from ....utils.plotting.plotMatrix  import filterKwargsMiniMaxiCmapName
 
 #__________________________________________________ 
 
@@ -51,6 +52,7 @@ def makeTrianimFinalStateMultiSim(kwargsFuncAnim,
 
     (fs, finits, ffinals, mini, maxi, Pmax) = extractFinalStateMultiSim(outputDirList)
     (xmin, xmax, ymin, ymax)                = xylims2d()
+    (miniC, maxiC, cmapNameC, kwargs)       = filterKwargsMiniMaxiCmapName(mini, maxi, cmapName, **kwargs)
 
     figure = plt.figure()
     plt.clf()
@@ -66,9 +68,9 @@ def makeTrianimFinalStateMultiSim(kwargsFuncAnim,
                          xmax=xmax,
                          ymin=ymin,
                          ymax=ymax,
-                         cmapName=cmapName,
-                         vmin=mini,
-                         vmax=maxi,
+                         cmapName=cmapNameC,
+                         vmin=miniC,
+                         vmax=maxiC,
                          **kwargs)
         imI = plotMatrix(axInit,
                          finit,
@@ -77,9 +79,9 @@ def makeTrianimFinalStateMultiSim(kwargsFuncAnim,
                          xmax=xmax,
                          ymin=ymin,
                          ymax=ymax,
-                         cmapName=cmapName,
-                         vmin=mini,
-                         vmax=maxi,
+                         cmapName=cmapNameC,
+                         vmin=miniC,
+                         vmax=maxiC,
                          **kwargs)
         imF = plotMatrix(axFinal,
                          ffinal,
@@ -88,9 +90,9 @@ def makeTrianimFinalStateMultiSim(kwargsFuncAnim,
                          xmax=xmax,
                          ymin=ymin,
                          ymax=ymax,
-                         cmapName=cmapName,
-                         vmin=mini,
-                         vmax=maxi,
+                         cmapName=cmapNameC,
+                         vmin=miniC,
+                         vmax=maxiC,
                          **kwargs)
 
         adaptAxesExtent(ax, xmin, xmax, ymin, ymax, extendX, extendY, nbrXTicks, nbrYTicks, xTicksDecimals, yTicksDecimals, EPSILON)
@@ -103,7 +105,7 @@ def makeTrianimFinalStateMultiSim(kwargsFuncAnim,
 
     gs.tight_layout(figure, rect=figureRect(colorBar, timeTextPBar))
     if colorBar:
-        (cax, cbar)   = addColorBar(plt, timeTextPBar, cmapName, mini, maxi, nbrCTicks, cticksDecimals, cLabel)
+        (cax, cbar)   = addColorBar(plt, timeTextPBar, cmapNameC, miniC, maxiC, nbrCTicks, cticksDecimals, cLabel)
 
     if timeTextPBar:
         (TTPBax, ret) = addTimeTextPBar(plt, 0, Pmax+1)
@@ -120,9 +122,9 @@ def makeTrianimFinalStateMultiSim(kwargsFuncAnim,
                              xmax=xmax,
                              ymin=ymin,
                              ymax=ymax,
-                             cmapName=cmapName,
-                             vmin=mini,
-                             vmax=maxi,
+                             cmapName=cmapNameC,
+                             vmin=miniC,
+                             vmax=maxiC,
                              **kwargs)
             imI = plotMatrix(axInit,
                              finit,
@@ -131,9 +133,9 @@ def makeTrianimFinalStateMultiSim(kwargsFuncAnim,
                              xmax=xmax,
                              ymin=ymin,
                              ymax=ymax,
-                             cmapName=cmapName,
-                             vmin=mini,
-                             vmax=maxi,
+                             cmapName=cmapNameC,
+                             vmin=miniC,
+                             vmax=maxiC,
                              **kwargs)
             imF = plotMatrix(axFinal,
                              ffinal,
@@ -142,9 +144,9 @@ def makeTrianimFinalStateMultiSim(kwargsFuncAnim,
                              xmax=xmax,
                              ymin=ymin,
                              ymax=ymax,
-                             cmapName=cmapName,
-                             vmin=mini,
-                             vmax=maxi,
+                             cmapName=cmapNameC,
+                             vmin=miniC,
+                             vmax=maxiC,
                              **kwargs)
             ret.extend([imC,imI,imF])
 
