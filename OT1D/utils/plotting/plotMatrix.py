@@ -62,6 +62,31 @@ def fillKwargs(plotter, xmin, xmax, ymin, ymax, cmapName, **kwargs):
 
 #__________________________________________________
 
+def filterKwargsMiniMaxiCmapName(mini, maxi, cmapName, **kwargs):
+
+    if kwargs.has_key('vmin'):
+        miniR = kwargs['vmin']
+        del kwargs['vmin']
+    else:
+        miniR = mini
+
+
+    if kwargs.has_key('vmax'):
+        maxiR = kwargs['vmax']
+        del kwargs['vmax']
+    else:
+        maxiR = maxi
+
+    if kwargs.has_key('cmap'):
+        cmapNameR = kwargs['cmap']
+        del kwargs['cmap']
+    else:
+        cmapNameR = cmapName
+
+    return (miniR, maxiR, cmapNameR, kwargs)
+
+#__________________________________________________
+
 def addColorBar(plt, timeTextPBar, cmapName, mini, maxi, nbrTicks, ticksDecimals, label):
     rect = colorBarRect(timeTextPBar)
     gsCB = gridspec.GridSpec(1, 1, left=rect[0], bottom=rect[1], right=rect[2], top=rect[3])

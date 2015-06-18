@@ -17,6 +17,7 @@ from ....utils.plotting.plot        import addTitleLabelsGrid
 from ....utils.plotting.plot        import addTimeTextPBar
 from ....utils.plotting.plotMatrix  import addColorBar
 from ....utils.plotting.plotMatrix  import plotMatrix
+from ....utils.plotting.plotMatrix  import filterKwargsMiniMaxiCmapName
 from ....utils.plotting.saveFig     import saveFig
 
 #__________________________________________________
@@ -49,6 +50,8 @@ def triplotFinalStateMultiSim(outputDirList,
 
     (fs, finits, ffinals, mini, maxi, Pmax) = extractFinalStateMultiSim(outputDirList)
     (xmin, xmax, ymin, ymax)                = xylims2d()
+    (miniC, maxiC, cmapNameC, kwargs)       = filterKwargsMiniMaxiCmapName(mini, maxi, cmapName, **kwargs)
+
 
     for t in xrange(Pmax+2):
 
@@ -66,9 +69,9 @@ def triplotFinalStateMultiSim(outputDirList,
                        xmax=xmax,
                        ymin=ymin,
                        ymax=ymax,
-                       cmapName=cmapName,
-                       vmin=mini,
-                       vmax=maxi,
+                       cmapName=cmapNameC,
+                       vmin=miniC,
+                       vmax=maxiC,
                        **kwargs)
             plotMatrix(axInit,
                        finit,
@@ -77,9 +80,9 @@ def triplotFinalStateMultiSim(outputDirList,
                        xmax=xmax,
                        ymin=ymin,
                        ymax=ymax,
-                       cmapName=cmapName,
-                       vmin=mini,
-                       vmax=maxi,
+                       cmapName=cmapNameC,
+                       vmin=miniC,
+                       vmax=maxiC,
                        **kwargs)
             plotMatrix(axFinal,
                        ffinal,
@@ -88,9 +91,9 @@ def triplotFinalStateMultiSim(outputDirList,
                        xmax=xmax,
                        ymin=ymin,
                        ymax=ymax,
-                       cmapName=cmapName,
-                       vmin=mini,
-                       vmax=maxi,
+                       cmapName=cmapNameC,
+                       vmin=miniC,
+                       vmax=maxiC,
                        **kwargs)
 
             adaptAxesExtent(ax, xmin, xmax, ymin, ymax, extendX, extendY, nbrXTicks, nbrYTicks, xTicksDecimals, yTicksDecimals, EPSILON)
@@ -105,7 +108,7 @@ def triplotFinalStateMultiSim(outputDirList,
         gs.tight_layout(figure, rect=figureRect(colorBar, timeTextPBar))
 
         if colorBar:
-            addColorBar(plt, timeTextPBar, cmapName, mini, maxi, nbrCTicks, cticksDecimals, cLabel)
+            addColorBar(plt, timeTextPBar, cmapNameC, miniC, maxiC, nbrCTicks, cticksDecimals, cLabel)
 
         if timeTextPBar:
             addTimeTextPBar(plt, t, Pmax+1)
