@@ -32,7 +32,7 @@ class PdAlgorithm( Algorithm ):
         return ( 'PD algorithm' )
 
     def setState(self, newState, copy=True):
-        if isinstance(newState, Adr3State):
+        if isinstance(newState, PdState):
             if copy:
                 self.stateN = newState.copy()
             else:

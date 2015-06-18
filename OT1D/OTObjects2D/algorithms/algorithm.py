@@ -99,7 +99,6 @@ class Algorithm( OTObject ):
                     self.setState(p.load(), copy=False)
                     f.close()
                     print ( 'State loaded from '+fileState )
-                except:
                     self.stateN = None
 
         if self.stateN is None:
