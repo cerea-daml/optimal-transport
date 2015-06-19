@@ -16,13 +16,13 @@ def plotMatrix(ax, matrix, plotter, xmin=0.0, xmax=1.0, ymin=0.0, ymax=1.0, cmap
     kwargs = fillKwargs(plotter, xmin, xmax, ymin, ymax, cmapName, **kwargs)
 
     if plotter == 'imshow':
-        return ax.imshow(matrix, **kwargs)
+        return ax.imshow(matrix.transpose(), **kwargs)
 
     elif plotter == 'contour':
-        return ax.contour(matrix, **kwargs)
+        return ax.contour(matrix.transpose(), **kwargs)
 
     elif plotter == 'contourf':
-        return ax.contourf(matrix, **kwargs)
+        return ax.contourf(matrix.transpose(), **kwargs)
 
 #__________________________________________________
 
