@@ -20,6 +20,6 @@ def saveAnimation(anim, figDir, prefixFigName, extensionsList, writer):
         figName = figDir + prefixFigName + extension
         print('Saving '+figName+' ...')
         try:
-            anim.save(figName, writer=writer)
+            anim.save(figName, writer=writer, dpi=100)
         except:
             print('Could not write '+figName+' ...')
