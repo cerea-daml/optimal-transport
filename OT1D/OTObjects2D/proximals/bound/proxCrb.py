@@ -43,14 +43,16 @@ class ProxCrb( Projector ):
             field.f[:,0,0]      = 0.
             field.f[:,self.N,0] = 0.
 
-            deltaMassCurrent = field.boundaries().massDefault() - self.massDefault
+            # Trying to correct mass default...
+            # should accelerate convergence
+            # but this version lacks of a non-zero filter !
+            #deltaMassCurrent = field.boundaries().massDefault()
+            #deltaMassCurrent /= 2. * ( self.M + self.N ) * self.P
 
-            deltaMassCurrent /= 2. * ( self.M + self.N ) * self.P
-
-            field.f[0,:,self.P+1]             += deltaMassCurrent
-            field.f[self.M,:,self.P+1]        += deltaMassCurrent
-            field.f[1:self.M,0,self.P+1]      += deltaMassCurrent
-            field.f[1:self.M,self.N,self.P+1] += deltaMassCurrent
+            #field.f[0,:,self.P+1]             += deltaMassCurrent
+            #field.f[self.M,:,self.P+1]        += deltaMassCurrent
+            #field.f[1:self.M,0,self.P+1]      += deltaMassCurrent
+            #field.f[1:self.M,self.N,self.P+1] += deltaMassCurrent
 
             return field
         else:
