@@ -39,12 +39,19 @@ class ProxCrb( proj.Projector ):
             field.f[0,0]      = 0.
             field.f[self.N,0] = 0.
 
-            deltaMassCurrent = field.boundaries().massDefault() - self.massDefault
+            deltaMassCurrent = field.boundaries().massDefault()
 
             deltaMassCurrent /= 2. * self.P
 
             field.f[0,self.P+1]      += deltaMassCurrent
             field.f[self.N,self.P+1] += deltaMassCurrent
+
+            if ( field.f[0,self.P+1] < 0.0 ):
+                field.f[self.N,self.P+1] += field.f[0,self.P+1]
+                field.f[0,self.P+1]       = 0.0
+            elif ( field.f[self.N,self.P+1] < 0.0 ):
+                field.f[0,self.P+1]     += field.f[self.N,self.P+1]
+                field.f[self.N,self.P+1] = 0.0
 
             return field
         else:

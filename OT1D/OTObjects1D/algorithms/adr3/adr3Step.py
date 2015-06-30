@@ -29,7 +29,7 @@ class Adr3Step:
     def __call__(self, stateN, stateNP1):
         p1 = self.prox1( stateN.u1 , self.gamma )
         p2 = self.prox2( stateN.u2 )
-        p3 = self.prox2( stateN.u3 )
+        p3 = self.prox3( stateN.u3 )
 
         p  = ( self.omega1 * p1 + 
                self.omega2 * p2 + 
