@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 
-from .OT1D.utils.sys.run                        import runCommand
-from .OT1D.utils.sys.argv                       import extractArgv
-from .OT1D.utils.io.extractConfig               import extractConfig
-from .OT1D.utils.io.saveResult                  import saveResult
-from .OT1D.OTObjects2D.configuration            import Configuration
-from .OT1D.OTObjects2D.analyse.computeOperators import applyAllOperators
+from OT.utils.sys.run                        import runCommand
+from OT.utils.sys.argv                       import extractArgv
+from OT.utils.io.extractConfig               import extractConfig
+from OT.utils.io.saveResult                  import saveResult
+from OT.OTObjects2D.configuration            import Configuration
+from OT.OTObjects2D.analyse.computeOperators import applyAllOperators
 
 # Extract Arguments
 arguments        = extractArgv()

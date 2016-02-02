@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
-from .OT1D.utils.sys.run                                import runCommand
-from .OT1D.utils.sys.argv                               import extractArgv
-from .OT1D.OTObjects1D.animating.animatingConfiguration import AnimatingConfiguration
+from OT.utils.sys.run                                import runCommand
+from OT.utils.sys.argv                               import extractArgv
+from OT.OTObjects1D.animating.animatingConfiguration import AnimatingConfiguration
 
 # Extract Arguments
 arguments   = extractArgv()
