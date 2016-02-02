@@ -2,7 +2,7 @@
 # cmap.py
 #________
 
-from .matplotlib import cm
+from matplotlib import cm
 
 #__________________________________________________
 

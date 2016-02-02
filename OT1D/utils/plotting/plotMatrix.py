@@ -5,8 +5,8 @@
 import numpy      as np
 import matplotlib as mpl
 
-from .matplotlib              import gridspec
-from .mpl_toolkits.axes_grid1 import make_axes_locatable
+from matplotlib              import gridspec
+from mpl_toolkits.axes_grid1 import make_axes_locatable
 from .cmap                    import colormap
 from .positions               import colorBarRect
 

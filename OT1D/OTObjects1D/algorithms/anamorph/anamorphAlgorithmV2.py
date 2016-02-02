@@ -11,8 +11,8 @@ import cPickle as pck
 import time    as tm
 import numpy   as np
 
-from .scipy.interpolate                 import interp1d
-from .scipy.integrate                   import cumtrapz
+from scipy.interpolate                 import interp1d
+from scipy.integrate                   import cumtrapz
 
 from ...OTObject                       import OTObject
 from ...grid                           import grid
