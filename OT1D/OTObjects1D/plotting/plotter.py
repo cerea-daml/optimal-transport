@@ -2,8 +2,8 @@
 # plotter.py
 ############
 
-from plotAnalyse.analysePlotter       import AnalysePlotter
-from plotFinalState.finalStatePlotter import FinalStatePlotter
+from .plotAnalyse.analysePlotter       import AnalysePlotter
+from .plotFinalState.finalStatePlotter import FinalStatePlotter
 
 class Plotter:
     

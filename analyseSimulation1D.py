@@ -1,8 +1,8 @@
 #!/usr/bin/env python 
 
-from OT1D.utils.sys.argv                       import extractArgv
-from OT1D.OTObjects1D.configuration            import Configuration
-from OT1D.OTObjects1D.analyse.computeOperators import applyAllOperators
+from .OT1D.utils.sys.argv                       import extractArgv
+from .OT1D.OTObjects1D.configuration            import Configuration
+from .OT1D.OTObjects1D.analyse.computeOperators import applyAllOperators
 
 # Extract Arguments
 arguments      = extractArgv()

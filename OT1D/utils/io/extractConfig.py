@@ -5,7 +5,7 @@
 import numpy   as np
 import cPickle as pck
 
-from files import fileConfig
+from .files import fileConfig
 
 def extractConfig(outputDir):
     f              = open(fileConfig(outputDir),'rb')

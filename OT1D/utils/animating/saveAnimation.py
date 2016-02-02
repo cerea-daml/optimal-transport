@@ -2,9 +2,9 @@
 # saveAnimation.py
 ##################
 
-from matplotlib.animation import AVConvWriter
-from matplotlib.animation import FFMpegWriter
-from matplotlib.animation import MencoderWriter
+from .matplotlib.animation import AVConvWriter
+from .matplotlib.animation import FFMpegWriter
+from .matplotlib.animation import MencoderWriter
 
 def makeMovieWriter(writerName, writerFPS, writerCodec, writerBitrate, writerExtraArgs):
     if writerName == 'avconv':

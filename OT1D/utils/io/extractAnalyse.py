@@ -4,7 +4,7 @@
 
 import cPickle as pck
 
-from files import fileAnalyse
+from .files import fileAnalyse
 
 def extractAnalyse(outputDir):
 

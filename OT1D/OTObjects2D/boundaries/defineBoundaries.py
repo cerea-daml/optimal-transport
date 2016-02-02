@@ -6,18 +6,18 @@
 #
 
 import numpy as np
-from scipy.interpolate import interp1d
+from .scipy.interpolate import interp1d
 
 from ...utils.io.io import extensionOfFile
 from ...utils.io.io import arrayFromFile
 from ..grid         import grid
 
-from gaussian       import defaultBoundaryGaussian
-from gaussian       import defaultBoundaryGaussian2
-from gaussianSplit  import defaultBoundaryGaussianSplit1
-from gaussianSplit  import defaultBoundaryGaussianSplit2
-from gaussianSine   import defaultBoundaryGaussianSine
-from gaussianSine   import defaultBoundaryGaussianCosine
+from .gaussian       import defaultBoundaryGaussian
+from .gaussian       import defaultBoundaryGaussian2
+from .gaussianSplit  import defaultBoundaryGaussianSplit1
+from .gaussianSplit  import defaultBoundaryGaussianSplit2
+from .gaussianSine   import defaultBoundaryGaussianSine
+from .gaussianSine   import defaultBoundaryGaussianCosine
 
 def boundariesForConfig(config):
     # default configurations

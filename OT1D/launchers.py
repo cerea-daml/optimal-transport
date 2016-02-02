@@ -5,15 +5,15 @@
 # defines some launchers for 1D Optimal Transport
 #
 
-from OTObjects1D.configuration import Configuration
-from OTObjects1D.analyse.computeOperators import applyAllOperators
-from OTObjects1D.plotting.plotAnalyse import plotAnalyseDefaultSubplots
-from OTObjects1D.plotting.plotAnalyseMultiSim import plotAnalysesDefaultSubplots
+from .OTObjects1D.configuration import Configuration
+from .OTObjects1D.analyse.computeOperators import applyAllOperators
+from .OTObjects1D.plotting.plotAnalyse import plotAnalyseDefaultSubplots
+from .OTObjects1D.plotting.plotAnalyseMultiSim import plotAnalysesDefaultSubplots
 
-from OTObjects1D.plotting.plotFinalStep import plotFinalState
-from OTObjects1D.plotting.plotFinalStep import animFinalState
-from OTObjects1D.plotting.plotFinalStepMultiSim import plotFinalStateMultiSim
-from OTObjects1D.plotting.plotFinalStepMultiSim import animFinalStateMultiSim
+from .OTObjects1D.plotting.plotFinalStep import plotFinalState
+from .OTObjects1D.plotting.plotFinalStep import animFinalState
+from .OTObjects1D.plotting.plotFinalStepMultiSim import plotFinalStateMultiSim
+from .OTObjects1D.plotting.plotFinalStepMultiSim import animFinalStateMultiSim
 
 import pickle as pck
 

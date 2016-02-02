@@ -5,7 +5,7 @@
 from ....utils.plotting.plotting       import makeOutputDirLabelPrefixFigNameList
 from ....utils.animating.saveAnimation import makeMovieWriter
 from ....utils.animating.saveAnimation import saveAnimation
-from trianimFinalStateMultiSim         import makeTrianimFinalStateMultiSim
+from .trianimFinalStateMultiSim         import makeTrianimFinalStateMultiSim
 
 #__________________________________________________
 

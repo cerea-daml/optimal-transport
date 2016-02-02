@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
-from OT1D.utils.sys.run                              import runCommand
-from OT1D.utils.sys.argv                             import extractArgv
-from OT1D.OTObjects2D.plotting.plottingConfiguration import PlottingConfiguration
+from .OT1D.utils.sys.run                              import runCommand
+from .OT1D.utils.sys.argv                             import extractArgv
+from .OT1D.OTObjects2D.plotting.plottingConfiguration import PlottingConfiguration
 
 # Extract Arguments
 arguments   = extractArgv()

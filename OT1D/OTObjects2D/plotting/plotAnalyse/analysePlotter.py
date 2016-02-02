@@ -2,8 +2,8 @@
 # analysePlotter.py
 #__________________
 
-from definePlotSubplots          import definePlotSubplots
-from plotAnalyseMultiSim         import plotAnalyseMultiSim
+from .definePlotSubplots          import definePlotSubplots
+from .plotAnalyseMultiSim         import plotAnalyseMultiSim
 from ....utils.plotting.plotting import makeOutputDirLabelPrefixFigNameList
 
 #__________________________________________________

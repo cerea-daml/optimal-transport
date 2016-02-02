@@ -5,7 +5,7 @@
 # Defines everything necessary for plotting the result of an OT algorithm from a config file
 #
 
-from plotter                                     import Plotter
+from .plotter                                     import Plotter
 from ...utils.io.io                              import fileNameSuffix
 from ...utils.configuration.defaultConfiguration import DefaultConfiguration
 

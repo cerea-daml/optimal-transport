@@ -8,7 +8,7 @@
 import numpy                as np
 import matplotlib.pyplot    as plt
 
-from matplotlib.animation           import FuncAnimation
+from .matplotlib.animation           import FuncAnimation
 
 from ....utils.io.io                import fileNameSuffix
 from ....utils.io.extractFinalState import extractFinalStateMultiSim

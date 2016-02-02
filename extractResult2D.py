@@ -4,7 +4,7 @@ import sys
 import numpy   as np
 import cPickle as pck
 
-from OT1D.OTObjects2D.grid import grid
+from .OT1D.OTObjects2D.grid import grid
 
 #__________________________________________________
 

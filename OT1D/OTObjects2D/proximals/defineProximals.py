@@ -13,20 +13,20 @@
 
 from ..grid import grid
 
-from proximalJ import ProxJ
+from .proximalJ import ProxJ
 
-from div.proxCdiv import ProxCdiv
-from div.proxCdivb import ProxCdivb
-from div.proxCdivtb import ProxCdivtb
+from .div.proxCdiv import ProxCdiv
+from .div.proxCdivb import ProxCdivb
+from .div.proxCdivtb import ProxCdivtb
 
-from sc.proxCsc import ProxCsc
-from sc.proxCscb import ProxCscb
-from sc.proxCsctb import ProxCsctb
-from sc.proxCscrb import ProxCscrb
+from .sc.proxCsc import ProxCsc
+from .sc.proxCscb import ProxCscb
+from .sc.proxCsctb import ProxCsctb
+from .sc.proxCscrb import ProxCscrb
 
-from bound.proxCb import ProxCb
-from bound.proxCtb import ProxCtb
-from bound.proxCrb import ProxCrb
+from .bound.proxCb import ProxCb
+from .bound.proxCtb import ProxCtb
+from .bound.proxCrb import ProxCrb
 
 def proximalForConfig(config):
 

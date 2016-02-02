@@ -3,7 +3,7 @@
 #________________________
 
 from ....utils.plotting.plotting            import makeOutputDirLabelPrefixFigNameList
-from triplotFinalStateMultiSim              import triplotFinalStateMultiSim
+from .triplotFinalStateMultiSim              import triplotFinalStateMultiSim
 
 #__________________________________________________
 

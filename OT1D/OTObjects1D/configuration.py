@@ -5,12 +5,12 @@
 # Defines everything necessary for running an OT algorithm from a config file
 #
 
-from boundaries.defineBoundaries                import boundariesForConfig
-from algorithms.adr.adrAlgorithm                import AdrAlgorithm
-from algorithms.pd.pdAlgorithm                  import PdAlgorithm
-from algorithms.adr3.adr3Algorithm              import Adr3Algorithm
-from algorithms.anamorph.anamorphAlgorithm      import AnamorphAlgorithm
-from algorithms.project.projectAlgorithm        import ProjectAlgorithm
+from .boundaries.defineBoundaries                import boundariesForConfig
+from .algorithms.adr.adrAlgorithm                import AdrAlgorithm
+from .algorithms.pd.pdAlgorithm                  import PdAlgorithm
+from .algorithms.adr3.adr3Algorithm              import Adr3Algorithm
+from .algorithms.anamorph.anamorphAlgorithm      import AnamorphAlgorithm
+from .algorithms.project.projectAlgorithm        import ProjectAlgorithm
 from ..utils.configuration.defaultConfiguration import DefaultConfiguration
 
 #__________________________________________________

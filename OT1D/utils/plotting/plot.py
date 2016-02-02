@@ -4,13 +4,13 @@
 
 import numpy as np
 
-from mpl_toolkits.axes_grid1 import make_axes_locatable
-from matplotlib              import gridspec
+from .mpl_toolkits.axes_grid1 import make_axes_locatable
+from .matplotlib              import gridspec
 
 from ..io.io                 import fileNameSuffix
-from positions               import timeTextPBarRect
-from positions               import positionsTimeTxtPbar
-from plotting                import adaptAxesExtent
+from .positions               import timeTextPBarRect
+from .positions               import positionsTimeTxtPbar
+from .plotting                import adaptAxesExtent
 
 #__________________________________________________
 

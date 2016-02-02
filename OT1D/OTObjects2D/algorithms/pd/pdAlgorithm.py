@@ -10,10 +10,10 @@ from ...grid                      import grid
 from ...init.initialFields        import initialStaggeredField
 from ...proximals.defineProximals import proximalForConfig
 
-from pdState import PdState
-from pdStep  import PdStep
-from proxPd  import Prox1Pd
-from proxPd  import Prox2Pd
+from .pdState import PdState
+from .pdStep  import PdStep
+from .proxPd  import Prox1Pd
+from .proxPd  import Prox2Pd
 
 class PdAlgorithm( Algorithm ):
     '''

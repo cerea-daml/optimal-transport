@@ -6,7 +6,7 @@ from ....utils.plotting.defaultTransparency import getTransparencyFunction
 from ....utils.plotting.plotting            import makeOutputDirLabelPrefixFigNameList
 from ....utils.animating.saveAnimation      import makeMovieWriter
 from ....utils.animating.saveAnimation      import saveAnimation
-from animFinalStateMultiSim                 import makeAnimFinalStateMultiSim
+from .animFinalStateMultiSim                 import makeAnimFinalStateMultiSim
 
 #__________________________________________________
 

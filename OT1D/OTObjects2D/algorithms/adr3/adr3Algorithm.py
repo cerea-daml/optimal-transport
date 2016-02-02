@@ -10,11 +10,11 @@ from ...grid                      import grid
 from ...init.initialFields        import initialStaggeredCenteredField
 from ...proximals.defineProximals import proximalForConfig
 
-from adr3State import Adr3State
-from adr3Step  import Adr3Step
-from proxAdr3  import Prox1Adr3
-from proxAdr3  import Prox2Adr3
-from proxAdr3  import Prox3Adr3
+from .adr3State import Adr3State
+from .adr3Step  import Adr3Step
+from .proxAdr3  import Prox1Adr3
+from .proxAdr3  import Prox2Adr3
+from .proxAdr3  import Prox3Adr3
 
 class Adr3Algorithm( Algorithm ):
     '''

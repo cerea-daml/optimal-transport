@@ -2,8 +2,8 @@
 # animator.py
 #____________
 
-from animFinalState.finalStateAnimator       import FinalStateAnimator
-from trianimFinalState.finalStateTrianimator import FinalStateTrianimator 
+from .animFinalState.finalStateAnimator       import FinalStateAnimator
+from .trianimFinalState.finalStateTrianimator import FinalStateTrianimator 
 
 #__________________________________________________
 

@@ -5,7 +5,7 @@
 # Defines everything necessary for animating the result of an OT algorithm from a config file
 #
 
-from animator                                    import Animator
+from .animator                                    import Animator
 from ...utils.io.io                              import fileNameSuffix
 from ...utils.configuration.defaultConfiguration import DefaultConfiguration
 

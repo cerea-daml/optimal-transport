@@ -2,9 +2,9 @@
 # plotter.py
 #___________
 
-from plotAnalyse.analysePlotter             import AnalysePlotter
-from plotFinalState.finalStatePlotter       import FinalStatePlotter
-from triplotFinalState.finalStateTriplotter import FinalStateTriplotter
+from .plotAnalyse.analysePlotter             import AnalysePlotter
+from .plotFinalState.finalStatePlotter       import FinalStatePlotter
+from .triplotFinalState.finalStateTriplotter import FinalStateTriplotter
 
 #__________________________________________________
 

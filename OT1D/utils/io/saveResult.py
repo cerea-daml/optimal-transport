@@ -4,7 +4,7 @@
 
 import cPickle as pck
 
-from files import fileResult
+from .files import fileResult
 
 def saveResult(outputDir, result):
     f = open(fileResult(outputDir), 'wb')

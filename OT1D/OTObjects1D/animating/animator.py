@@ -2,7 +2,7 @@
 # animator.py
 #____________
 
-from animFinalState.finalStateAnimator import FinalStateAnimator
+from .animFinalState.finalStateAnimator import FinalStateAnimator
 
 #__________________________________________________
 

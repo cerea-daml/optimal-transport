@@ -4,7 +4,7 @@
 
 from ....utils.plotting.defaultTransparency import getTransparencyFunction
 from ....utils.plotting.plotting            import makeOutputDirLabelPrefixFigNameList
-from plotFinalStateMultiSim                 import plotFinalStateMultiSim
+from .plotFinalStateMultiSim                 import plotFinalStateMultiSim
 
 #__________________________________________________
 

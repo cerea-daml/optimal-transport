@@ -5,8 +5,8 @@
 import numpy   as np
 import cPickle as pck
 
-from extractConfig import extractConfig
-from files         import fileFinalState
+from .extractConfig import extractConfig
+from .files         import fileFinalState
 #from files import fileConfig
 
 from ..interpolate.interpolate import interpolateTimeFinalStateMultiSim
