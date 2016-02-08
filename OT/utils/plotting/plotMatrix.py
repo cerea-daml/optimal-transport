@@ -31,7 +31,7 @@ def fillKwargs(plotter, xmin, xmax, ymin, ymax, cmapName, **kwargs):
     if plotter == 'imshow' or plotter == 'contourf':
 
         cmap   = colormap(cmapName)
-        if kwargs.has_key('vmin') and kwargs.has_key('vmax'):
+        if 'vmin' in kwargs and 'vmax' in kwargs:
             norm = mpl.colors.Normalize(vmin=kwargs['vmin'], vmax=kwargs['vmax'], clip=False)
             kwargs['norm'] = norm
 
@@ -44,18 +44,18 @@ def fillKwargs(plotter, xmin, xmax, ymin, ymax, cmapName, **kwargs):
         except:
             pass
 
-    if not kwargs.has_key('origin'):
+    if not 'origin' in kwargs:
         kwargs['origin'] = 'lower'
-    if not kwargs.has_key('extent'):
+    if not 'extent' in kwargs:
         kwargs['extent'] = [xmin, xmax, ymin, ymax]
 
     if plotter == 'imshow':
-        if not kwargs.has_key('interpolation'):
+        if not 'interpolation' in kwargs:
             kwargs['interpolation'] = 'nearest'
     elif plotter == 'contour':
-        if not kwargs.has_key('colors'):
+        if not 'colors' in kwargs:
             kwargs['colors'] = 'k'
-        if not kwargs.has_key('linestyles'):
+        if not 'linestyles' in kwargs:
             kwargs['linestyles'] = 'solid'
 
     return kwargs
@@ -64,20 +64,20 @@ def fillKwargs(plotter, xmin, xmax, ymin, ymax, cmapName, **kwargs):
 
 def filterKwargsMiniMaxiCmapName(mini, maxi, cmapName, **kwargs):
 
-    if kwargs.has_key('vmin'):
+    if 'vmin' in kwargs:
         miniR = kwargs['vmin']
         del kwargs['vmin']
     else:
         miniR = mini
 
 
-    if kwargs.has_key('vmax'):
+    if 'vmax' in kwargs:
         maxiR = kwargs['vmax']
         del kwargs['vmax']
     else:
         maxiR = maxi
 
-    if kwargs.has_key('cmap'):
+    if 'cmap' in kwargs:
         cmapNameR = kwargs['cmap']
         del kwargs['cmap']
     else:

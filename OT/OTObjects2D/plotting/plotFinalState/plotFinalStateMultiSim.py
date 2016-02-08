@@ -56,7 +56,7 @@ def plotFinalStateMultiSim(outputDirList,
     (miniI, maxiI, cmapNameI, kwargsInit)   = filterKwargsMiniMaxiCmapName(mini, maxi, cmapName, **kwargsInit)
     (miniF, maxiF, cmapNameF, kwargsFinal)  = filterKwargsMiniMaxiCmapName(mini, maxi, cmapName, **kwargsFinal)
 
-    for t in xrange(Pmax+2):
+    for t in range(Pmax+2):
         kwargsInit['alpha']  = transparencyFunction(1.-float(t)/(Pmax+1.))
         kwargsFinal['alpha'] = transparencyFunction(float(t)/(Pmax+1.))
 

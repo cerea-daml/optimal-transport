@@ -72,9 +72,9 @@ def applyOperators(listOfOperators1, listOfOperators2, outputDir):
     while i < size :
         state = p.load()
         iterationTimes[i] = p.load()
-        for j in xrange(len(listOfOperators1)):
+        for j in range(len(listOfOperators1)):
             values[i,j] = listOfOperators1[j][0](state)
-        for j in xrange(len(listOfOperators2)):
+        for j in range(len(listOfOperators2)):
             values[i,len(listOfOperators1)+j] = listOfOperators2[j][0](state,finalState)
         i += 1
     f.close()

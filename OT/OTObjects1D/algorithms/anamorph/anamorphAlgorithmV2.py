@@ -206,7 +206,7 @@ class AnamorphAlgorithm( OTObject ):
 
         fu        = np.zeros(shape=(self.N+1, self.P+2))
 
-        for j in xrange(self.P+2):
+        for j in range(self.P+2):
             t        = TS[j]
             T_t_map  = makeiT_t_map(t, CDF0_map, iCDF1_map)
             T_t_fine = T_t_map(X_fine)

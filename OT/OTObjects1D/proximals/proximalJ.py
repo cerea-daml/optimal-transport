@@ -27,7 +27,7 @@ class ProxJ( oto.OTObject ):
 
     def timing(self,nTiming,gamma=1.):
         t = 0.
-        for i in xrange(nTiming):
+        for i in range(nTiming):
             field = grid.CenteredField.random(self.N,self.P)
             time_start = tm.time()
             field = self(field,gamma)

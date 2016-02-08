@@ -59,7 +59,7 @@ class ProxCrb( proj.Projector ):
 
     def test(self,nTest,overwrite=True):
         e = 0.
-        for i in xrange(nTest):
+        for i in range(nTest):
             field = grid.StaggeredField.random(self.N, self.P)
             field = self(field,overwrite)
 
@@ -74,7 +74,7 @@ class ProxCrb( proj.Projector ):
 
     def timing(self,nTiming,overwrite=True):
         t = 0.
-        for i in xrange(nTiming):
+        for i in range(nTiming):
             field = grid.StaggeredField.random(self.N, self.P)
             time_start = tm.time()
             field = self(field,overwrite)

@@ -70,7 +70,7 @@ class ProxCdivb( Projector ):
         EPS = 1e-8
         e = 0.
 
-        for i in xrange(nTest):
+        for i in range(nTest):
             divB1 = grid.DivergenceBoundaries.random(self.M, self.N, self.P)
             divB1.correctMassDefault(EPS)
 
@@ -91,7 +91,7 @@ class ProxCdivb( Projector ):
 
     def test(self,nTest):
         e = 0.
-        for i in xrange(nTest):
+        for i in range(nTest):
             field = grid.StaggeredField.random(self.M, self.N, self.P)
 
             db = field.divergenceBoundaries()
@@ -104,7 +104,7 @@ class ProxCdivb( Projector ):
 
     def timing(self,nTiming):
         t = 0.
-        for i in xrange(nTiming):
+        for i in range(nTiming):
             field = grid.StaggeredField.random(self.M, self.N, self.P)
             time_start = tm.time()
             field = self(field)

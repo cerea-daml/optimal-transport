@@ -63,7 +63,7 @@ class ProxCdivtb( proj.Projector ):
     def testInverse(self,nTest):
         e = 0.
 
-        for i in xrange(nTest):
+        for i in range(nTest):
             divTB1 = grid.DivergenceTemporalBoundaries.random( self.N , self.P )
             
             divTB2 = divTB1.copy()
@@ -80,7 +80,7 @@ class ProxCdivtb( proj.Projector ):
 
     def test(self,nTest):
         e = 0.
-        for i in xrange(nTest):
+        for i in range(nTest):
             field = grid.StaggeredField.random(self.N, self.P)
             field = self(field)
             e += ( self.A(field) - self.kernel ).LInftyNorm()
@@ -88,7 +88,7 @@ class ProxCdivtb( proj.Projector ):
 
     def timing(self,nTiming):
         t = 0.
-        for i in xrange(nTiming):
+        for i in range(nTiming):
             field = grid.StaggeredField.random(self.N, self.P)
             time_start = tm.time()
             field = self(field)

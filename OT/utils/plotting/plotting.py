@@ -56,7 +56,7 @@ def makeAxesGrid(plt, nbrOfItems, order, extendDirection):
     gs                 = gridspec.GridSpec(nLines, nColumns)
     axes               = []
 
-    for j in xrange(nbrOfItems):
+    for j in range(nbrOfItems):
         if order == 'horizontalFirst':
             modulo = nColumns
         elif order == 'verticalFirst':
@@ -83,7 +83,7 @@ def makeAxesGridTriplot(plt, nbrOfItems, order, extendDirection, extendDirection
     if extendDirectionTriplot == 'horizontal':
         gs = gridspec.GridSpec(nLines, 3*nColumns)
 
-        for j in xrange(nbrOfItems):
+        for j in range(nbrOfItems):
             nc = int(np.mod(j, modulo))
             nl = int((j-nc)/modulo)
             axesInit.append(plt.subplot(gs[nl,3*nc]))
@@ -93,7 +93,7 @@ def makeAxesGridTriplot(plt, nbrOfItems, order, extendDirection, extendDirection
     elif extendDirectionTriplot == 'vertical':
         gs = gridspec.GridSpec(3*nLines, nColumns)
 
-        for j in xrange(nbrOfItems):
+        for j in range(nbrOfItems):
             nc = int(np.mod(j, modulo))
             nl = int((j-nc)/modulo)
             axesInit.append(plt.subplot(gs[3*nl,nc]))

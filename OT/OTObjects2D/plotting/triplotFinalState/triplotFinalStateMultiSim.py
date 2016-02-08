@@ -53,7 +53,7 @@ def triplotFinalStateMultiSim(outputDirList,
     (miniC, maxiC, cmapNameC, kwargs)       = filterKwargsMiniMaxiCmapName(mini, maxi, cmapName, **kwargs)
 
 
-    for t in xrange(Pmax+2):
+    for t in range(Pmax+2):
 
         figure     = plt.figure()
         plt.clf()

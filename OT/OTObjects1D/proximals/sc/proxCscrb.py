@@ -150,10 +150,10 @@ class ProxCscrb( proj.Projector ):
     def bigTest(self,down,up,n1,n2):
         alpha = np.linspace(down,up,n1)
         res   = np.zeros(n1)
-        for i in xrange(n1):
+        for i in range(n1):
             if np.mod(i,100)==0:
                 print('i='+str(i)+'/'+str(n1))
-            for j in xrange(n2):
+            for j in range(n2):
                 field1 = grid.CenteredFieldBoundaries.random(self.N , self.P)
                 field2 = field1.copy()
                 res[i] += ( self.inverseATAV2(field2,alpha[i]) - self.inverseATA(field1) ).LInftyNorm()
@@ -163,7 +163,7 @@ class ProxCscrb( proj.Projector ):
         t0 = 0.
         t1 = 0.
 
-        for i in xrange(n):
+        for i in range(n):
             field1 = grid.CenteredFieldBoundaries.random(self.N , self.P)
             field2 = field1.copy()
             time_start = tm.time()
@@ -183,7 +183,7 @@ class ProxCscrb( proj.Projector ):
 
     def testInverse(self,nTest):
         e = 0.
-        for i in xrange(nTest):
+        for i in range(nTest):
             field1 = grid.CenteredFieldBoundaries.random(self.N , self.P)
             field1.boundaries.temporalBoundaries.bt1[0]      = 0.
             field1.boundaries.temporalBoundaries.bt1[self.N] = 0.
@@ -202,7 +202,7 @@ class ProxCscrb( proj.Projector ):
     
     def test(self,nTest):
         e = 0.
-        for i in xrange(nTest):
+        for i in range(nTest):
             field = grid.StaggeredCenteredField.random(self.N, self.P)
             field = self(field)
             e += ( self.A(field) - self.kernel ).LInftyNorm()
@@ -210,7 +210,7 @@ class ProxCscrb( proj.Projector ):
 
     def timing(self,nTiming):
         t = 0.
-        for i in xrange(nTiming):
+        for i in range(nTiming):
             field = grid.StaggeredCenteredField.random(self.N, self.P)
             time_start = tm.time()
             field = self(field)

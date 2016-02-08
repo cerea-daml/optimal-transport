@@ -21,17 +21,17 @@ def reverseTime(f):
         return f
 
     elif dim == 1:
-        for t in xrange(shape[0]):
+        for t in range(shape[0]):
             fReversed[t] = f[shape[0]-1-t]
         return fReversed
 
     elif dim == 2:
-        for t in xrange(shape[1]):
+        for t in range(shape[1]):
             fReversed[:,t] = f[:,shape[1]-1-t]
         return fReversed
 
     elif dim == 3:
-        for t in xrange(shape[2]):
+        for t in range(shape[2]):
             fReversed[:,:,t] = f[:,:,shape[2]-1-t]
         return fReversed
 

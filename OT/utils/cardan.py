@@ -61,7 +61,7 @@ def maxRootNaiv(a,b,c,d):
 
 def maxRootNaivVect(a,b,c,d,N):
     res = np.zeros(N)
-    for i in xrange(N):
+    for i in range(N):
         res[i] = maxRootNaiv(a[i],b[i],c[i],d[i])
     return res
 

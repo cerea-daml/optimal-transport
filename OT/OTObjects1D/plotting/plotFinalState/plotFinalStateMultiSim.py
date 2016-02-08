@@ -49,7 +49,7 @@ def plotFinalStateMultiSim(outputDirList,
     xmin = 0.0
     xmax = 1.0
 
-    for t in xrange(Pmax+2):
+    for t in range(Pmax+2):
         alphaInit  = transparencyFunction(1.-float(t)/(Pmax+1))
         alphaFinal = transparencyFunction(float(t)/(Pmax+1))
 

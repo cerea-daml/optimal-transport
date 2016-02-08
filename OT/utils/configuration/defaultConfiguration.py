@@ -40,7 +40,7 @@ class DefaultConfiguration(object):
             if self.__getattribute__(attr) == []:
                 self.replaceByDefaultValue(attr)
         else:
-            if not self.__dict__.has_key(attr):
+            if not attr in self.__dict__:
                 self.replaceByDefaultValue(attr)
     
     #_________________________

@@ -15,7 +15,7 @@ def initialStaggeredField(config):
 
     if config.dynamics == 0 or config.dynamics == 1:
 
-        for i in xrange(config.P+2):
+        for i in range(config.P+2):
             t = float(i)/(config.P+1.)
             f[:,:,i] = ( config.boundaries.temporalBoundaries.bt0[:,:] * ( 1. - t ) + 
                          config.boundaries.temporalBoundaries.bt1[:,:] * t )
@@ -24,21 +24,21 @@ def initialStaggeredField(config):
                           np.cumsum( config.boundaries.spatialBoundaries.bx0 - 
                                      config.boundaries.spatialBoundaries.bx1 , axis = 1 ) )
 
-        for i in xrange(config.P+1):
-            for j in xrange(config.N+1):
+        for i in range(config.P+1):
+            for j in range(config.N+1):
                 f[:,j,i+1] += massIncomingX[j,i] / ( config.M + 1. )
 
         massIncomingY = ( ( float(config.N) / float(config.P) ) * 
                           np.cumsum( config.boundaries.spatialBoundaries.by0 - 
                                      config.boundaries.spatialBoundaries.by1 , axis = 1 ) )
 
-        for i in xrange(config.P+1):
-            for j in xrange(config.M+1):
+        for i in range(config.P+1):
+            for j in range(config.M+1):
                 f[j,:,i+1] += massIncomingY[j,i] / ( config.N + 1. )
 
     else:
     
-        for i in xrange(config.P+2):
+        for i in range(config.P+2):
             t = float(i)/(config.P+1.)
             f[:,:,i] = ( config.boundaries.temporalBoundaries.bt0[:,:] * ( 1. - t ) +
                          config.boundaries.temporalBoundaries.bt1[:,:] * t )
