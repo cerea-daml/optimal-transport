@@ -6,7 +6,7 @@
 #
 
 import numpy as np
-import cPickle as pck
+import pickle as pck
 
 from .operators1 import listOfOperators1 as defineListOfOperators1
 from .operators2 import listOfOperators2 as defineListOfOperators2

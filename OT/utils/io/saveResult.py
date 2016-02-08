@@ -2,7 +2,7 @@
 # saveResult.py
 ###############
 
-import cPickle as pck
+import pickle as pck
 
 from .files import fileResult
 

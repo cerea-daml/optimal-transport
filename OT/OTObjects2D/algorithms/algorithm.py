@@ -10,7 +10,7 @@
 #   * initialize   [method]
 #
 
-import cPickle as pck
+import pickle as pck
 import time    as tm
 import numpy   as np
 

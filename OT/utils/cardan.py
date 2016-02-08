@@ -76,8 +76,8 @@ def testMaxRootVect(N):
     r1 = maxRoot(a,b,c,d)
     t2 = time.time()
     e  = abs(r0 - r1).sum()
-    print 'number of tests :', N
-    print 'max error =', e
-    print 'time non verctorized :', t1-t0
-    print 'time vectoried :', t2-t1
+    print('number of tests :'+str(N))
+    print('max error ='+str(e))
+    print('time non verctorized :'+str(t1-t0))
+    print('time vectoried :'+str(t2-t1))
     return e

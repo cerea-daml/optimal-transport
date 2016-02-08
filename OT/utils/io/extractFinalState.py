@@ -3,7 +3,7 @@
 ######################
 
 import numpy   as np
-import cPickle as pck
+import pickle as pck
 
 from .extractConfig import extractConfig
 from .files         import fileFinalState

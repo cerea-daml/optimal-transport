@@ -152,7 +152,7 @@ class ProxCscrb( proj.Projector ):
         res   = np.zeros(n1)
         for i in xrange(n1):
             if np.mod(i,100)==0:
-                print 'i=',i,'/',n1
+                print('i='+str(i)+'/'+str(n1))
             for j in xrange(n2):
                 field1 = grid.CenteredFieldBoundaries.random(self.N , self.P)
                 field2 = field1.copy()
