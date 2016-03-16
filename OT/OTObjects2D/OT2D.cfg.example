@@ -1,0 +1,96 @@
+#__________________________________________________
+#__________________________________________________
+
+# Copyrigth 2016 A. Farchi and M. Bocquet
+# CEREA, joint laboratory Ecole des Ponts ParisTech and EDF R&D
+
+# Code for the paper: Using the Wasserstein distance to compare fields of pollutants:
+# Application to the radionuclide atmospheric dispersion of the Fukushima-Daiichi accident
+# by A. Farchi, M. Bocquet, Y. Roustan, A. Mathieu and A. Querel
+
+#__________________________________________________
+
+#__________________________________________________
+#__________________________________________________
+# Example of configuration file
+#__________________________________________________
+
+#__________________________________________________
+# Tolerance value for testings 
+EPSILON = 1.e-8
+
+#__________________________________________________
+# Output directory
+outputDir = ./
+
+#__________________________________________________
+# Dynamics / Boundaries parameters
+
+# Space / Time disretization
+M = 32
+N = 32
+P = 32
+
+# dynamics type
+# 0 -> normal dynamics (requires spatial boundary conditions)
+# 1 -> normal dynamics with 0 spatial boundary conditions
+# 2 -> no spatial boundary conditions
+# 3 -> normal dynamics with a reservoir (for adr)
+# 4 -> normal dynamics with a reservoir (for adr3)
+dynamics = 0
+
+# boundary type
+# 0 -> from file (requires existing files)
+# 1 to 6 -> default configuration (see init/ for more information)
+boundaryType = 1
+
+# normalization
+# -1 -> no normalization
+#  0 -> correct mass default by rescaling f1
+#  1 -> correct mass default by rescaling f0 (for 0 spatial boundary conditions)
+#  2 -> correct mass default by making mass exiting leftward and rightward
+#  3 -> rescales f0 and f1 to have a unit of mass each (for 0 spatial boundary conditions)
+normType = 0
+
+#__________________________________________________
+# Files for boundaryType = 0
+filef0  = f0.bin
+filef1  = f1.bin
+filemx0 = mx0.bin
+filemx1 = mx1.bin
+filemy0 = my0.bin
+filemy1 = my1.bin
+
+#__________________________________________________
+# Algorithm parameters
+algoName   = adr
+iterTarget = 10000
+nModPrint  = 500
+nModWrite  = 500
+
+# for adr algorithm
+gamma = 0.013333333
+alpha = 1.998
+
+# for pd algorithm
+theta = 1.
+sigma = 85.
+tau   = 0.0116470588235294
+
+# for adr3 algorithm
+gamma3 = 0.013333333
+alpha3 = 1.998
+omega1 = 0.33
+omega2 = 0.33
+omega3 = 0.34
+
+#__________________________________________________
+# Initial condition
+# 0 -> default initial condition
+# 1 -> tries to catch initial condition from the result of a previous simulation, stored in outputDir
+# 2 -> tries to catch initial condition from the result of an other simulation, for which results are stored in initialInputDir
+# 3 -> 1 & 2 (searches in outputDir first)
+initial = 0
+
+# for initial = 2 or 3
+initialInputDir = ./

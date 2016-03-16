@@ -1,0 +1,116 @@
+#__________________________________________________
+#__________________________________________________
+
+# Copyrigth 2016 A. Farchi and M. Bocquet
+# CEREA, joint laboratory Ecole des Ponts ParisTech and EDF R&D
+
+# Code for the paper: Using the Wasserstein distance to compare fields of pollutants:
+# Application to the radionuclide atmospheric dispersion of the Fukushima-Daiichi accident
+# by A. Farchi, M. Bocquet, Y. Roustan, A. Mathieu and A. Querel
+
+#__________________________________________________
+
+#__________________________________________________
+#__________________________________________________
+# Example of configuration file for plotting
+#__________________________________________________
+
+#__________________________________________________
+# Tolerance value for testings 
+EPSILON = 1.e-8
+
+#__________________________________________________
+# Plot single simulation or multiple simulations
+singleOrMulti = single
+
+#__________________________________________________
+# Figures output directory
+figDir = ./
+
+#__________________________________________________
+# Extension for figures
+# You may want to try more than one extension
+# in that case, just duplicate this line
+extensions = str : .pdf
+extensions = str : .eps
+
+#__________________________________________________
+# Output directory and associated labels
+# For multiple simulations, just duplicate these lines
+# For single simulation, only the first line will be used 
+outputDirList = str : ./
+labelList     = str : sim0
+outputDirList = str : ./
+labelList     = str : sim1
+
+#__________________________________________________
+# Plot analyse
+plotAnalyse = True
+
+# Defining plotSubplots
+plotAnalyse_plotSubplotsFunction    = customPlotSubplots
+plotAnalyse_prefixFigName           = analyse_
+
+# Arguments for definining plotSubplots
+plotAnalyse_plotSubplots_iterOrTime = iterations
+plotAnalyse_plotSubplots_xScale     = log
+plotAnalyse_plotSubplots_yScale     = log
+plotAnalyse_plotSubplots_grid       = True
+
+#__________________________________________________
+# Plot final state
+plotFinalState = True
+
+# Options for plotting final state
+plotFinalState_prefixFigName        = finalState_
+plotFinalState_transparencyFunction = customTransparency
+plotFinalState_plotter              = imshow
+plotFinalState_args                 = interpolation : str   : nearest
+plotFinalState_argsInit             = colors        : str   : k
+plotFinalState_argsInit             = linestyles    : str   : solid
+plotFinalState_argsFinal            = colors        : str   : k
+plotFinalState_argsFinal            = linestyles    : str   : solid
+plotFinalState_colorBar             = True
+plotFinalState_cmapName             = jet
+plotFinalState_timeTextPBar         = True
+plotFinalState_xLabel               = $x$
+plotFinalState_yLabel               = $y$
+plotFinalState_cLabel               = $f$
+plotFinalState_extendX              = 0.0
+plotFinalState_extendY              = 0.0
+plotFinalState_nbrXTicks            = 2
+plotFinalState_nbrYTicks            = 2
+plotFinalState_nbrCTicks            = 5
+plotFinalState_xTicksDecimals       = 1
+plotFinalState_yTicksDecimals       = 1
+plotFinalState_cTicksDecimals       = 2
+plotFinalState_order                = horizontalFirst
+plotFinalState_extendDirection      = horizontal
+
+#__________________________________________________
+# Triplot final state
+triplotFinalState = True
+
+# Options for triplotting final state
+triplotFinalState_prefixFigName          = finalState_tri_
+triplotFinalState_plotter                = imshow
+triplotFinalState_args                   = interpolation : str   : nearest
+triplotFinalState_colorBar               = True
+triplotFinalState_cmapName               = jet
+triplotFinalState_timeTextPBar           = True
+triplotFinalState_xLabel                 = $x$
+triplotFinalState_yLabel                 = $y$
+triplotFinalState_cLabel                 = $f$
+triplotFinalState_extendX                = 0.0
+triplotFinalState_extendY                = 0.0
+triplotFinalState_nbrXTicks              = 2
+triplotFinalState_nbrYTicks              = 2
+triplotFinalState_nbrCTicks              = 5
+triplotFinalState_xTicksDecimals         = 1
+triplotFinalState_yTicksDecimals         = 1
+triplotFinalState_cTicksDecimals         = 2
+triplotFinalState_order                  = horizontalFirst
+triplotFinalState_extendDirection        = vertical
+triplotFinalState_extendDirectionTriplot = horizontal
+
+#__________________________________________________

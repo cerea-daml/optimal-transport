@@ -1,0 +1,75 @@
+#__________________________________________________
+#__________________________________________________
+
+# Copyrigth 2016 A. Farchi and M. Bocquet
+# CEREA, joint laboratory Ecole des Ponts ParisTech and EDF R&D
+
+# Code for the paper: Using the Wasserstein distance to compare fields of pollutants:
+# Application to the radionuclide atmospheric dispersion of the Fukushima-Daiichi accident
+# by A. Farchi, M. Bocquet, Y. Roustan, A. Mathieu and A. Querel
+
+#__________________________________________________
+
+#__________________________________________________
+#__________________________________________________
+# Example of configuration file for plotting
+#__________________________________________________
+
+#__________________________________________________
+# Tolerance value for testings 
+EPSILON = 1.e-8
+
+#__________________________________________________
+# Plot single simulation or multiple simulations
+singleOrMulti = single
+
+#__________________________________________________
+# Figures output directory
+figDir = ./
+
+#__________________________________________________
+# Movie writer
+writerName      = ffmpeg
+writerFPS       = 5
+writerCodec     = 
+writerBitrate   = 
+writerExtraArgs = 
+
+extensions      = str : .mp4
+extensions      = str : .avi
+
+#__________________________________________________
+# FuncAnimation arguments
+funcAnimArgs = blit : bool : true
+
+#__________________________________________________
+# Output directory and associated labels
+# For multiple simulations, just duplicate these lines
+# For single simulation, only the first line will be used 
+outputDirList = str : ./
+labelList     = str : sim0
+outputDirList = str : ./
+labelList     = str : sim1
+
+#__________________________________________________
+# Animate final state
+animFinalState = True
+
+# Options for animating final state
+animFinalState_prefixFigName        = finalState_
+animFinalState_transparencyFunction = customTransparency
+animFinalState_legend               = True
+animFinalState_grid                 = True
+animFinalState_timeTextPBar         = True
+animFinalState_xLabel               = $x$
+animFinalState_yLabel               =
+animFinalState_extendX              = 0.0
+animFinalState_extendY              = 0.05
+animFinalState_nbrXTicks            = 5
+animFinalState_nbrYTicks            = 5
+animFinalState_xTicksDecimals       = 2
+animFinalState_yTicksDecimals       = 2
+animFinalState_order                = horizontalFirst
+animFinalState_extendDirection      = vertical
+
+#__________________________________________________

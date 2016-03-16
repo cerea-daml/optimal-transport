@@ -1,8 +1,21 @@
+#__________________________________________________
+#__________________________________________________
+
+# Copyrigth 2016 A. Farchi and M. Bocquet
+# CEREA, joint laboratory Ecole des Ponts ParisTech and EDF R&D
+
+# Code for the paper: Using the Wasserstein distance to compare fields of pollutants:
+# Application to the radionuclide atmospheric dispersion of the Fukushima-Daiichi accident
+# by A. Farchi, M. Bocquet, Y. Roustan, A. Mathieu and A. Querel
+
+#__________________________________________________
+
+#__________________________________________________
 #!/usr/bin/env python
 
-from OT1D.utils.sys.run                                import runCommand
-from OT1D.utils.sys.argv                               import extractArgv
-from OT1D.OTObjects1D.animating.animatingConfiguration import AnimatingConfiguration
+from OT.utils.sys.run                                import runCommand
+from OT.utils.sys.argv                               import extractArgv
+from OT.OTObjects1D.animating.animatingConfiguration import AnimatingConfiguration
 
 # Extract Arguments
 arguments   = extractArgv()
