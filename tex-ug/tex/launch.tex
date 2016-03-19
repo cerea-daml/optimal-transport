@@ -11,7 +11,7 @@
         \begin{lstlisting}
 $ ./launchSimulation*D.py CONFIG_FILE=file.cgf PRINT_IO=True\end{lstlisting}
         where \ppath{file.cfg} is
-        your configuration file and \bcode{PRINT\us{}IO} is an optionnal parameter that enables output on the screen.
+        your configuration file and \bcode{PRINT\us{}IO} is an optional parameter that enables output on the screen.
         The launcher then reads your configuration file, construct the adequate configuration object, then constructs
         the algorithm object with the \pcode{algorithm(self)} method and make it run with the \pcode{run(self)} method.
         At the end, it save the results in the specified output repertory (see section \ref{sssec:output}) and make an analyse of the
@@ -22,7 +22,7 @@ $ ./launchSimulation*D.py CONFIG_FILE=file.cgf PRINT_IO=True\end{lstlisting}
         \begin{enumerate}
             \item \pcode{EPSILON}: variable used as tolerance value for some testings.
             \item \pcode{outputDir}: path to the repertory for 
-                output\footnote{\NB{}: although \python{} supports relative paths, it is strongly recommanded to use absolte paths.}. See 
+                output\footnote{\NB{}: although \python{} supports relative paths, it is strongly recommended to use absolute paths.}. See 
                 section \ref{sssec:output} for more details about the output.
             \item \pcode{M}, \pcode{N} and \pcode{P}: discretization resolution along the dimensions in space for 
                 \pcode{M} (only for the $\dimension{}=2$ case) and \pcode{N} and in time for \pcode{P}.

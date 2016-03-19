@@ -25,9 +25,9 @@ $ ./reLaunchSimulation*D.py OUTPUT_DIR=/previous/output/dir/ NEW_ITER_TARGET=100
     \subsection{Anamorphosis\label{sssec:anamorphosis}}
     \noindent
 
-        For $\dimension=1$, the solution of the optimal transport problem can be otained with an analytical formula, and this
+        For $\dimension=1$, the solution of the optimal transport problem can be obtained with an analytical formula, and this
         is known as the anamorphosis transform. For more details about this transformation, see section 2.4 of \precite{farchi-2016}.
-        An implementation of these formula is available with this solver. It has beeen written in the exact same way as the
+        An implementation of these formula is available with this solver. It has been written in the exact same way as the
         \drAlgo{} and the \pdAlgo{} algorithms in the file \ppath{OTObjects1D/algorithms/anamorph/anamorphAlgorithm.py}.
 
         To use this \inG{algorithm}, one must set \pcode{algoName=ana} in the configuration file and define the parameter
@@ -41,7 +41,7 @@ $ ./reLaunchSimulation*D.py OUTPUT_DIR=/previous/output/dir/ NEW_ITER_TARGET=100
         After performing a simulation, one may want to analyse the convergence rate of the algorithm. Some tools are implemented
         to this end in the repertory \ppath{OTObjects*D/analyse/}. First, the output files will be opened. As described in section
         \ref{ssec:launch-algo}, it contains the value of the converging variable every \pcode{nModeWrite} algorithm iteration. It
-        also contains the execution time at the current iteraction -- in order to perform time analysis. Then some operators
+        also contains the execution time at the current iteration -- in order to perform time analysis. Then some operators
         will be applied to the variable.\\
 
         In file \ppath{operators1.py} are defined a first set of operators: the $L^\infty$ norm of the $\left(\dimension+1\right)$-divergence of the field
@@ -54,7 +54,7 @@ $ ./reLaunchSimulation*D.py OUTPUT_DIR=/previous/output/dir/ NEW_ITER_TARGET=100
             \item the \numpy{} array of iteration numbers;
             \item the \numpy{} array of iteration times;
             \item a list of string representing the operator names;
-            \item the \numpy{} two-dimensional arry of the operation values, whose shape is:\\number~of~iterations~$\times$~number~of~operators.
+            \item the \numpy{} two-dimensional array of the operation values, whose shape is:\\number~of~iterations~$\times$~number~of~operators.
         \end{enumerate}
 
         With these informations, everything is available to plot analyses of the run as a function of time or as a function of iteration number.
@@ -132,7 +132,7 @@ $ ./animateSimulation*D.py CONFIG_FILE=animating.cgf PRINT_IO=True\end{lstlistin
 
         The $3$ and $4$ values for \pcode{dynamics} are dedicated to the version of the problem with reservoirs (see section
         \ref{sssec:bc-reservoir}). The divergence constraint never include the boundary conditions (because it would break
-        the symmetry of the problem and prevent one to use the fourier transformation methods). They are included in the 
+        the symmetry of the problem and prevent one to use the Fourier transformation methods). They are included in the 
         interpolation constraint if \pcode{dynamics} is equal to $3$ but not if it is equal to $4$.\\
 
         As a consequence, the \pdAlgo{} algorithm must be used with \pcode{dynamics} equals to $1$ or $2$. The
@@ -186,7 +186,7 @@ $ ./animateSimulation*D.py CONFIG_FILE=animating.cgf PRINT_IO=True\end{lstlistin
             After loading the fields from the files, one has to check that the mass is conserved according
             to \eqref{eq:mass-conservation}. See section \ref{sssec:normalization} for more information about normalization.
             If one is interested in solving the optimal transport problem without the mass conservation constraint,
-            then one should consider using the reservoir method we developped and presented in \cite{farchi-2016}.
+            then one should consider using the reservoir method we developed and presented in \cite{farchi-2016}.
 
         \subsubsection{Reservoir approach}
         \noindent
@@ -239,7 +239,7 @@ $ ./animateSimulation*D.py CONFIG_FILE=animating.cgf PRINT_IO=True\end{lstlistin
             the converging variable and the current time elapsed to a file.
             The file is named \ppath{states.bin} and is located in the \pcode{outputDir} repertory.
             The variable is written as a \pcode{StaggeredField} object, in binary format using the \cpck{} module.
-            Note that the results are appened to the file \ppath{states.bin} so that one can keep the
+            Note that the results are appended to the file \ppath{states.bin} so that one can keep the
             states of the previous runs.
 
         \subsubsection{At the end of the run}
@@ -248,7 +248,7 @@ $ ./animateSimulation*D.py CONFIG_FILE=animating.cgf PRINT_IO=True\end{lstlistin
             After the run, a full copy of the algorithm state is written in \pcode{outputDir}. More precisely,
             the configuration object is written in the file \ppath{config.bin} and the algorithm state in
             the file \ppath{finalState.bin}. Once again, the objects are written in binary format with the
-            \cpck{} module. Note that the configuration is appened to the file in order to keep track
+            \cpck{} module. Note that the configuration is appended to the file in order to keep track
             of the configurations for the previous runs.
 
             Finally, the number in the file \ppath{runCount.bin} is incremented if it already exists. Else
@@ -259,7 +259,7 @@ $ ./animateSimulation*D.py CONFIG_FILE=animating.cgf PRINT_IO=True\end{lstlistin
     \noindent
 
         As seen in section \ref{sssec:bc-reservoir}, there are a few default configurations for the boundary conditions
-        provided for testing purpose. They are all defined in th repertory \ppath{OTObjects*D/boundaries/} and the
+        provided for testing purpose. They are all defined in the repertory \ppath{OTObjects*D/boundaries/} and the
         selection of the correct boundary condition happens in function \pcode{boundariesForConfig(config)} from file
         \ppath{defineBoundaries.py} according to the parameter \pcode{boundaryType}. The possibilities are described in
         table \ref{tab:boundary-examples}.
