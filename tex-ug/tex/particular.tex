@@ -1,0 +1,284 @@
+
+\section{Specific aspects}
+\noindent
+    
+    \subsection{Relaunch simulations\label{sssec:relaunch-sim}}
+    \noindent
+
+        The \python file \ppath{reLaunchSimulation*D.py} can be used to relaunch a simulation. This script will construct
+        the configuration from the previous configuration file if provided by the keyword argument \bcode{CONFIG\us{}FILE}
+        or directly from the configuration object saved in the output directory. In the latter case, one has to specify the
+        previous output directory with the keyword argument \bcode{OUTPUT\us{}DIR}. Optional arguments include
+        \bcode{NEW\us{}ITER\us{}TARGET}, which specify a new value for the number of algorithm iterations to perform, and 
+        \bcode{PRINT\us{}IO}.
+
+        Use one of the following commands.
+        \lstset{style=codebash}
+        \begin{lstlisting}
+$ ./reLaunchSimulation*D.py CONFIG_FILE=configFile.cgf NEW_ITER_TARGET=1000 PRINT_IO=True\end{lstlisting}
+        \begin{lstlisting}
+$ ./reLaunchSimulation*D.py OUTPUT_DIR=/previous/output/dir/ NEW_ITER_TARGET=1000 PRINT_IO=True\end{lstlisting}
+
+        Also note that using this script, one necessary relaunch the simulation with the same algorithm. There are also ways
+        the relaunch a simulation with a different algorithm, for example see section \ref{sssec:initialization}.
+
+    \subsection{Anamorphosis\label{sssec:anamorphosis}}
+    \noindent
+
+        For $\dimension=1$, the solution of the optimal transport problem can be otained with an analytical formula, and this
+        is known as the anamorphosis transform. For more details about this transformation, see section 2.4 of \precite{farchi-2016}.
+        An implementation of these formula is available with this solver. It has beeen written in the exact same way as the
+        \drAlgo{} and the \pdAlgo{} algorithms in the file \ppath{OTObjects1D/algorithms/anamorph/anamorphAlgorithm.py}.
+
+        To use this \inG{algorithm}, one must set \pcode{algoName=ana} in the configuration file and define the parameter
+        \pcode{PDFError} that will be used as a relative tolerance value to compute the inverse of cumulative density functions.
+        Unlike the other algorithms, it will ignore the parameter \pcode{iterTarget} since it is not an iterative
+        algorithm.
+
+    \subsection{Analyse\label{sssec:analyse}}
+    \noindent
+
+        After performing a simulation, one may want to analyse the convergence rate of the algorithm. Some tools are implemented
+        to this end in the repertory \ppath{OTObjects*D/analyse/}. First, the output files will be opened. As described in section
+        \ref{ssec:launch-algo}, it contains the value of the converging variable every \pcode{nModeWrite} algorithm iteration. It
+        also contains the execution time at the current iteraction -- in order to perform time analysis. Then some operators
+        will be applied to the variable.\\
+
+        In file \ppath{operators1.py} are defined a first set of operators: the $L^\infty$ norm of the $\left(\dimension+1\right)$-divergence of the field
+        (\ie{} the error in the continuity constraint), the minimum value of the density field and some numerical variations of the cost
+        function \eqref{eq:cost}. In file \ppath{operators2.py} the operators defined compare the current value of the field to the last
+        value of the field (which is therefore assumed to be the solution of the minimization problem): the $L^\infty$ norm of the difference.
+
+        The results are stored in the file \ppath{analyse.bin} in \pcode{outputDir} in binary format using the \cpck{} module as following:
+        \begin{enumerate}
+            \item the \numpy{} array of iteration numbers;
+            \item the \numpy{} array of iteration times;
+            \item a list of string representing the operator names;
+            \item the \numpy{} two-dimensional arry of the operation values, whose shape is:\\number~of~iterations~$\times$~number~of~operators.
+        \end{enumerate}
+
+        With these informations, everything is available to plot analyses of the run as a function of time or as a function of iteration number.
+        See section \ref{sssec:plotting-animating} for more information about plots. Also note that there is a \python launcher dedicated
+        to this analyse process: \ppath{analyseSimulation*D.py}, to use with one of the following commands.
+        \lstset{style=codebash}
+        \begin{lstlisting}
+$ ./analyseSimulation*D.py CONFIG_FILE=configFile.cgf\end{lstlisting}
+        \begin{lstlisting}
+$ ./analyseSimulation*D.py OUTPUT_DIR=/output/dir/\end{lstlisting}
+
+    \subsection{Plotting and animating\label{sssec:plotting-animating}}
+    \noindent
+
+        With this module, two submodules are provided for plotting and animating purpose in the \ppath{OTObjects*D/plotting/} and
+        \ppath{OTObjects*D/animating} repertories. The operation of these submodules is approximately the same as the main module.
+        Two specific configuration classes are implemented. As usual, these submodules come with the dedicated \python launchers
+        \ppath{plotSimulation*D.py} and \ppath{animateSimulation*D.py} and their usage require a configuration file. The configuration
+        files are specific to each submodule, examples are available: \ppath{OTObjects*D/plotting/plotting.cfg.example} and 
+        \ppath{OTObjects*D/animating/animating.cfg.example}. Use the launchers with the following commands.
+        \lstset{style=codebash}
+        \begin{lstlisting}
+$ ./plotSimulation*D.py CONFIG_FILE=plotting.cgf PRINT_IO=True\end{lstlisting}
+        \begin{lstlisting}
+$ ./animateSimulation*D.py CONFIG_FILE=animating.cgf PRINT_IO=True\end{lstlisting}
+
+        Note that these submodules rely on \mpl{} to draw plot and on movie encoders (\eg{} \ffmpeg{} or \mencoder{}) to  
+        save the animations in files.
+
+    \subsection{Initialization\label{sssec:initialization}}
+    \noindent
+
+        The algorithm presented in section \ref{ssec:algorithms} converge, no matter which initial condition is chosen for
+        the algorithm state. However, choosing a clever initial condition is a good strategy to achieve a better convergence
+        without increasing the number of algorithm iterations. Yet, there has been no study about the influence of the
+        initial condition in this particular optimal transport problem.\\
+
+        In our solver, all algorithm use the same initialization function \pcode{initialStaggeredField(config)}
+        defined in the file 
+        \ppath{OTObjects*D/init/initialFields.py}. Basically, it just constructs the linear interpolation between the temporal
+        boundary conditions \fI{} and \fII{}.\\
+
+        Alternatively the initial condition can be obtained from the output of a previous simulation. This is driven by
+        parameter \pcode{initial} of the configuration object:
+        \begin{itemize}
+            \item if \pcode{initial} is $1$, then the algorithm will look for the result of a simulation whose result is 
+                located in \pcode{outputDir} to initialize its state;
+            \item if \pcode{initial} is $2$, then it will look in the repertory \pcode{initialInputDir};
+            \item if \pcode{initial} is $3$, it will first look in \pcode{outputDir} then in \pcode{initialInputDir}.
+        \end{itemize}
+
+        If no previous run is found, the initialization method will fall back to the \pcode{initialStaggeredField(config)} function.
+        With this method, an algorithm can catch the state of an other algorithm. In that case, it uses the converging
+        variable to define its initial state.
+
+    \subsection{Proximal variations selection\label{sssec:proximal-selection}}
+    \noindent
+
+        Choosing the correct versions for the proximal operators is a critical step while constructing the algorithms. 
+        The proximal used by each algorithm is detailed in section \ref{ssec:algorithms}. When choosing the proximal operators,
+        one must insure that each constraint appear at least in one proximal operator that will be used by the algorithm.\\
+
+        In file
+        \ppath{OTObjects*D/proximals/defineProximals.py}, the function \pcode{proximalForConfig(config)} defines the correct proximal
+        operators according to the parameter \pcode{dynamics} of the
+        configuration.
+        \begin{itemize}
+            \item If \pcode{dynamics} is $0$, then boundary conditions in space and time are added to all constraint.
+            \item It is also the case if \pcode{dynamics} is $1$, but this time the spatial boundary conditions are supposed to be zero
+                -- while they can be non-zero with \pcode{dynamics} equal to $0$, as presented in section \ref{sssec:bc-reservoir}.
+            \item If \pcode{dynamics} is $2$, then the temporal boundary conditions are added to all constraints but no spatial boundary condition
+                is applied. For this reason, the convergence of the algorithm with this method is questionable, as the 
+                mathematical problem is not well defined.
+        \end{itemize}
+
+        The $3$ and $4$ values for \pcode{dynamics} are dedicated to the version of the problem with reservoirs (see section
+        \ref{sssec:bc-reservoir}). The divergence constraint never include the boundary conditions (because it would break
+        the symmetry of the problem and prevent one to use the fourier transformation methods). They are included in the 
+        interpolation constraint if \pcode{dynamics} is equal to $3$ but not if it is equal to $4$.\\
+
+        As a consequence, the \pdAlgo{} algorithm must be used with \pcode{dynamics} equals to $1$ or $2$. The
+        \drAlgo{} algorithm with two proximal operators 
+        can be used with \pcode{dynamics} equals to $1$ or $2$ for the classical optimal transport problem
+        and \pcode{dynamics} equals to $3$ for the optimal transport problem with reservoirs.
+        The \drAlgo{} algorithm with three proximal operators can be used with \pcode{dynamics} equals 
+        to $1$ or $2$ for the classical optimal transport problem and \pcode{dynamics} equals to $3$ or $4$ for 
+        the optimal transport problem with reservoirs. Using  \pcode{dynamics} equals to $2$ is not recommanded.
+
+    \subsection{Boundary conditions and reservoir approach\label{sssec:bc-reservoir}}
+    \noindent
+        
+        \subsubsection{Boundary conditions}
+        \noindent
+
+            In the very definition of the optimal transport problem, we defined \fI{} and \fII{} to be probability
+            density functions over \spaceE{}. In particular, this means that:
+            \begin{equation}
+                \int_{\spaceE} \fI\left(\x\right)\dx = \int_{\spaceE}\fII\left(\x\right)\dx = 1,
+            \end{equation}
+            which is a necessary condition to have a couple \coupleFM{} satisfying \eqref{eq:continuity}, \eqref{eq:boundaries}
+            and \eqref{eq:null-flux}.
+            In fact, this condition can be relaxed if one changes the null-flux condition \eqref{eq:null-flux} into:
+            \begin{equation}
+                \forall \coupleXT \in \partial\EtimesT, \quad \mom\coupleXT = \mom_0\coupleXT,
+            \end{equation}
+            with the new mass conservation condition:
+            \begin{equation}
+                \label{eq:mass-conservation}
+                \int_{\partial\EtimesT} \left(\mom_0\coupleXT \cdot \dx \right) \dt = \int_{\spaceE}\left( \fII \left(\x\right) - \fI \left(\x\right)\right)\dx.
+            \end{equation}
+
+            Numerically, it doesn't change anything in the computation of the proximal operators, it just changes
+            the construction of the numerical boundary conditions. These conditions are constructed during the
+            construction of the configuration object by the function \pcode{boundariesForConfig(config)} of file
+            \ppath{OTObjects*D/boundaries/defineBoundaries.py}. This function relies on the parameter 
+            \pcode{boundaryType} of the configuration object. If \pcode{boundaryType} takes value 1 to 8, then
+            default boundary conditions will be applied (see section \ref{sssec:examples}). 
+            If \pcode{boundaryType} is 0, then the boundary conditions
+            will be constructed with data from files. The file names for the \fI{} and \fII{} conditions are determined
+            by the parameters \pcode{filef0} and \pcode{filef1} of the configuration object. If necessary -- \ie{} if
+            the parameter \pcode{dynamics} is 0 as said in section \ref{sssec:proximal-selection} -- spatial boundary conditions 
+            are also determined from files \pcode{filem0} and \pcode{filem1} for the $\dimension=1$ case and from files
+            \pcode{filemx0}, \pcode{filemx1}, \pcode{filemy0} and \pcode{filemy1} for the $\dimension=2$ case.
+            The corresponding boundary conditions are presented in table \ref{tab:boundary-files}.
+
+            \input{./tex/tables/table_boundary_files}
+
+            The format of the file accepted by the algorithm is detailed in section \ref{sssec:input}.
+            After loading the fields from the files, one has to check that the mass is conserved according
+            to \eqref{eq:mass-conservation}. See section \ref{sssec:normalization} for more information about normalization.
+            If one is interested in solving the optimal transport problem without the mass conservation constraint,
+            then one should consider using the reservoir method we developped and presented in \cite{farchi-2016}.
+
+        \subsubsection{Reservoir approach}
+        \noindent
+
+            For this method, \spaceE{} is expanded by adding a reservoir variable at each boundary location of \spaceE{}.
+            To keep control of the total mass inside the domain, we impose the null-flux condition \eqref{eq:null-flux}
+            to the extended domain. Potentially inverting the role of \fI{} and \fII{} -- this operation is
+            tracked by the variable \pcode{swappedInitFinal} of the configuration object -- one can assume that 
+            \fI{} has more mass than \fII{}. Then we can impose the following boundary conditions:
+            \begin{itemize}
+                \item at $\ficttime=0$, all reservoirs must be empty, \ie{} all reservoir variables must be equal to zero;
+                \item at $\ficttime=1$, the total mass inside the reservoir must be equal to the difference of mass between
+                    \fI{} and \fII{};
+                \item in the interior of \spaceE{} we impose the classical temporal boundary conditions \eqref{eq:boundaries}.
+            \end{itemize}
+
+            To solve the optimal transport problem with reservoir, one must use the \drAlgo{} algorithm with
+            the parameter \pcode{dynamics} equals to $3$ or $4$ as presented in section \ref{sssec:proximal-selection}.
+            Note that in this case, the boundary values of the arrays specified for \fI{} and \fII{} will
+            be ignored and replaced by zero.
+
+    \subsection{Input\label{sssec:input}}
+    \noindent
+
+        \subsubsection{Boundary conditions}
+        \noindent
+
+            The boundary conditions can be defined from files as presented in section \ref{sssec:bc-reservoir}. The files
+            are read with the \pcode{arrayFromFile(fileName)} function, implemented in the file \ppath{utils/io/io.py}.
+            It accepts either \ppath{.npy} files, loaded with with the \pcode{numpy.load(fileName)} function, or
+            binary files, loaded with the \pcode{numpy.fromfile(fileName)} function and then reshaped with the
+            \pcode{numpy.ndarray.reshape(newShape)} function to match the dimensions imposed by the parameters
+            \pcode{M}, \pcode{N} and \pcode{P}.\\
+
+        \subsubsection{Initial condition}
+        \noindent
+
+            As seen in section \ref{sssec:initialization}, the initial condition can be retrieved from a previous run.
+            In that case, the algorithm will read the files \ppath{runCount.bin} -- to check that there has been indeed
+            a run -- and \ppath{finalState.bin} that have both been written by an algorithm, according to the method
+            presented in section \ref{sssec:output}.
+
+    \subsection{Output\label{sssec:output}}
+    \noindent
+
+        \subsubsection{During the algorithm run}
+        \noindent
+
+            As mentioned in section \ref{ssec:launch-algo}, every \pcode{nModWrite} iterations, the algorithm writes
+            the converging variable and the current time elapsed to a file.
+            The file is named \ppath{states.bin} and is located in the \pcode{outputDir} repertory.
+            The variable is written as a \pcode{StaggeredField} object, in binary format using the \cpck{} module.
+            Note that the results are appened to the file \ppath{states.bin} so that one can keep the
+            states of the previous runs.
+
+        \subsubsection{At the end of the run}
+        \noindent
+
+            After the run, a full copy of the algorithm state is written in \pcode{outputDir}. More precisely,
+            the configuration object is written in the file \ppath{config.bin} and the algorithm state in
+            the file \ppath{finalState.bin}. Once again, the objects are written in binary format with the
+            \cpck{} module. Note that the configuration is appened to the file in order to keep track
+            of the configurations for the previous runs.
+
+            Finally, the number in the file \ppath{runCount.bin} is incremented if it already exists. Else
+            the number $1$ is written in file \ppath{runCount.bin}. This way, one is able to keep track of
+            the number of runs performed.
+
+    \subsection{Default examples\label{sssec:examples}}
+    \noindent
+
+        As seen in section \ref{sssec:bc-reservoir}, there are a few default configurations for the boundary conditions
+        provided for testing purpose. They are all defined in th repertory \ppath{OTObjects*D/boundaries/} and the
+        selection of the correct boundary condition happens in function \pcode{boundariesForConfig(config)} from file
+        \ppath{defineBoundaries.py} according to the parameter \pcode{boundaryType}. The possibilities are described in
+        table \ref{tab:boundary-examples}.
+
+        \input{./tex/tables/table_boundary_default}
+
+    \subsection{Normalization\label{sssec:normalization}}
+    \noindent
+
+        After defining the correct boundary conditions, one has to check the mass conservation (if not using the reservoir method).
+        This is performed by the \pcode{normalize(normType)} method of class \pcode{Boundaries} whose behavior only depends on
+        the \pcode{normType} parameter of the configuration object.
+
+        \begin{itemize}
+            \item If \pcode{normType} is $0$, then \fII{} is rescaled using the mass of \fI{}. 
+            \item If \pcode{normType} is $1$, then \fI{} is rescaled using the mass of \fII{}.
+            \item If \pcode{normType} is $2$, then \fI{} and \fII{} are not changed but the
+                spatial boundary conditions are adapted to compensate for the mass losses. 
+            \item If \pcode{normType} is $3$, then the mass of \fI{} and
+                the mass of \fII{} are set to unity.
+        \end{itemize}
+

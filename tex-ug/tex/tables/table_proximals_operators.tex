@@ -1,0 +1,18 @@
+
+\begin{tablehtbp}
+    
+    \begin{tabular}{|l|l|l|l|}
+
+        \hline
+        Proximal operator & Sub-repertory  & Main constraint                                                    & State space of input and output      \\ \hline \hline
+        \pcode{proxJ}     & \ppath{.}      & Cost function of transport \eqref{eq:cost}                         & Centered grid                        \\ \hline
+        \pcode{proxCdiv}  & \ppath{div/}   & Continuity equation \eqref{eq:continuity}                          & Staggered grid                       \\ \hline
+        \pcode{proxCsc}   & \ppath{sc/}    & Interpolation constraint                                           & Couple staggered grid, centered grid \\ \hline
+        \pcode{proxCb}    & \ppath{bound/} & Boundary conditions \eqref{eq:boundaries} and \eqref{eq:null-flux} & Staggered grid                       \\ \hline
+
+    \end{tabular}
+
+    \caption{Details about the proximal operators.}
+    \label{tab:proximals-operators}
+
+\end{tablehtbp}

@@ -1,0 +1,27 @@
+
+\begin{tablehtbp}
+    
+    \begin{tabular}{|l|c|c|}
+
+        \hline
+        Class              & Boundary conditions                                                   & State space of input and output      \\ \hline \hline
+        \multicolumn{3}{|c|}{Variations of the divergence constraint}                                                                     \\ \hline \hline
+        \pcode{ProxCdiv}   & None                                                                  & Staggered grid                       \\ \hline
+        \pcode{ProxCdivb}  & \eqref{eq:boundaries} and \eqref{eq:null-flux}                        & Staggered grid                       \\ \hline
+        \pcode{ProxCdivtb} & \eqref{eq:boundaries}                                                 & Staggered grid                       \\ \hline \hline
+        \multicolumn{3}{|c|}{Variations of the interpolation constraint}                                                                  \\ \hline \hline
+        \pcode{ProxCsc}    & None                                                                  & Couple staggered grid, centered grid \\ \hline
+        \pcode{ProxCscb}   & \eqref{eq:boundaries} and \eqref{eq:null-flux}                        & Couple staggered grid, centered grid \\ \hline
+        \pcode{ProxCscrb}  & \eqref{eq:boundaries}, only at $\ficttime=0$ and \eqref{eq:null-flux} & Couple staggered grid, centered grid \\ \hline
+        \pcode{ProxCsctb}  & \eqref{eq:boundaries}                                                 & Couple staggered grid, centered grid \\ \hline \hline
+        \multicolumn{3}{|c|}{Variations of the boundary conditions}                                                                       \\ \hline \hline
+        \pcode{ProxCb}     & \eqref{eq:boundaries} and \eqref{eq:null-flux}                        & Staggered grid                       \\ \hline
+        \pcode{ProxCrb}    & \eqref{eq:boundaries}, only at $\ficttime=0$ and \eqref{eq:null-flux} & Staggered grid                       \\ \hline
+        \pcode{ProxCtb}    & \eqref{eq:boundaries}                                                 & Staggered grid                       \\ \hline
+
+    \end{tabular}
+
+    \caption{Details about the variations of the proximal operators.}
+    \label{tab:proximals-variations}
+
+\end{tablehtbp}

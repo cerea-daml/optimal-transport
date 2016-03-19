@@ -1,0 +1,61 @@
+
+\section{Introduction}
+\noindent
+
+    The transportation theory is the study of optimal transportation and allocation.
+    The so-called optimal transport problem was first introduced by \cite{monge-1781} and formalized
+    by \cite{kantorovich-1942}, leading to the Monge-Kantorovich transportation problem.\\
+
+    The goal is to look for a transport map transforming a probability density function into an other
+    while minimizing the cost of transport.
+
+    \subsection{Brief description of the problem}
+    \noindent
+
+        Let \spaceE{} be an euclidean space of dimension \dimension{} and let \fI{} and \fII{} be two probability density functions over \spaceE{}.
+        We are looking for a couple density-velocity \coupleFV{} defined over \EtimesT{} satisfying a continuity constraint:
+        \begin{equation}
+            \label{eq:continuity}
+            \forall \coupleXT \in \EtimesT, \quad \frac{\partial \f}{\partial \ficttime} \coupleXT + \divergence{\f\cdot\vel} \coupleXT = 0,
+        \end{equation}
+        a boundary condition:
+        \begin{equation}
+            \label{eq:boundaries}
+            \forall \x \in \spaceE, \quad \f\left(\x, \ficttime = 0\right) = \fI \andEq \f\left(\x, \ficttime = 1\right) = \fII,
+        \end{equation}
+        a null-flux condition for mass conservation:
+        \begin{equation}
+            \label{eq:null-flux}
+            \forall \coupleXT \in \partial\EtimesT, \quad \vel\coupleXT = 0,
+        \end{equation}
+        and minimizing the cost of transport:
+        \begin{equation}
+            \label{eq:cost}
+            \J \coupleFV = \int_{\EtimesT} \f \coupleXT \cdot \norm{ \vel \coupleXT }^2 \dx \dt.
+        \end{equation}
+
+        The minimum of this cost function is defined as the Wasserstein distance between \fI{} and \fII{}. The argument \fstar{} of the
+        minimum defines a non-trivial interpolation between \fI{} and \fII{}.
+        For more details on this problem, see \cite{benamou-2000, villani-2008, farchi-2016}.
+
+    \subsection{About the solver}
+    \noindent
+
+        The optimal transport problem is a minimization problem under constraint. Following \cite{papadakis-2014}, we propose iterative
+        solvers that rely on the use of proximal operators. To be able to numerically represent the fields, we have to assume that
+        \spaceE{} is compact, and in particular we take $\spaceE=[0,1]^{\dimension}$. Moreover, to simplify the computation, we will work with
+        the variables \coupleFM{}, where $\mom=\f\vel$ represents the momentum.\\
+
+        In the \python module we implemented the Douglas-Rachford (\drAlgo{}) and the Primal-Dual (\pdAlgo{}) algorithms in order to compute the density
+        and momentum fields satisfying \eqref{eq:continuity} and \eqref{eq:boundaries} and minimizing \eqref{eq:cost}
+        given two tables representing discretized versions of
+        the probability density functions \fI{} and \fII{}. Our \python code can handle the one-dimensional and two-dimensional cases
+        (\ie{} $\dimension=1$ or $2$), is object-oriented, heavily relies on the standard \numpy{} and \scipy{} modules 
+        (\eg{} linalg, fftpack, tensordot...) and is not parallelized. It is also able to solve the optimal transport
+        problem with reservoir boundaries as presented in \cite{farchi-2016}.\\
+
+        The code has been originally written for \python{2.7}. An other version is available for \python{3.4} which only
+        introduces minor modifications to match the new \python{3.x} syntax, however this version is slightly slower. This is due to the
+        lower performance of the \numpy{} and \scipy{} modules in \python{3.4}.
+        For more details about the code see \cite{farchi-2016}.
+

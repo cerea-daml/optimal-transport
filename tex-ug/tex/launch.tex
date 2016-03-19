@@ -1,0 +1,71 @@
+
+\section{Launching an algorithm\label{ssec:launch-algo}}
+\noindent
+
+    \subsection{With the default launchers}
+    \noindent
+
+        The easiest way to launch an algorithm is to use the default launchers provided in the top repertory.
+        More precisely, the launcher to use is the \python file \ppath{launchSimulation*D.py} with the command:
+        \lstset{style=codebash}
+        \begin{lstlisting}
+$ ./launchSimulation*D.py CONFIG_FILE=file.cgf PRINT_IO=True\end{lstlisting}
+        where \ppath{file.cfg} is
+        your configuration file and \bcode{PRINT\us{}IO} is an optionnal parameter that enables output on the screen.
+        The launcher then reads your configuration file, construct the adequate configuration object, then constructs
+        the algorithm object with the \pcode{algorithm(self)} method and make it run with the \pcode{run(self)} method.
+        At the end, it save the results in the specified output repertory (see section \ref{sssec:output}) and make an analyse of the
+        run (see section \ref{sssec:analyse}).\\
+
+        An example of configuration file is given by \ppath{OT/OTObjects*D/OT*D.cfg.example}. It must define the following
+        parameters:
+        \begin{enumerate}
+            \item \pcode{EPSILON}: variable used as tolerance value for some testings.
+            \item \pcode{outputDir}: path to the repertory for 
+                output\footnote{\NB{}: although \python{} supports relative paths, it is strongly recommanded to use absolte paths.}. See 
+                section \ref{sssec:output} for more details about the output.
+            \item \pcode{M}, \pcode{N} and \pcode{P}: discretization resolution along the dimensions in space for 
+                \pcode{M} (only for the $\dimension{}=2$ case) and \pcode{N} and in time for \pcode{P}.
+            \item \pcode{dynamics}: parameter used to select the correct variations of the proximal operators. 
+                See section \ref{sssec:proximal-selection} for more details about the way proximal operators are selected.
+            \item \pcode{boundaryType}: parameter used to select the correct boundary conditions. See section \ref{sssec:bc-reservoir} for 
+                more information about the boundary conditions.
+            \item \pcode{normType}: parameter used to select the correct normalization of the fields. See section \ref{sssec:normalization}
+                for more details about normalization.
+            \item \pcode{file**}: names of the files used to define the boundary conditions when needed. See section \ref{sssec:bc-reservoir} and
+                section \ref{sssec:input} for more information about the boundary conditions and input.
+            \item \pcode{algoName}: name of the algorithm to use. Use:
+                \begin{itemize}
+                    \item \pcode{pd} for the \pdAlgo{} algorithm;
+                    \item \pcode{adr3} for the \drAlgo{} algorithm with three proximal operators;
+                    \item \pcode{adr} for the \drAlgo{} with two proximal operators. 
+                \end{itemize}
+            \item \pcode{iterTarget}: number of algorithm iterations to run.
+            \item \pcode{nModPrint}: while running the algorithm, display information every \pcode{nModPrint} algorithm iteration. Information include
+                the number of iterations run, the time elapsed and the current value of the cost of transport \eqref{eq:cost}.
+            \item \pcode{nModWrite}: while running the algorithm, every \pcode{nModWrite} algorithm iteration, the current value of the 
+                converging variable will be written
+                in the output directory. See section \ref{sssec:output} for more details about output.
+            \item \pcode{initial}: parameter used to select the correct method to compute the initial condition. See section \ref{sssec:initialization}
+                for more details about initialization.
+            \item \pcode{initialInputDir}: when the initial condition is obtained from a previous run, this variable must contain the repertory 
+                in which the results have been saved. See section \ref{sssec:initialization} and section \ref{sssec:input} for more
+                informations about initialization and input.
+        \end{enumerate}
+
+        Also the algorithm parameters must be defined. See table \ref{tab:algo-parameters} for more details about the parameters
+        specific to each algorithm.
+
+        \input{./tex/tables/table_algo_param}
+
+    \subsection{Alternatives}
+    \noindent
+
+        If one doesn't want to use the provided \python{} launchers, the best way is probably to define an (almost) empty configuration class
+        and to make it contain every variable needed for the construction of the algorithm. We provide here a minimal example to solve the
+        optimal transport between two one-dimensional Gaussians using
+        the \pdAlgo{} algorithm.
+
+        \lstset{style=codepython}
+        \lstinputlisting{py/example_without_launcher.py}
+

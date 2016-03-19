@@ -1,0 +1,60 @@
+
+\section{Main objects defined}
+\noindent
+
+    \subsection{Discretization}
+    \noindent
+
+        In file \ppath{OT/OTObjects*D/grid/grid.py} are defined all the necessary classes to handle the discretized versions of
+        the density and momentum fields on centered and staggered grids as defined in section 3.1 of \cite{farchi-2016} and in section 3 of
+        \cite{papadakis-2014}.
+
+    \subsection{Proximal operators}
+    \noindent
+
+        The proximal operators are defined in repertory \ppath{OT/OTObjects*D/proximals/}. Their computation mainly rely on the functions
+        defined in the grid classes. For more details about the discretized versions of these operators, see section 4 of
+        \cite{papadakis-2014}.\\
+
+        Four different proximal operators are defined and
+        that are referred in the code as \pcode{proxJ}, \pcode{proxCdiv}, \pcode{proxCsc} and \pcode{proxCb}.
+        In table~\ref{tab:proximals-operators} we describe the contraint applied for each proximal operator and the state space
+        of the input and output variable, \ie{} the grid on which the input and output variables must be defined to
+        apply the proximal operator.
+
+        \input{./tex/tables/table_proximals_operators} 
+
+        For each constraint, there are variations of
+        the projection operators that add (partial) boundary conditions to the main constraint.
+        For example, in \ppath{div/}, \ppath{proxCdiv.py} defines
+        the projection on the continuity constraint \eqref{eq:continuity}, \ppath{proxCdivb.py} defines the projection on the continuity constraint 
+        \eqref{eq:continuity} with the boundary conditions \eqref{eq:boundaries} and \eqref{eq:null-flux} and
+        \ppath{proxCdivtb.py} defines the projection on the continuity constraint \eqref{eq:continuity} with temporal boundary conditions
+        \eqref{eq:boundaries}.
+        See table~\ref{tab:proximals-variations} for more details.
+
+        \input{./tex/tables/table_proximals_variations}
+
+        Choosing the correct version for the proximal operators is a critical step. See section \ref{sssec:proximal-selection}
+        for more details about the way proximal operators are chosen.
+
+    \subsection{Algorithms}
+    \noindent
+
+        The algorithms are implemented in repertory \ppath{OT/OTObjects*D/algorithms/}. When using this module to solve an 
+        optimal transport problem, there are two steps: one has to construct
+        an algorithm object, with the correct set of parameters, and then one just need to call the \pcode{run(self)} member of the object.
+        The construction of the algorithm object requires a configuration object, which is in fact just a container object
+        that contains the set of parameters.
+
+        Three algorithms are implemented: the \pdAlgo{} algorithm in \ppath{pd/}, the \drAlgo{} algorithm for the minimization of two
+        functionals in \ppath{adr/} and the \drAlgo{} algorithm for the minimization of three functionals in \ppath{adr3/}.
+        More details about the algorithms are available in section \ref{ssec:algorithms}.
+
+    \subsection{Configuration}
+    \noindent
+
+        The class for the configuration object is defined in \ppath{OT/OTObjects*D/configuration.py}. It inherits from a default
+        configuration class that handels the interface with a configuration file.
+        It also defines a member \pcode{algorithm(self)} that constructs the algorithm for a given configuration object.
+

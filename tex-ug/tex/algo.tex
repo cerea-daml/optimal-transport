@@ -1,0 +1,87 @@
+
+\section{Algorithms\label{ssec:algorithms}}
+\noindent
+
+    \subsection{Primal-Dual algorithm}
+    \noindent
+
+        The \pdAlgo{} algorithm allows one to minimize a functional $\costToMin=\costIToMin+\costIIToMin\circ\linearOperator$ where 
+        \linearOperator{} is a linear operator and \costIToMin{} and \costIIToMin{}
+        are simple functions. \\
+
+        Here we apply this method by considering the minimization space to be the set of discretized
+        couples \coupleFM{} defined on staggered grids. 
+        \linearOperator{} is the linear operator that interpolates a couple 
+        \coupleFM{} defined on staggered grids into a couple \coupleFM{} defined on centered grids. It is implemented by 
+        the \pcode{interpolation(self)} method of class \pcode{StaggeredField}.
+
+        \costIToMin{} is the cost function related to the continuity constraint \eqref{eq:continuity} and the boundary conditions
+        \eqref{eq:boundaries} and \eqref{eq:null-flux} -- therefore when using this algorithm, one needs to select 
+        the \pcode{ProxCdivb} version of the \pcode{proxCdiv} proximal operator. See section \ref{sssec:proximal-selection}
+        for more details about the selection of the versions of the proximal operators.
+
+        \costIIToMin{} is the cost function related to the cost of tranport \eqref{eq:cost}.\\
+
+        One then defines three recurrent sequences \pdStateU{n}, \pdStateY{n} and \pdStateV{n} that are sequences of couples \coupleFM{}
+        defined on staggered grids for \pdStateU{n} and \pdStateY{n} and on centered grids for \pdStateV{n} by:
+        \begin{align}
+            \pdStateV{n+1} &= \pdParSigma \cdot 
+                                \proximal{\costIIToMin{}/\pdParSigma}{\frac{1}{\pdParSigma}\cdot\pdStateV{n}+\linearOperator\left(\pdStateY{n}\right)}, \\
+            \pdStateU{n+1} &= \proximal{\pdParTau\costIToMin{}}{\pdStateU{n}-\pdParTau\cdot\linearOperator\left(\pdStateV{n+1}\right)}, \\
+            \pdStateY{n+1} &= \left( 1 + \pdParTheta \right ) \cdot \pdStateU{n+1} - \pdParTheta \cdot \pdStateU{n}.
+        \end{align}
+
+        If $\pdParTheta\in[0,1]$ and $\pdParSigma\pdParTau<1$ then \pdStateU{n} converge towards the solution of the 
+        discretized minimization problem.
+
+    \subsection{Douglas Rachford algorithm for three cost functions}
+    \noindent
+
+        The \drAlgo{} allows one to minimize a functional \costToMin that is the sum of a finite number of simple
+        functionals. Here we use it to minimize the sum of $3$ functionals:
+        $\costToMin=\costIToMin+\costIIToMin+\costIIIToMin$.
+
+        We consider here the minimization space to be the space of the couples of discretized couples \coupleFM{},
+        the first couple defined on the staggered gris and the second couple defined on the centered grids.
+
+        \costIToMin{} is
+        the cost of transport \eqref{eq:cost} and the continuity constraint \eqref{eq:continuity}. The continuity
+        constraint only applies to the first couple \coupleFM{} (defined on the staggered grid) whereas the cost of transport
+        only applies to the second couple \coupleFM{} (defined on the centered grid).
+
+        \costIIToMin{} is the interpolation constraint, that mixes both couples \coupleFM{}.
+
+        \costIIIToMin{} is the boundary conditions constraint \eqref{eq:boundaries} and \eqref{eq:null-flux}. It only
+        applies to the first couple \coupleFM{} (defined on the staggered grid).\\
+
+        Note that, as long as each boundary condition required for the optimal transport problem appear at least in one functional, 
+        one can freely choose any variation of the proximal operators for the constraints. See section \ref{sssec:proximal-selection}
+        for more details about the way proximal operators are selected.\\
+
+        One then defines four recurrent sequences \drTStateUI{n}, \drTStateUII{n}, \drTStateUIII{n} and \drTStateX{n} that
+        are in the minimization space (\ie{} that are couples of couples \coupleFM{}) by:
+        \begin{align}
+            \drTStatePI &= \proximal{\drTParGamma\costIToMin}{\drTStateUI{n}},\\
+            \drTStatePII &= \proximal{\costIIToMin}{\drTStateUII{n}},\\
+            \drTStatePIII &= \proximal{\costIIIToMin}{\drTStateUIII{n}},\\
+            \drTStateP &= \drTParOmegaI \cdot \drTStatePI + \drTParOmegaII \cdot \drTStatePII + \drTParOmegaIII \cdot \drTStatePIII,\\
+            \drTStateUI{n+1} &= \drTStateUI{n} + \drTParAlpha \cdot \left( 2 \cdot \drTStateP - \drTStateX{n} - \drTStatePI \right),\\
+            \drTStateUII{n+1} &= \drTStateUII{n} + \drTParAlpha \cdot \left( 2 \cdot \drTStateP - \drTStateX{n} - \drTStatePII \right),\\
+            \drTStateUIII{n+1} &= \drTStateUIII{n} + \drTParAlpha \cdot \left( 2 \cdot \drTStateP - \drTStateX{n} - \drTStatePIII \right),\\
+            \drTStateX{n+1} &= \left( 1 - \drTParAlpha \right) \cdot \drTStateX{n} + \drTParAlpha \cdot \drTStateP,
+        \end{align}
+        where \drTStateP{}, \drTStatePI{}, \drTStatePII{} and \drTStatePIII{} are working variables in the minimization space.
+
+        If $\drTParAlpha\in [0,1]$, $\drTParGamma>0$, $\drTParOmegaI>0$, $\drTParOmegaII>0$, $\drTParOmegaIII>0$ and 
+        $\drTParOmegaI+\drTParOmegaII+\drTParOmegaIII=1$ then \drTStateX{n} converge towards the solution of the discretized
+        minimization problem.
+
+    \subsection{Douglas Rachford algorithm for two cost functions}
+    \noindent
+
+        When using the standard boundary conditions (\ie{} no reservoirs), one can use the \pcode{ProxCdivb} version of the \pcode{proxCdiv}
+        in the \drAlgo{} algorithm.
+        The boundary constraint in functional \costIIIToMin{} are therefore redundant with those in functional
+        \costIToMin{}. Hence, one can adapt the previous algorithm to use only the first two proximal operators. This is a clever
+        way to reduce the computation complexity per iteration.
+
