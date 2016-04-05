@@ -1,3 +1,5 @@
+#!/usr/bin/env python 
+
 #==================================================
 #__________________________________________________
 
@@ -10,8 +12,6 @@
 
 #__________________________________________________
 #==================================================
-
-#!/usr/bin/env python 
 
 from OT.utils.sys.argv                       import extractArgv
 from OT.OTObjects1D.configuration            import Configuration
