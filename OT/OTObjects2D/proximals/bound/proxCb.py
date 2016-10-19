@@ -40,7 +40,7 @@ class ProxCb( Projector ):
     def __repr__(self):
         return ( 'Projector on the boundary contion constrain space.' )
 
-    def __call__(self, field, overwrite=True):
+    def __call__(self, field, overwrite=False):
         if overwrite:
             field.mx[0,:,:]        = self.kernel.spatialBoundaries.bx0[:,:]
             field.mx[self.M+1,:,:] = self.kernel.spatialBoundaries.bx1[:,:]
